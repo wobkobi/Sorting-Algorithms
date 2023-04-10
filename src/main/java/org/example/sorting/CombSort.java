@@ -1,6 +1,9 @@
 package org.example.sorting;
 
-import org.example.SortingAlgorithm;
 
-public class CombSort implements SortingAlgorithm {
+public class CombSort implements org.example.SortingAlgorithm {
+    @Override
+    public void sort(int[] arr) {
+
+    }
 }

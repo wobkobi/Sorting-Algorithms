@@ -1,10 +1,10 @@
 package org.example.sorting;
 
-import org.example.SortingAlgorithm;
 
-public class BubbleSort implements SortingAlgorithm {
+public class BubbleSort implements org.example.SortingAlgorithm {
 
-	@Override public void sort(int[] arr) {
-		// TODO document why this method is empty
-	}
+    @Override
+    public void sort(int[] arr) {
+
+    }
 }

@@ -1,6 +1,8 @@
 package org.example.sorting;
 
-import org.example.SortingAlgorithm;
+public class OptimizedGnomeSortWithBinarySearch implements org.example.SortingAlgorithm {
+    @Override
+    public void sort(int[] arr) {
 
-public class OptimizedGnomeSortWithBinarySearch implements SortingAlgorithm {
+    }
 }
