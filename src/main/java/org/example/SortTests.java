@@ -1,7 +1,6 @@
 package org.example;
 
 
-
 import org.example.sorting.*;
 
 import java.util.*;
@@ -12,7 +11,6 @@ public class SortTests {
         List<org.example.SortingAlgorithm> algorithms = new ArrayList<>();
         algorithms.add(new AmericanFlagSort128Buckets());
         algorithms.add(new andreyAstrelinInplaceMergeSort());
-        algorithms.add(new BadSort());
         algorithms.add(new BatchersBitonicSort());
         algorithms.add(new BatchersOddEvenMergeSort());
         algorithms.add(new BinaryInsertionSort());
@@ -111,7 +109,17 @@ public class SortTests {
         for (Map.Entry<String, Long> entry : sortedTimes) {
             String algorithmName = entry.getKey();
             long timeTaken = entry.getValue();
-            System.out.println(algorithmName + ": " + timeTaken + " nanoseconds");
+            //keep stepping up the time unit until it is readable, only use ns ms s, skip us
+            String timeUnit = "ns";
+            if (timeTaken > 1000000) {
+                timeTaken /= 1000000;
+                timeUnit = "ms";
+            }
+            if (timeTaken > 1000) {
+                timeTaken /= 1000;
+                timeUnit = "s";
+            }
+            System.out.println(algorithmName + ": " + timeTaken + timeUnit);
         }
     }
 }
