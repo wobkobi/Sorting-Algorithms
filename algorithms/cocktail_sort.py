@@ -1,8 +1,8 @@
-def cocktail_shaker_sort(arr):
+def cocktail_sort(arr: list) -> list:
     n = len(arr)
-    swapped = True
     start = 0
     end = n - 1
+    swapped = True
     while swapped:
         swapped = False
         for i in range(start, end):

@@ -1,28 +1,26 @@
-def bead_sort(arr):
-    if any(not isinstance(x, int) or x < 0 for x in arr):
-        raise ValueError("All elements must be non-negative integers")
-
+def bead_sort(arr: list) -> list:
     if not arr:
         return arr
 
-    max_element = max(arr)
-    beads = [[0] * len(arr) for _ in range(max_element)]
+    # Shift numbers if there are negatives.
+    min_val = min(arr)
+    shifted = False
+    if min_val < 0:
+        offset = -min_val
+        arr = [x + offset for x in arr]
+        shifted = True
 
-    # Place beads
-    for i, num in enumerate(arr):
-        for j in range(num):
-            beads[j][i] = 1
+    max_beads = max(arr)
+    n = len(arr)
+    # Create a 2D grid of beads.
+    beads = [[1 if j < arr[i] else 0 for j in range(max_beads)] for i in range(n)]
+    # Let beads "fall"
+    for j in range(max_beads):
+        sum_beads = sum(beads[i][j] for i in range(n))
+        for i in range(n):
+            beads[i][j] = 1 if i >= n - sum_beads else 0
+    sorted_arr = [sum(row) for row in beads]
 
-    # Let beads fall
-    for row in beads:
-        count = sum(row)
-        for j in range(len(arr) - count):
-            row[j] = 0
-        for j in range(len(arr) - count, len(arr)):
-            row[j] = 1
-
-    # Write output
-    for i in range(len(arr)):
-        arr[i] = sum(beads[j][i] for j in range(max_element))
-
-    return arr
+    if shifted:
+        sorted_arr = [x - offset for x in sorted_arr]
+    return sorted_arr
