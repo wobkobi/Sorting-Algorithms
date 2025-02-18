@@ -2,6 +2,8 @@ import csv
 import os
 import random
 import time
+import math
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # Import sorting functions from files within the "algorithms" folder.
 from algorithms.bead_sort import bead_sort
@@ -46,31 +48,30 @@ from algorithms.tree_sort import tree_sort
 
 def format_time(seconds):
     """
-    Format elapsed time into a human-readable string (without microseconds).
+    Format elapsed time into a human-readable string (without microseconds detail),
+    rounding values to full numbers.
 
     - If time is less than 1 millisecond, returns "less than 1 millisecond".
-    - If time is less than 1 second, displays milliseconds.
-    - For times between 1 and 60 seconds, displays seconds and milliseconds.
+    - For times less than 1 second, displays milliseconds (rounded to a whole number).
+    - For times between 1 and 60 seconds, displays seconds and milliseconds (both as integers).
     - For times between 60 seconds and 1 hour, displays minutes, seconds, and milliseconds.
-    - For times 1 hour or more, displays hours, minutes, and seconds.
+    - For times >= 1 hour, displays hours, minutes, and seconds.
     """
     if seconds < 1e-3:
         return "less than 1 millisecond"
     elif seconds < 1:
-        ms = seconds * 1000
-        return f"{ms:.2f} milliseconds"
+        ms = int(round(seconds * 1000))
+        return f"{ms} millisecond{'s' if ms != 1 else ''}"
     elif seconds < 60:
         sec_int = int(seconds)
-        ms = (seconds - sec_int) * 1000
-        return (
-            f"{sec_int} second{'s' if sec_int != 1 else ''} and {ms:.2f} milliseconds"
-        )
+        ms = int(round((seconds - sec_int) * 1000))
+        return f"{sec_int} second{'s' if sec_int != 1 else ''} and {ms} millisecond{'s' if ms != 1 else ''}"
     elif seconds < 3600:
         minutes = int(seconds // 60)
         rem = seconds % 60
         sec_int = int(rem)
-        ms = (rem - sec_int) * 1000
-        return f"{minutes} minute{'s' if minutes != 1 else ''}, {sec_int} second{'s' if sec_int != 1 else ''} and {ms:.2f} milliseconds"
+        ms = int(round((rem - sec_int) * 1000))
+        return f"{minutes} minute{'s' if minutes != 1 else ''}, {sec_int} second{'s' if sec_int != 1 else ''} and {ms} millisecond{'s' if ms != 1 else ''}"
     else:
         hours = int(seconds // 3600)
         rem = seconds % 3600
@@ -99,29 +100,39 @@ def group_rankings(ranking, margin=1e-3):
     return groups
 
 
+def run_iteration(sort_func, size):
+    """
+    Run a single iteration of sort for the given sort function and size.
+    Returns the elapsed time in seconds.
+    """
+    arr = [random.randint(-1000000, 1000000) for _ in range(size)]
+    arr_copy = arr.copy()
+    start_time = time.perf_counter()
+    sort_func(arr_copy)
+    return time.perf_counter() - start_time
+
+
 def run_sorting_tests():
-    # Define a wide range of array sizes.
-    sizes = [
-        5,
-        10,
-        20,
-        50,
-        100,
-        200,
-        500,
-        1000,
-        5000,
-        10000,
-        50000,
-        100000,
-        500000,
-        1000000,
-        5000000,
-        10000000,
-        50000000,
-        100000000,
-    ]
-    iterations = 50  # Run each test 50 times for more realistic averages
+    # Generate sizes logarithmically.
+    small_sizes = [int(round(5 * (1000 / 5) ** (i / 19))) for i in range(20)]
+    big_sizes = [int(round(1000 * (100000000 / 1000) ** (i / 9))) for i in range(10)]
+    sizes = sorted(list(set(small_sizes + big_sizes)))
+
+    iterations = 500  # Run each test 500 times
+
+    # Use the specified skip thresholds.
+    skip_thresholds = {
+        "Bogo Sort": 15,
+        "Sleep Sort": 20,
+        "Stooge Sort": 20,
+        "Spaghetti Sort": 20,
+        "Strand Sort": 20,
+        "Bead Sort": 40,
+    }
+
+    # Use half of the available cores (as requested).
+    num_workers = max((os.cpu_count() or 2) // 2, 1)
+    print(f"Using {num_workers} worker(s) for parallel execution.")
 
     # Ensure output folder exists for CSV files.
     output_folder = "results"
@@ -178,15 +189,6 @@ def run_sorting_tests():
     }
     overall_totals = {alg: {"sum": 0, "count": 0} for alg in algorithms.keys()}
 
-    # Define inefficient algorithms to skip for sizes greater than 10.
-    inefficient_algorithms = {
-        "Bogo Sort",
-        "Sleep Sort",
-        "Stooge Sort",
-        "Spaghetti Sort",
-        "Strand Sort",
-    }
-
     # Process each size.
     for size in sizes:
         print(f"\nTesting array size: {size}")
@@ -201,31 +203,31 @@ def run_sorting_tests():
 
         size_results = {}  # Temporary results for this size.
         for alg_name, sort_func in algorithms.items():
-            # Skip inefficient algorithms for sizes greater than 10.
-            if alg_name in inefficient_algorithms and size > 20:
+            # Skip inefficient algorithms based on threshold.
+            if alg_name in skip_thresholds and size > skip_thresholds[alg_name]:
                 size_results[alg_name] = None
                 continue
 
             total_time = 0
-            success_runs = 0
-            for i in range(iterations):
-                arr = [random.randint(-1000000, 1000000) for _ in range(size)]
-                arr_copy = arr.copy()
-                try:
-                    start_time = time.perf_counter()
-                    sort_func(arr_copy)
-                    elapsed_time = time.perf_counter() - start_time
-                    total_time += elapsed_time
-                    success_runs += 1
-                    # Write each run's result immediately to the CSV file for this size.
-                    csv_writer.writerow([alg_name, size, i + 1, f"{elapsed_time:.8f}"])
-                    csv_file.flush()
-                except Exception as e:
-                    print(f"{alg_name} error on size {size} iteration {i + 1}: {e}")
-                    total_time = None
-                    break
-            if total_time is not None and success_runs > 0:
-                avg_time = total_time / success_runs
+            # Use ProcessPoolExecutor to parallelize iterations.
+            with ProcessPoolExecutor(max_workers=num_workers) as executor:
+                futures = [
+                    executor.submit(run_iteration, sort_func, size)
+                    for _ in range(iterations)
+                ]
+                for i, future in enumerate(as_completed(futures), start=1):
+                    try:
+                        elapsed_time = future.result()
+                        total_time += elapsed_time
+                        csv_writer.writerow([alg_name, size, i, f"{elapsed_time:.8f}"])
+                        csv_file.flush()
+                    except Exception as e:
+                        print(f"{alg_name} error on size {size} iteration {i}: {e}")
+                        total_time = None
+                        break
+
+            if total_time is not None:
+                avg_time = total_time / iterations
                 size_results[alg_name] = avg_time
                 overall_totals[alg_name]["sum"] += avg_time
                 overall_totals[alg_name]["count"] += 1
