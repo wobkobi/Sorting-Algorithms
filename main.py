@@ -5,7 +5,7 @@ import time
 import math
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-# Import sorting functions from files within the "algorithms" folder.
+# Import sorting functions from the "algorithms" folder.
 from algorithms.bead_sort import bead_sort
 from algorithms.bitonic_sort import bitonic_sort_parallel
 from algorithms.block_sort import block_sort
@@ -48,14 +48,13 @@ from algorithms.tree_sort import tree_sort
 
 def format_time(seconds):
     """
-    Format elapsed time into a human-readable string (without microseconds detail),
-    rounding values to full numbers.
+    Convert a time in seconds into a human-readable string (rounded to whole numbers).
 
-    - If time is less than 1 millisecond, returns "less than 1 millisecond".
-    - For times less than 1 second, displays milliseconds (rounded to a whole number).
-    - For times between 1 and 60 seconds, displays seconds and milliseconds (both as integers).
-    - For times between 60 seconds and 1 hour, displays minutes, seconds, and milliseconds.
-    - For times >= 1 hour, displays hours, minutes, and seconds.
+    - For times less than 1 millisecond, returns "less than 1 millisecond".
+    - For times < 1 second, shows milliseconds.
+    - For times < 60 seconds, shows seconds and milliseconds.
+    - For times < 3600 seconds (1 hour), shows minutes, seconds, and milliseconds.
+    - For times >= 1 hour, shows hours, minutes, and seconds.
     """
     if seconds < 1e-3:
         return "less than 1 millisecond"
@@ -82,9 +81,14 @@ def format_time(seconds):
 
 def group_rankings(ranking, margin=1e-3):
     """
-    Group rankings if consecutive average times are within the margin (default 1 millisecond).
-    'ranking' is a sorted list of tuples (algorithm, avg_time).
-    Returns a list of groups, where each group is a list of (algorithm, avg_time) tuples.
+    Group a sorted list of (algorithm, avg_time) tuples if their times differ by less than the margin.
+
+    Parameters:
+        ranking (list): Sorted list of (algorithm, avg_time) tuples.
+        margin (float): Maximum difference (in seconds) to consider values equal.
+
+    Returns:
+        List of groups (each group is a list of (algorithm, avg_time) tuples).
     """
     groups = []
     if not ranking:
@@ -102,8 +106,14 @@ def group_rankings(ranking, margin=1e-3):
 
 def run_iteration(sort_func, size):
     """
-    Run a single iteration of sort for the given sort function and size.
-    Returns the elapsed time in seconds.
+    Run a single iteration of a sort algorithm for a given input size.
+
+    Parameters:
+        sort_func (function): The sort function to test.
+        size (int): The size of the array to sort.
+
+    Returns:
+        float: The elapsed time in seconds.
     """
     arr = [random.randint(-1000000, 1000000) for _ in range(size)]
     arr_copy = arr.copy()
@@ -113,6 +123,15 @@ def run_iteration(sort_func, size):
 
 
 def run_sorting_tests():
+    """
+    Run the sorting benchmarks for various input sizes and iterations.
+
+    - Generates sizes logarithmically (a mix of many small sizes and larger ones).
+    - Runs each algorithm for a given number of iterations (parallelized).
+    - Uses specified skip thresholds for very inefficient algorithms.
+    - Writes individual run times to CSV files (one per size) in the "results" folder.
+    - Updates the Markdown file ("README.md") in the root with per-size and overall rankings.
+    """
     # Generate sizes logarithmically.
     small_sizes = [int(round(5 * (1000 / 5) ** (i / 19))) for i in range(20)]
     big_sizes = [int(round(1000 * (100000000 / 1000) ** (i / 9))) for i in range(10)]
@@ -120,7 +139,7 @@ def run_sorting_tests():
 
     iterations = 500  # Run each test 500 times
 
-    # Use the specified skip thresholds.
+    # Use the specified skip thresholds for very inefficient algorithms.
     skip_thresholds = {
         "Bogo Sort": 15,
         "Sleep Sort": 20,
@@ -130,7 +149,7 @@ def run_sorting_tests():
         "Bead Sort": 40,
     }
 
-    # Use half of the available cores (as requested).
+    # Use half of the available cores.
     num_workers = max((os.cpu_count() or 2) // 2, 1)
     print(f"Using {num_workers} worker(s) for parallel execution.")
 
@@ -203,13 +222,13 @@ def run_sorting_tests():
 
         size_results = {}  # Temporary results for this size.
         for alg_name, sort_func in algorithms.items():
-            # Skip inefficient algorithms based on threshold.
+            # Skip inefficient algorithms if the size exceeds their threshold.
             if alg_name in skip_thresholds and size > skip_thresholds[alg_name]:
                 size_results[alg_name] = None
                 continue
 
             total_time = 0
-            # Use ProcessPoolExecutor to parallelize iterations.
+            # Parallelize iterations using a ProcessPoolExecutor.
             with ProcessPoolExecutor(max_workers=num_workers) as executor:
                 futures = [
                     executor.submit(run_iteration, sort_func, size)
