@@ -163,12 +163,12 @@ def run_sorting_tests():
 
     # Skip thresholds for very inefficient algorithms.
     skip_thresholds = {
-        "Bogo Sort": 15,
-        "Sleep Sort": 20,
-        "Stooge Sort": 20,
-        "Spaghetti Sort": 20,
-        "Strand Sort": 20,
-        "Bead Sort": 40,
+        "Bogo Sort": 12,
+        "Sleep Sort": 50,
+        "Stooge Sort": 50,
+        "Spaghetti Sort": 50,
+        "Strand Sort": 50,
+        "Bead Sort": 50,
     }
 
     # Use half of available cores.
