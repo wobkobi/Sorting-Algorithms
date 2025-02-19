@@ -1,5 +1,8 @@
 import csv
 import os
+import random
+import time
+import math
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # Import sorting functions from the "algorithms" folder.
@@ -63,14 +66,13 @@ def generate_sizes():
 
 def read_csv_results(csv_path):
     """
-    Read the CSV file for a given array size and compute, for each algorithm,
-    the average, minimum, and maximum elapsed times.
+    Read the CSV file for a given array size and compute the average, minimum, and maximum times for each algorithm.
 
     Parameters:
-        csv_path (str): The path to the CSV file.
+        csv_path (str): Path to the CSV file.
 
     Returns:
-        dict: A mapping from algorithm name to a tuple (avg, min, max).
+        dict: Mapping from algorithm name to a tuple (avg, min, max).
     """
     algorithm_times = {}
     with open(csv_path, "r", newline="") as csvfile:
@@ -93,7 +95,7 @@ def read_csv_results(csv_path):
 
 def algorithms():
     """
-    Return a dictionary mapping algorithm names to their corresponding sort function.
+    Return a dictionary mapping algorithm names to their corresponding sort functions.
 
     Returns:
         dict: {algorithm_name: sort_function, ...}
@@ -142,34 +144,34 @@ def algorithms():
 
 def run_sorting_tests():
     """
-    Run the sorting benchmarks over logarithmically spaced array sizes.
+    Run the sorting benchmarks over logarithmically generated array sizes.
 
     For each size:
       - If a CSV file exists in the 'results' folder, read its contents.
-      - Otherwise, execute the tests for each algorithm (running 500 iterations in parallel),
-        writing each iteration's result to the CSV file immediately.
+      - Otherwise, execute the tests for each algorithm (250 iterations in parallel),
+        writing each iteration’s result to the CSV file immediately.
       - Update overall totals and accumulate per-algorithm results.
-      - Write a per-size ranking table to the main Markdown file.
+      - Write a per-size ranking table to the main Markdown file (showing only average times).
 
     After processing all sizes:
       - Compute overall averages and append an overall Top 10 table to the main Markdown file.
-      - Write separate Markdown files for each algorithm (if they do not already exist)
-        in the folder 'results/algorithms', using the data collected from the CSV files.
+      - Write separate Markdown files for each algorithm (if they don't already exist)
+        in the folder 'results/algorithms', showing array size, average, minimum, and maximum times.
     """
     sizes = generate_sizes()
-    iterations = 500
+    iterations = 250
 
-    # Defined skip thresholds for very inefficient algorithms.
+    # Skip thresholds for very inefficient algorithms.
     skip_thresholds = {
-        "Bogo Sort": 12,
-        "Sleep Sort": 50,
-        "Stooge Sort": 50,
-        "Spaghetti Sort": 50,
-        "Strand Sort": 50,
-        "Bead Sort": 50,
+        "Bogo Sort": 15,
+        "Sleep Sort": 20,
+        "Stooge Sort": 20,
+        "Spaghetti Sort": 20,
+        "Strand Sort": 20,
+        "Bead Sort": 40,
     }
 
-    # Use half of the available CPU cores.
+    # Use half of available cores.
     num_workers = max((os.cpu_count() or 2) // 2, 1)
     print(f"Using {num_workers} worker(s) for parallel execution.")
 
@@ -185,17 +187,16 @@ def run_sorting_tests():
     with open(md_path, "w") as md_file:
         md_file.write("# Sorting Algorithms Benchmark Results\n")
         md_file.write(
-            "This document is updated as tests run. It contains per-size rankings of each sorting algorithm.\n\n"
+            "This document is updated as tests run. It contains per-size rankings of each sorting algorithm (average times only).\n\n"
         )
 
-        # Process each generated size.
         for size in sizes:
             print(f"\nTesting array size: {size}")
             csv_filename = f"results_{size}.csv"
             csv_path = os.path.join(output_folder, csv_filename)
-            size_results = {}  # Dictionary: algorithm -> (avg, min, max)
+            size_results = {}  # Mapping: algorithm -> (avg, min, max)
 
-            # If a CSV file exists, read results; otherwise, execute tests.
+            # If CSV exists, read results; otherwise, run tests.
             if os.path.exists(csv_path):
                 print(f"CSV file for size {size} exists; reading results.")
                 size_results = read_csv_results(csv_path)
@@ -228,7 +229,7 @@ def run_sorting_tests():
                                 try:
                                     elapsed_time = future.result()
                                     times_list.append(elapsed_time)
-                                    # Write CSV row immediately after each iteration.
+                                    # Write result immediately.
                                     csv_writer.writerow(
                                         [alg_name, size, i, f"{elapsed_time:.8f}"]
                                     )
@@ -248,17 +249,17 @@ def run_sorting_tests():
                             size_results[alg_name] = None
                 print(f"Ran tests for size {size} and saved CSV.")
 
-            # Update overall totals and collect per-algorithm results.
+            # Update overall totals and accumulate per-algorithm results.
             for alg, data in size_results.items():
                 if data is not None:
                     overall_totals[alg]["sum"] += data[0]
                     overall_totals[alg]["count"] += 1
                     per_alg_results[alg].append((size, data[0], data[1], data[2]))
 
-            # Write the per-size ranking table to the main Markdown file.
+            # Write the per-size ranking table to the main Markdown file (average only).
             write_markdown(md_file, size, size_results)
 
-        # Compute overall averages across sizes.
+        # Compute overall averages.
         overall = {}
         for alg, totals in overall_totals.items():
             if totals["count"] > 0:
@@ -272,8 +273,12 @@ def run_sorting_tests():
         md_file.write("\n")
         md_file.flush()
 
-    # Write per-algorithm Markdown files (if they don't already exist) based on the CSV data.
+    # Write per-algorithm Markdown files (only if they don't already exist).
     write_algorithm_markdown(per_alg_results)
     print(
         "\nCSV files saved in 'results' folder, README.md updated in the root, and per-algorithm Markdown files written in 'results/algorithms'."
     )
+
+
+if __name__ == "__main__":
+    run_sorting_tests()
