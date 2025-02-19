@@ -4,14 +4,19 @@ from utils import format_time, group_rankings
 
 def write_markdown(md_file, size, size_results):
     """
-    Write the per-size ranking table (including average, min, and max times) to the Markdown file.
+    Write a Markdown table summarizing the results for a specific array size.
+
+    The table includes the ranking of algorithms along with their average, minimum,
+    and maximum times. Algorithms that have average times differing by less than the
+    specified margin are grouped together.
 
     Parameters:
-        md_file: Open file handle for Markdown.
-        size (int): Current array size.
-        size_results (dict): Mapping from algorithm to (avg, min, max) tuple.
+        md_file: An open file handle to the main Markdown file.
+        size (int): The current array size.
+        size_results (dict): A dictionary mapping algorithm names to a tuple (avg, min, max).
     """
     md_file.write(f"## Array Size: {size}\n")
+    # Build a ranking list with each tuple: (algorithm, avg, min, max)
     ranking = [
         (alg, data[0], data[1], data[2])
         for alg, data in size_results.items()
@@ -23,6 +28,7 @@ def write_markdown(md_file, size, size_results):
                 "All algorithms ran in less than 1 millisecond on this array size; detailed ranking differences are negligible.\n\n"
             )
         else:
+            # Sort ranking by average time.
             ranking.sort(key=lambda x: x[1])
             groups = group_rankings(
                 [(alg, avg) for alg, avg, mn, mx in ranking], margin=1e-3
@@ -67,11 +73,16 @@ def write_markdown(md_file, size, size_results):
 
 def write_algorithm_markdown(per_alg_results):
     """
-    Write a separate Markdown file for each algorithm showing its results across sizes.
-    If a file for an algorithm already exists in 'results/algorithms', do not overwrite it.
+    Write separate Markdown files for each algorithm to summarize their results across sizes.
+
+    Each file is named after the algorithm (spaces replaced with underscores) and placed in
+    the folder 'results/algorithms'. The table in each file lists the array size and the corresponding
+    average, minimum, and maximum times.
+
+    This function only creates a file if it does not already exist.
 
     Parameters:
-        per_alg_results (dict): Mapping from algorithm to a list of tuples (size, avg, min, max).
+        per_alg_results (dict): A dictionary mapping algorithm names to a list of tuples (size, avg, min, max).
     """
     alg_folder = os.path.join("results", "algorithms")
     os.makedirs(alg_folder, exist_ok=True)
