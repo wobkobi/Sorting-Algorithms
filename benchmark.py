@@ -69,7 +69,7 @@ def read_csv_results(csv_path):
     Read the CSV file for a given array size and compute the average, minimum, and maximum times for each algorithm.
 
     Parameters:
-        csv_path (str): Path to the CSV file.
+        csv_path (str): The path to the CSV file.
 
     Returns:
         dict: Mapping from algorithm name to a tuple (avg, min, max).
@@ -142,36 +142,81 @@ def algorithms():
     }
 
 
+def rebuild_readme(overall_totals, details_path, skip_list):
+    """
+    Rebuild the main README.md file using the per-size details from details.md and overall averages.
+
+    The README.md will start with an Overall Top 10 table (with hyperlinks to individual algorithm Markdown files)
+    and a "Skipped Algorithms" section listing those algorithms that are being skipped due to an overall average
+    exceeding 30 minutes, followed by the per-size ranking sections.
+
+    Parameters:
+        overall_totals (dict): Mapping from algorithm to a dict with keys "sum" and "count".
+        details_path (str): Path to the details markdown file.
+        skip_list (set): Set of algorithm names that have been skipped.
+    """
+    overall = {}
+    for alg, totals in overall_totals.items():
+        if totals["count"] > 0:
+            overall[alg] = totals["sum"] / totals["count"]
+    overall_ranking = sorted(overall.items(), key=lambda x: x[1])
+
+    overall_lines = []
+    overall_lines.append("# Sorting Algorithms Benchmark Results\n\n")
+    overall_lines.append(
+        "## Overall Top 10 Algorithms (by average time across sizes)\n"
+    )
+    overall_lines.append("| Rank | Algorithm | Overall Average Time |\n")
+    overall_lines.append("| ---- | --------- | -------------------- |\n")
+    for rank, (alg, avg_time) in enumerate(overall_ranking[:10], start=1):
+        link = f"[{alg}](results/algorithms/{alg.replace(' ', '_')}.md)"
+        overall_lines.append(f"| {rank} | {link} | {format_time(avg_time)} |\n")
+    overall_lines.append("\n")
+
+    if skip_list:
+        overall_lines.append("## Skipped Algorithms\n")
+        overall_lines.append(
+            "The following algorithms were skipped for subsequent sizes because their overall average exceeded 30 minutes:\n\n"
+        )
+        overall_lines.append(", ".join(sorted(skip_list)) + "\n\n")
+
+    with open(details_path, "r") as f:
+        details_content = f.read()
+
+    with open("README.md", "w") as md_file:
+        md_file.writelines(overall_lines)
+        md_file.write(details_content)
+        md_file.flush()
+
+
 def run_sorting_tests():
     """
-    Run the sorting benchmarks over logarithmically generated array sizes.
+    Execute the sorting benchmarks over logarithmically generated array sizes.
 
     For each size:
-      - If a CSV file exists in the 'results' folder, read its contents.
-      - Otherwise, execute the tests for each algorithm (250 iterations in parallel),
-        writing each iteration’s result to the CSV file immediately.
+      - If a CSV file exists in the 'results' folder, read its contents; otherwise, perform 250 iterations
+        for each algorithm in parallel (writing each iteration’s result immediately to the CSV file).
       - Update overall totals and accumulate per-algorithm results.
-      - Write a per-size ranking table to the main Markdown file (showing only average times).
+      - Append the per-size ranking table (showing average times only) to a details file on disk.
+      - Rebuild the main README.md file after each size so that the Overall Top 10 table (with hyperlinks)
+        and a "Skipped Algorithms" section appear at the top.
+      - Dynamically add any algorithm to the skip list if its overall average (from all available data)
+        exceeds 30 minutes (1800 seconds). Also, print a message when an algorithm is skipped.
 
     After processing all sizes:
-      - Compute overall averages and append an overall Top 10 table to the main Markdown file.
-      - Write separate Markdown files for each algorithm (if they don't already exist)
-        in the folder 'results/algorithms', showing array size, average, minimum, and maximum times.
+      - Write separate Markdown files for each algorithm (if they don't already exist) in "results/algorithms",
+        showing array size, average time, minimum time, and maximum time.
     """
     sizes = generate_sizes()
     iterations = 250
 
-    # Skip thresholds for very inefficient algorithms.
-    skip_thresholds = {
-        "Bogo Sort": 12,
-        "Sleep Sort": 50,
-        "Stooge Sort": 50,
-        "Spaghetti Sort": 50,
-        "Strand Sort": 50,
-        "Bead Sort": 50,
-    }
+    # 15 minutes threshold in seconds.
+    threshold_seconds = 15 * 60
 
-    # Use half of available cores.
+    # Initialize dynamic skip list.
+    skip_list = set()
+
+    # Use half of available CPU cores.
     num_workers = max((os.cpu_count() or 2) // 2, 1)
     print(f"Using {num_workers} worker(s) for parallel execution.")
 
@@ -183,101 +228,141 @@ def run_sorting_tests():
     output_folder = "results"
     os.makedirs(output_folder, exist_ok=True)
 
-    md_path = "README.md"
-    with open(md_path, "w") as md_file:
-        md_file.write("# Sorting Algorithms Benchmark Results\n")
-        md_file.write(
-            "This document is updated as tests run. It contains per-size rankings of each sorting algorithm (average times only).\n\n"
-        )
+    # Create (or clear) a details file to store per-size markdown sections.
+    details_path = "details.md"
+    with open(details_path, "w") as details_file:
+        details_file.write("")
 
-        for size in sizes:
-            print(f"\nTesting array size: {size}")
-            csv_filename = f"results_{size}.csv"
-            csv_path = os.path.join(output_folder, csv_filename)
-            size_results = {}  # Mapping: algorithm -> (avg, min, max)
+    # Process each size.
+    for size in sizes:
+        print(f"\nTesting array size: {size}")
+        csv_filename = f"results_{size}.csv"
+        csv_path = os.path.join(output_folder, csv_filename)
+        size_results = {}  # Mapping: algorithm -> (avg, min, max)
 
-            # If CSV exists, read results; otherwise, run tests.
-            if os.path.exists(csv_path):
-                print(f"CSV file for size {size} exists; reading results.")
-                size_results = read_csv_results(csv_path)
-            else:
-                with open(csv_path, "w", newline="") as csv_file:
-                    csv_writer = csv.writer(csv_file)
-                    csv_writer.writerow(
-                        [
-                            "Algorithm",
-                            "Array Size",
-                            "Iteration",
-                            "Elapsed Time (seconds)",
+        # If CSV exists, read its contents; otherwise, run tests.
+        if os.path.exists(csv_path):
+            print(f"CSV file for size {size} exists; reading results.")
+            size_results = read_csv_results(csv_path)
+        else:
+            with open(csv_path, "w", newline="") as csv_file:
+                csv_writer = csv.writer(csv_file)
+                csv_writer.writerow(
+                    ["Algorithm", "Array Size", "Iteration", "Elapsed Time (seconds)"]
+                )
+                for alg_name, sort_func in algorithms().items():
+                    # Skip if algorithm is already in the dynamic skip list.
+                    if alg_name in skip_list:
+                        size_results[alg_name] = None
+                        continue
+
+                    times_list = []
+                    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+                        futures = [
+                            executor.submit(run_iteration, sort_func, size)
+                            for _ in range(iterations)
                         ]
-                    )
-                    for alg_name, sort_func in algorithms().items():
-                        if (
-                            alg_name in skip_thresholds
-                            and size > skip_thresholds[alg_name]
-                        ):
-                            size_results[alg_name] = None
-                            continue
+                        for i, future in enumerate(as_completed(futures), start=1):
+                            try:
+                                elapsed_time = future.result()
+                                times_list.append(elapsed_time)
+                                # Write CSV row immediately after each iteration.
+                                csv_writer.writerow(
+                                    [alg_name, size, i, f"{elapsed_time:.8f}"]
+                                )
+                                csv_file.flush()
+                            except Exception as e:
+                                print(
+                                    f"{alg_name} error on size {size} iteration {i}: {e}"
+                                )
+                                times_list = []
+                                break
+                    if times_list:
+                        avg_time = sum(times_list) / len(times_list)
+                        min_time = min(times_list)
+                        max_time = max(times_list)
+                        size_results[alg_name] = (avg_time, min_time, max_time)
+                    else:
+                        size_results[alg_name] = None
+            print(f"Ran tests for size {size} and saved CSV.")
 
-                        times_list = []
-                        with ProcessPoolExecutor(max_workers=num_workers) as executor:
-                            futures = [
-                                executor.submit(run_iteration, sort_func, size)
-                                for _ in range(iterations)
-                            ]
-                            for i, future in enumerate(as_completed(futures), start=1):
-                                try:
-                                    elapsed_time = future.result()
-                                    times_list.append(elapsed_time)
-                                    # Write result immediately.
-                                    csv_writer.writerow(
-                                        [alg_name, size, i, f"{elapsed_time:.8f}"]
-                                    )
-                                    csv_file.flush()
-                                except Exception as e:
-                                    print(
-                                        f"{alg_name} error on size {size} iteration {i}: {e}"
-                                    )
-                                    times_list = []
-                                    break
-                        if times_list:
-                            avg_time = sum(times_list) / len(times_list)
-                            min_time = min(times_list)
-                            max_time = max(times_list)
-                            size_results[alg_name] = (avg_time, min_time, max_time)
-                        else:
-                            size_results[alg_name] = None
-                print(f"Ran tests for size {size} and saved CSV.")
+        # Update overall totals and accumulate per-algorithm results.
+        for alg, data in size_results.items():
+            if data is not None:
+                overall_totals[alg]["sum"] += data[0]
+                overall_totals[alg]["count"] += 1
+                per_alg_results[alg].append((size, data[0], data[1], data[2]))
 
-            # Update overall totals and accumulate per-algorithm results.
-            for alg, data in size_results.items():
-                if data is not None:
-                    overall_totals[alg]["sum"] += data[0]
-                    overall_totals[alg]["count"] += 1
-                    per_alg_results[alg].append((size, data[0], data[1], data[2]))
-
-            # Write the per-size ranking table to the main Markdown file (average only).
-            write_markdown(md_file, size, size_results)
-
-        # Compute overall averages.
-        overall = {}
+        # Dynamically update the skip list based on overall averages (from all available data).
         for alg, totals in overall_totals.items():
             if totals["count"] > 0:
-                overall[alg] = totals["sum"] / totals["count"]
-        overall_ranking = sorted(overall.items(), key=lambda x: x[1])
-        md_file.write("## Overall Top 10 Algorithms (by average time across sizes)\n")
-        md_file.write("| Rank | Algorithm | Overall Average Time |\n")
-        md_file.write("| ---- | --------- | -------------------- |\n")
-        for rank, (alg, avg_time) in enumerate(overall_ranking[:10], start=1):
-            md_file.write(f"| {rank} | {alg} | {format_time(avg_time)} |\n")
-        md_file.write("\n")
-        md_file.flush()
+                overall_avg = totals["sum"] / totals["count"]
+                if overall_avg > threshold_seconds and alg not in skip_list:
+                    skip_list.add(alg)
+                    print(f"Skipping {alg} for future sizes (overall average > 30min).")
+
+        # Append per-size markdown (average times only) to details.md.
+        from markdown_utils import write_markdown
+
+        with open(details_path, "a") as details_file:
+            write_markdown(details_file, size, size_results)
+
+        # Rebuild the main README.md file after each size.
+        rebuild_readme(overall_totals, details_path, skip_list)
 
     # Write per-algorithm Markdown files (only if they don't already exist).
+    from markdown_utils import write_algorithm_markdown
+
     write_algorithm_markdown(per_alg_results)
     print(
         "\nCSV files saved in 'results' folder, README.md updated in the root, and per-algorithm Markdown files written in 'results/algorithms'."
     )
+
+
+def rebuild_readme(overall_totals, details_path, skip_list):
+    """
+    Rebuild the main README.md file using the per-size details from details.md and overall averages.
+
+    The README.md will start with an Overall Top 10 table (with hyperlinks to individual algorithm Markdown files)
+    and a "Skipped Algorithms" section, followed by the per-size ranking sections from details.md.
+
+    Parameters:
+        overall_totals (dict): Mapping from algorithm to a dict with keys "sum" and "count".
+        details_path (str): Path to the details markdown file.
+        skip_list (set): Set of algorithm names that are being skipped.
+    """
+    overall = {}
+    for alg, totals in overall_totals.items():
+        if totals["count"] > 0:
+            overall[alg] = totals["sum"] / totals["count"]
+    overall_ranking = sorted(overall.items(), key=lambda x: x[1])
+
+    overall_lines = []
+    overall_lines.append("# Sorting Algorithms Benchmark Results\n\n")
+    overall_lines.append(
+        "## Overall Top 10 Algorithms (by average time across sizes)\n"
+    )
+    overall_lines.append("| Rank | Algorithm | Overall Average Time |\n")
+    overall_lines.append("| ---- | --------- | -------------------- |\n")
+    for rank, (alg, avg_time) in enumerate(overall_ranking[:10], start=1):
+        link = f"[{alg}](results/algorithms/{alg.replace(' ', '_')}.md)"
+        overall_lines.append(f"| {rank} | {link} | {format_time(avg_time)} |\n")
+    overall_lines.append("\n")
+
+    if skip_list:
+        overall_lines.append("## Skipped Algorithms\n")
+        overall_lines.append(
+            "The following algorithms have been skipped for subsequent sizes because their overall average exceeded 30 minutes:\n\n"
+        )
+        overall_lines.append(", ".join(sorted(skip_list)) + "\n\n")
+
+    with open(details_path, "r") as f:
+        details_content = f.read()
+
+    with open("README.md", "w") as md_file:
+        md_file.writelines(overall_lines)
+        md_file.write(details_content)
+        md_file.flush()
 
 
 if __name__ == "__main__":
