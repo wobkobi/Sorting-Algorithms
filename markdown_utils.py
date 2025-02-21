@@ -4,12 +4,12 @@ from utils import format_time, group_rankings
 
 def write_markdown(md_file, size, size_results):
     """
-    Write a per-size ranking table (showing average times only) to the provided Markdown file.
+    Write a per-size ranking table (showing average times only) to the given Markdown file.
 
     Parameters:
-        md_file: Open file handle for a Markdown file.
-        size (int): The current array size.
-        size_results (dict): Mapping from algorithm name to a tuple (avg, min, max).
+        md_file: Open file handle to write Markdown.
+        size (int): Current array size.
+        size_results (dict): Mapping {algorithm: (avg, min, max)}.
     """
     md_file.write(f"## Array Size: {size}\n")
     ranking = [(alg, data[0]) for alg, data in size_results.items() if data is not None]
@@ -27,8 +27,7 @@ def write_markdown(md_file, size, size_results):
             for group in groups:
                 start_rank = current_rank
                 end_rank = current_rank + len(group) - 1
-                rep_alg = group[0][0]
-                rep_avg = next((avg for alg, avg in ranking if alg == rep_alg), None)
+                rep_avg = group[0][1]
                 algs_in_group = ", ".join(alg for alg, _ in group)
                 rank_str = (
                     f"{start_rank}"
@@ -49,14 +48,11 @@ def write_algorithm_markdown(per_alg_results):
     """
     Write separate Markdown files for each algorithm summarizing its results across sizes.
 
-    Each file is named after the algorithm (with spaces replaced by underscores) and placed in the
-    folder 'results/algorithms'. The table shows the array size along with the average, minimum,
-    and maximum times.
-
-    This function creates the file only if it does not already exist.
+    Each file is stored in 'results/algorithms' and contains a table with array size, average, min, and max times.
+    Files are created only if they do not already exist.
 
     Parameters:
-        per_alg_results (dict): Mapping from algorithm to a list of tuples (size, avg, min, max).
+        per_alg_results (dict): Mapping {algorithm: [(size, avg, min, max), ...]}.
     """
     alg_folder = os.path.join("results", "algorithms")
     os.makedirs(alg_folder, exist_ok=True)

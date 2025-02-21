@@ -4,21 +4,20 @@ import random
 
 def format_time(seconds):
     """
-    Convert a time in seconds into a human-readable string using abbreviated units,
+    Convert seconds into a human-readable string using abbreviated units (ms, s, min, hr)
     with no space between the number and the unit.
 
-    Returns:
-      - "less than 1ms" if time is below 0.001 seconds.
-      - For times < 1 second, displays time in milliseconds (e.g., "123ms").
-      - For times between 1 and 60 seconds, displays seconds and milliseconds (e.g., "3s120ms").
-      - For times between 60 seconds and 1 hour, displays minutes, seconds, and milliseconds (e.g., "2min3s120ms").
-      - For times 1 hour or more, displays hours, minutes, and seconds (e.g., "1hr2min3s").
+    - "less than a ms" if time < 0.001 seconds.
+    - For time < 1 second: e.g., "123ms".
+    - For time between 1 and 60 seconds: e.g., "3s120ms".
+    - For time between 60 seconds and 1 hour: e.g., "2min3s120ms".
+    - For time >= 1 hour: e.g., "1hr2min3s".
 
     Parameters:
         seconds (float): Time duration in seconds.
 
     Returns:
-        str: The formatted time string.
+        str: Formatted time string.
     """
     if seconds < 1e-3:
         return "less than a ms"
@@ -45,15 +44,14 @@ def format_time(seconds):
 
 def group_rankings(ranking, margin=1e-3):
     """
-    Group a sorted list of (algorithm, avg_time) tuples if the difference between
-    consecutive average times is less than the specified margin.
+    Group a sorted list of (algorithm, avg_time) tuples if the difference between consecutive values is below margin.
 
     Parameters:
-        ranking (list): Sorted list of tuples in the form (algorithm, avg_time).
-        margin (float): Maximum allowed difference in seconds for grouping.
+        ranking (list): Sorted list of tuples (algorithm, avg_time).
+        margin (float): Maximum allowed difference (in seconds) for grouping.
 
     Returns:
-        list: A list of groups, where each group is a list of (algorithm, avg_time) tuples.
+        list: A list of groups, each a list of (algorithm, avg_time) tuples.
     """
     groups = []
     if not ranking:
@@ -71,17 +69,29 @@ def group_rankings(ranking, margin=1e-3):
 
 def run_iteration(sort_func, size):
     """
-    Execute a single iteration of the provided sort function on a randomly generated array.
+    Run one iteration of a sorting function on a random integer array.
 
     Parameters:
-        sort_func (function): The sorting algorithm function to be benchmarked.
-        size (int): The size (length) of the array to be sorted.
+        sort_func (function): Sorting algorithm to benchmark.
+        size (int): Size of the array.
 
     Returns:
-        float: The elapsed time in seconds.
+        float: Elapsed time in seconds.
     """
     arr = [random.randint(-1000000, 1000000) for _ in range(size)]
-    arr_copy = arr.copy()
-    start_time = time.perf_counter()
-    sort_func(arr_copy)
-    return time.perf_counter() - start_time
+    start = time.perf_counter()
+    sort_func(arr.copy())
+    return time.perf_counter() - start
+
+
+def compute_average(times):
+    """
+    Compute the average of a list of numbers.
+
+    Parameters:
+        times (list): List of numerical values.
+
+    Returns:
+        float or None: Average value, or None if empty.
+    """
+    return sum(times) / len(times) if times else None
