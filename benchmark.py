@@ -242,10 +242,14 @@ def run_sorting_tests():
         for alg, data in size_results.items():
             if data is not None:
                 current_avg = data[0]
-                print(f"Average for {alg} on size {size}: {current_avg} seconds")
+                print(
+                    f"Average for {alg} on size {size}: {format_time(current_avg)} seconds"
+                )
                 if current_avg > threshold and alg not in skip_list:
                     skip_list.add(alg)
                     print(f"Skipping {alg} for future sizes (current average > 15min).")
+
+        # Append the current size's markdown (all current results are written).
 
         with open(details_path, "a") as f:
             write_markdown(f, size, size_results)
@@ -259,5 +263,5 @@ def run_sorting_tests():
 
 
 if __name__ == "__main__":
-
+    print("Please run main.py instead. But fine, I'll do it anyway.")
     run_sorting_tests()
