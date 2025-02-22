@@ -2,7 +2,7 @@ import csv
 import os
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-# Import sorting functions.
+# Import all sorting functions from the algorithms package.
 from algorithms import *
 
 # Import helper functions.
@@ -12,14 +12,30 @@ from markdown_utils import write_markdown, write_algorithm_markdown
 
 def generate_sizes():
     """
-    Generate logarithmically spaced array sizes.
+    Dynamically generate array sizes.
+
+    - For small sizes, generate a geometric progression from 5 to 100 (10 steps).
+    - For large sizes, use an exponential progression from 100 up to 1 trillion.
 
     Returns:
         list: Sorted list of unique sizes.
     """
-    small_sizes = [int(round(5 * (1000 / 5) ** (i / 19))) for i in range(20)]
-    big_sizes = [int(round(1000 * (100000000 / 1000) ** (i / 9))) for i in range(10)]
-    return sorted(list(set(small_sizes + big_sizes)))
+    # Geometric progression for small sizes (10 steps from 5 to 100)
+    n_small = 10
+    small_sizes = [
+        int(round(5 * ((100 / 5) ** (i / (n_small - 1))))) for i in range(n_small)
+    ]
+
+    # Exponential progression for larger sizes.
+    large_sizes = []
+    size = 100
+    while size < 1e12:
+        large_sizes.append(int(size))
+        size *= 2
+    large_sizes.append(int(1e12))
+
+    sizes = sorted(set(small_sizes + large_sizes))
+    return sizes
 
 
 def read_csv_results(csv_path):
@@ -45,9 +61,9 @@ def read_csv_results(csv_path):
             algorithm_times.setdefault(alg, []).append(t)
     results = {}
     for alg, times in algorithm_times.items():
-        avg_time = compute_average(times)
-        if avg_time is not None:
-            results[alg] = (avg_time, min(times), max(times))
+        avg = compute_average(times)
+        if avg is not None:
+            results[alg] = (avg, min(times), max(times))
     return results
 
 
@@ -102,11 +118,12 @@ def algorithms():
 
 def rebuild_readme(overall_totals, details_path, skip_list):
     """
-    Rebuild the main README.md using overall averages and per-size details.
+    Rebuild the main README.md using overall averages (based solely on current size's data)
+    and per-size details.
 
-    The README.md includes an Overall Top 10 table (with links to per-algorithm files)
+    The file includes an Overall Top 10 table (with links to per-algorithm files)
     and a Skipped Algorithms section listing those algorithms removed from future sizes
-    because their overall average exceeded 15 minutes.
+    because their current size's average exceeded the threshold.
 
     Parameters:
         overall_totals (dict): Mapping {algorithm: {"sum": total_time, "count": total_iterations}}.
@@ -114,6 +131,7 @@ def rebuild_readme(overall_totals, details_path, skip_list):
         skip_list (set): Set of algorithms being skipped.
     """
     overall = {}
+    # For this version, we compute overall averages per size (they may differ from the accumulated overall)
     for alg, totals in overall_totals.items():
         if totals["count"] > 0:
             overall[alg] = totals["sum"] / totals["count"]
@@ -132,7 +150,7 @@ def rebuild_readme(overall_totals, details_path, skip_list):
     if skip_list:
         lines.append("## Skipped Algorithms\n")
         lines.append(
-            "The following algorithms have been removed from future sizes because their average on a given size exceeded 15 minutes:\n\n"
+            "The following algorithms have been removed from future sizes because their current average exceeded the threshold:\n\n"
         )
         lines.append(", ".join(sorted(skip_list)) + "\n\n")
         print("Skipped Algorithms:", ", ".join(sorted(skip_list)))
@@ -152,7 +170,7 @@ def rebuild_readme(overall_totals, details_path, skip_list):
 
 def run_sorting_tests():
     """
-    Run sorting benchmarks over logarithmically generated array sizes.
+    Run sorting benchmarks over dynamically generated array sizes.
 
     For each size:
       - If a CSV exists for that size, read it; otherwise, perform 250 iterations per algorithm in parallel.
@@ -168,9 +186,9 @@ def run_sorting_tests():
     """
     sizes = generate_sizes()
     iterations = 250
-    threshold = 900  # 15 minutes in seconds
+    threshold = 300  # 5 minutes (300 seconds) per iteration cutoff
 
-    # overall_totals stores the total elapsed time and total iteration count across sizes.
+    # overall_totals stores the total elapsed time (as average*iterations) and total iteration count.
     overall_totals = {alg: {"sum": 0, "count": 0} for alg in algorithms().keys()}
     per_alg_results = {alg: [] for alg in algorithms().keys()}
     skip_list = set()
@@ -231,24 +249,24 @@ def run_sorting_tests():
                         size_results[alg_name] = None
             print(f"Ran tests for size {size} and saved CSV.")
 
-        # Update overall totals and per-algorithm results for the current size.
+        # Update overall totals and per-algorithm results for current size.
         for alg, data in size_results.items():
             if data is not None:
+                # Multiply current average by iterations to get total time for this size.
                 overall_totals[alg]["sum"] += data[0] * iterations
                 overall_totals[alg]["count"] += iterations
                 per_alg_results[alg].append((size, data[0], data[1], data[2]))
 
-        # Use current size averages to update the skip list.
+        # Use current size's average to update skip list.
         for alg, data in size_results.items():
             if data is not None:
                 current_avg = data[0]
-                print(f"{alg} on size {size}: {format_time(current_avg)}")
+                print(f"Average for {alg} on size {size}: {format_time(current_avg)}")
                 if current_avg > threshold and alg not in skip_list:
                     skip_list.add(alg)
-                    print(f"Skipping {alg} for future sizes (current average > 15min).")
+                    print(f"Skipping {alg} for future sizes (current average > 5min).")
 
-        # Append the current size's markdown (all current results are written).
-
+        # Append current size's markdown.
         with open(details_path, "a") as f:
             write_markdown(f, size, size_results)
 
@@ -260,6 +278,47 @@ def run_sorting_tests():
     )
 
 
-if __name__ == "__main__":
-    print("Please run main.py instead. But fine, I'll do it anyway.")
-    run_sorting_tests()
+def rebuild_readme(overall_totals, details_path, skip_list):
+    """
+    Rebuild the main README.md using overall averages and per-size details.
+
+    Parameters:
+        overall_totals (dict): Mapping {algorithm: {"sum": total_time, "count": total_iterations}}.
+        details_path (str): Path to the details markdown file.
+        skip_list (set): Set of algorithms being skipped.
+    """
+    overall = {}
+    for alg, totals in overall_totals.items():
+        if totals["count"] > 0:
+            overall[alg] = totals["sum"] / totals["count"]
+    overall_ranking = sorted(overall.items(), key=lambda x: x[1])
+
+    lines = []
+    lines.append("# Sorting Algorithms Benchmark Results\n\n")
+    lines.append("## Overall Top 10 Algorithms (by average time across sizes)\n")
+    lines.append("| Rank | Algorithm | Overall Average Time |\n")
+    lines.append("| ---- | --------- | -------------------- |\n")
+    for rank, (alg, avg_time) in enumerate(overall_ranking[:10], start=1):
+        link = f"[{alg}](results/algorithms/{alg.replace(' ', '_')}.md)"
+        lines.append(f"| {rank} | {link} | {format_time(avg_time)} |\n")
+    lines.append("\n")
+
+    if skip_list:
+        lines.append("## Skipped Algorithms\n")
+        lines.append(
+            "The following algorithms have been removed from future sizes because their average on a given size exceeded 15 minutes:\n\n"
+        )
+        lines.append(", ".join(sorted(skip_list)) + "\n\n")
+        print("Skipped Algorithms:", ", ".join(sorted(skip_list)))
+    else:
+        lines.append("## Skipped Algorithms\n")
+        lines.append("No algorithms were skipped.\n\n")
+        print("No algorithms were skipped.")
+
+    with open(details_path, "r") as f:
+        details_content = f.read()
+
+    with open("README.md", "w") as md_file:
+        md_file.writelines(lines)
+        md_file.write(details_content)
+        md_file.flush()
