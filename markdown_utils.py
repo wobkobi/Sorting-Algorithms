@@ -4,11 +4,11 @@ from utils import format_time, group_rankings
 
 def write_markdown(md_file, size, size_results):
     """
-    Write a per-size ranking table (showing average times only) to the given Markdown file.
+    Write a per-size ranking table (averages only) to the given Markdown file.
 
     Parameters:
-        md_file: Open file handle to write Markdown.
-        size (int): Current array size.
+        md_file: Open file handle.
+        size (int): Array size.
         size_results (dict): Mapping {algorithm: (avg, min, max)}.
     """
     md_file.write(f"## Array Size: {size}\n")
@@ -25,19 +25,13 @@ def write_markdown(md_file, size, size_results):
             md_file.write("| Rank | Algorithm(s) | Average Time |\n")
             md_file.write("| ---- | ------------ | ------------ |\n")
             for group in groups:
-                start_rank = current_rank
-                end_rank = current_rank + len(group) - 1
-                rep_avg = group[0][1]
-                algs_in_group = ", ".join(alg for alg, _ in group)
-                rank_str = (
-                    f"{start_rank}"
-                    if start_rank == end_rank
-                    else f"{start_rank}-{end_rank}"
-                )
-                md_file.write(
-                    f"| {rank_str} | {algs_in_group} | {format_time(rep_avg)} |\n"
-                )
-                current_rank = end_rank + 1
+                start = current_rank
+                end = current_rank + len(group) - 1
+                rep = group[0][1]
+                algs = ", ".join(alg for alg, _ in group)
+                rank_str = f"{start}" if start == end else f"{start}-{end}"
+                md_file.write(f"| {rank_str} | {algs} | {format_time(rep)} |\n")
+                current_rank = end + 1
             md_file.write("\n")
     else:
         md_file.write("No algorithms produced a result for this array size.\n\n")
@@ -46,9 +40,9 @@ def write_markdown(md_file, size, size_results):
 
 def write_algorithm_markdown(per_alg_results):
     """
-    Write separate Markdown files for each algorithm summarizing its results across sizes.
+    Write separate Markdown files for each algorithm summarizing its results.
 
-    Each file is stored in 'results/algorithms' and contains a table with array size, average, min, and max times.
+    Each file is saved in 'results/algorithms' and contains a table with array size, average, min, and max times.
     Files are created only if they do not already exist.
 
     Parameters:
