@@ -1,4 +1,4 @@
-def library_sort(arr : list) -> list:
+def library_sort(arr: list) -> list:
     """
     Library Sort.
 

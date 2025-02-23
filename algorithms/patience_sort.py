@@ -1,10 +1,10 @@
 def patience_sort(arr: list) -> list:
     """
     Patience Sort implementation.
-    
+
     Time Complexity: O(n log n)
     Space Complexity: O(n)
-    
+
     Inspired by the card game 'patience', it builds piles (or strands) and then merges them to form the sorted array.
     """
     piles = []

@@ -1,4 +1,4 @@
-def msd_radix_sort(arr:list, digit=None) -> list:
+def msd_radix_sort(arr: list, digit=None) -> list:
     """
     MSD Radix Sort.
 

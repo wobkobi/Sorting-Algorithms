@@ -4,10 +4,10 @@ import heapq
 def polyphase_merge_sort(arr: list) -> list:
     """
     Polyphase Merge Sort implementation.
-    
+
     Time Complexity: O(n log n)
     Space Complexity: O(n)
-    
+
     An external sorting algorithm that minimizes the number of merge passes using an uneven distribution of runs.
     """
     if not arr:
