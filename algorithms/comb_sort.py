@@ -1,4 +1,12 @@
 def comb_sort(arr: list) -> list:
+    """
+    Comb Sort implementation.
+
+    Time Complexity: Average-case better than bubble sort, but worst-case O(n²)
+    Space Complexity: O(1)
+
+    Improves on bubble sort by using a gap sequence to eliminate small values at the end of the list.
+    """
     n = len(arr)
     gap = n
     shrink = 1.3

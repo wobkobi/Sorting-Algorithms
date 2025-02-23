@@ -3,6 +3,14 @@ from heapq import merge
 
 
 def sample_sort(arr: list) -> list:
+    """
+    Sample Sort implementation.
+
+    Time Complexity: Expected O(n log n)
+    Space Complexity: O(n)
+
+    Divides the array using a set of sample elements to determine splitters, then sorts subarrays—well-suited for parallel sorting.
+    """
     if not arr:
         return arr
     n = len(arr)

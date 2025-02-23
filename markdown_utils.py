@@ -66,3 +66,49 @@ def write_algorithm_markdown(per_alg_results):
             print(f"Wrote results for {alg} to {filepath}")
         else:
             print(f"Markdown file for {alg} already exists; skipping.")
+
+
+def rebuild_readme(overall_totals, details_path, skip_list):
+    """
+    Rebuild the main README.md using overall averages and per-size details.
+
+    Parameters:
+        overall_totals (dict): Mapping {algorithm: {"sum": total_time, "count": total_iterations}}.
+        details_path (str): Path to the details markdown file.
+        skip_list (set): Set of algorithms being skipped.
+    """
+    overall = {}
+    for alg, totals in overall_totals.items():
+        if totals["count"] > 0:
+            overall[alg] = totals["sum"] / totals["count"]
+    overall_ranking = sorted(overall.items(), key=lambda x: x[1])
+
+    lines = []
+    lines.append("# Sorting Algorithms Benchmark Results\n\n")
+    lines.append("## Overall Top 10 Algorithms (by average time across sizes)\n")
+    lines.append("| Rank | Algorithm | Overall Average Time |\n")
+    lines.append("| ---- | --------- | -------------------- |\n")
+    for rank, (alg, avg_time) in enumerate(overall_ranking[:10], start=1):
+        link = f"[{alg}](results/algorithms/{alg.replace(' ', '_')}.md)"
+        lines.append(f"| {rank} | {link} | {format_time(avg_time)} |\n")
+    lines.append("\n")
+
+    if skip_list:
+        lines.append("## Skipped Algorithms\n")
+        lines.append(
+            "The following algorithms have been removed from future sizes because their average on the current size exceeded the threshold:\n\n"
+        )
+        lines.append(", ".join(sorted(skip_list)) + "\n\n")
+        print("Skipped Algorithms:", ", ".join(sorted(skip_list)))
+    else:
+        lines.append("## Skipped Algorithms\n")
+        lines.append("No algorithms were skipped.\n\n")
+        print("No algorithms were skipped.")
+
+    with open(details_path, "r") as f:
+        details_content = f.read()
+
+    with open("README.md", "w") as md_file:
+        md_file.writelines(lines)
+        md_file.write(details_content)
+        md_file.flush()

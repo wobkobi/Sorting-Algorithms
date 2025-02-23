@@ -1,4 +1,12 @@
 def bucket_sort(arr: list) -> list:
+    """
+    Bucket Sort implementation.
+
+    Time Complexity: Average-case O(n + k) where k is the number of buckets; Worst-case O(n²)
+    Space Complexity: O(n + k)
+
+    Distributes elements into buckets, sorts each bucket, then concatenates. Works best when data is uniformly distributed.
+    """
     if len(arr) == 0:
         return arr
     min_val = min(arr)

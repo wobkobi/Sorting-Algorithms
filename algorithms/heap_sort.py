@@ -1,4 +1,12 @@
 def heap_sort(arr: list) -> list:
+    """
+    Heap Sort implementation.
+
+    Time Complexity: O(n log n) in all cases
+    Space Complexity: O(1) (in-place)
+
+    Converts the list into a heap data structure, then repeatedly extracts the maximum (or minimum) element.
+    """
     n = len(arr)
     # Build a max heap.
     for i in range(n // 2 - 1, -1, -1):

@@ -1,4 +1,12 @@
 def cycle_sort(arr: list) -> list:
+    """
+    Cycle Sort implementation.
+
+    Time Complexity: O(n²)
+    Space Complexity: O(1)
+
+    Minimizes the number of writes by determining cycles in the permutation and rotating elements accordingly.
+    """
     n = len(arr)
     for cycle_start in range(0, n - 1):
         item = arr[cycle_start]

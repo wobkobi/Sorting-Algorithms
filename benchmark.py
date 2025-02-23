@@ -7,7 +7,7 @@ from algorithms import *
 
 # Import helper functions.
 from utils import format_time, run_iteration, compute_average
-from markdown_utils import write_markdown, write_algorithm_markdown
+from markdown_utils import rebuild_readme, write_markdown, write_algorithm_markdown
 
 
 def generate_sizes():
@@ -108,57 +108,18 @@ def algorithms():
         "Tim Sort": tim_sort,
         "Tournament Sort": tournament_sort,
         "Tree Sort": tree_sort,
+        "Exchange Sort": exchange_sort,
+        "Franceschini's Method": franceschinis_method,
+        "I-Can't-Believe-It-Can-Sort": icant_believe_it_can_sort,
+        "Library Sort": library_sort,
+        "Merge Insertion Sort": merge_insertion_sort,
+        "MSD Radix Sort": msd_radix_sort,
+        "MSD Radix Sort In-Place": msd_radix_sort_inplace,
+        "P-Merge Sort": p_merge_sort,
+        "Slowsort": slowsort,
+        "Sorting Network": sorting_network,
+        "Spreadsort": spreadsort,
     }
-
-
-def rebuild_readme(overall_totals, details_path, skip_list):
-    """
-    Rebuild the main README.md using overall averages and per-size details.
-
-    The file includes an Overall Top 10 table (with links to per-algorithm files)
-    and a Skipped Algorithms section listing algorithms removed from future sizes
-    because their current average exceeded the threshold.
-
-    Parameters:
-        overall_totals (dict): Mapping {algorithm: {"sum": total_time, "count": total_iterations}}.
-        details_path (str): Path to the details markdown file.
-        skip_list (set): Set of algorithms being skipped.
-    """
-    overall = {}
-    for alg, totals in overall_totals.items():
-        if totals["count"] > 0:
-            overall[alg] = totals["sum"] / totals["count"]
-    overall_ranking = sorted(overall.items(), key=lambda x: x[1])
-
-    lines = []
-    lines.append("# Sorting Algorithms Benchmark Results\n\n")
-    lines.append("## Overall Top 10 Algorithms (by average time across sizes)\n")
-    lines.append("| Rank | Algorithm | Overall Average Time |\n")
-    lines.append("| ---- | --------- | -------------------- |\n")
-    for rank, (alg, avg_time) in enumerate(overall_ranking[:10], start=1):
-        link = f"[{alg}](results/algorithms/{alg.replace(' ', '_')}.md)"
-        lines.append(f"| {rank} | {link} | {format_time(avg_time)} |\n")
-    lines.append("\n")
-
-    if skip_list:
-        lines.append("## Skipped Algorithms\n")
-        lines.append(
-            "The following algorithms have been removed from future sizes because their average on the current size exceeded the threshold:\n\n"
-        )
-        lines.append(", ".join(sorted(skip_list)) + "\n\n")
-        print("Skipped Algorithms:", ", ".join(sorted(skip_list)))
-    else:
-        lines.append("## Skipped Algorithms\n")
-        lines.append("No algorithms were skipped.\n\n")
-        print("No algorithms were skipped.")
-
-    with open(details_path, "r") as f:
-        details_content = f.read()
-
-    with open("README.md", "w") as md_file:
-        md_file.writelines(lines)
-        md_file.write(details_content)
-        md_file.flush()
 
 
 def run_sorting_tests():
@@ -282,49 +243,3 @@ def run_sorting_tests():
     print(
         "\nBenchmark complete: CSV files saved, README.md updated, and per-algorithm files created in 'results/algorithms'."
     )
-
-
-def rebuild_readme(overall_totals, details_path, skip_list):
-    """
-    Rebuild the main README.md using overall averages and per-size details.
-
-    Parameters:
-        overall_totals (dict): Mapping {algorithm: {"sum": total_time, "count": total_iterations}}.
-        details_path (str): Path to the details markdown file.
-        skip_list (set): Set of algorithms being skipped.
-    """
-    overall = {}
-    for alg, totals in overall_totals.items():
-        if totals["count"] > 0:
-            overall[alg] = totals["sum"] / totals["count"]
-    overall_ranking = sorted(overall.items(), key=lambda x: x[1])
-
-    lines = []
-    lines.append("# Sorting Algorithms Benchmark Results\n\n")
-    lines.append("## Overall Top 10 Algorithms (by average time across sizes)\n")
-    lines.append("| Rank | Algorithm | Overall Average Time |\n")
-    lines.append("| ---- | --------- | -------------------- |\n")
-    for rank, (alg, avg_time) in enumerate(overall_ranking[:10], start=1):
-        link = f"[{alg}](results/algorithms/{alg.replace(' ', '_')}.md)"
-        lines.append(f"| {rank} | {link} | {format_time(avg_time)} |\n")
-    lines.append("\n")
-
-    if skip_list:
-        lines.append("## Skipped Algorithms\n")
-        lines.append(
-            "The following algorithms have been removed from future sizes because their average on the current size exceeded the threshold:\n\n"
-        )
-        lines.append(", ".join(sorted(skip_list)) + "\n\n")
-        print("Skipped Algorithms:", ", ".join(sorted(skip_list)))
-    else:
-        lines.append("## Skipped Algorithms\n")
-        lines.append("No algorithms were skipped.\n\n")
-        print("No algorithms were skipped.")
-
-    with open(details_path, "r") as f:
-        details_content = f.read()
-
-    with open("README.md", "w") as md_file:
-        md_file.writelines(lines)
-        md_file.write(details_content)
-        md_file.flush()

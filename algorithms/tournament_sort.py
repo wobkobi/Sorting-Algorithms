@@ -2,6 +2,14 @@ import math
 
 
 def tournament_sort(arr: list) -> list:
+    """
+    Tournament Sort implementation.
+
+    Time Complexity: O(n log n)
+    Space Complexity: O(n)
+
+    Organizes elements in a tournament tree and repeatedly extracts the winner. Often used in selection problems.
+    """
     if not arr:
         return arr
     n = len(arr)

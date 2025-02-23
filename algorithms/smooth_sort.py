@@ -1,4 +1,12 @@
 def smooth_sort(arr: list) -> list:
+    """
+    Smooth Sort implementation.
+
+    Time Complexity: Worst-case O(n log n), Best-case O(n) for nearly sorted data
+    Space Complexity: O(1)
+
+    A variation of heap sort that adapts to the existing order in the input, potentially offering faster performance on nearly sorted lists.
+    """
     n = len(arr)
     if n < 2:
         return arr

@@ -1,4 +1,12 @@
 def hyper_quick(arr: list) -> list:
+    """
+    Hyper Quick implementation.
+
+    Time Complexity: Expected O(n log n), Worst-case O(n²)
+    Space Complexity: O(log n) average due to recursion
+
+    A variant of quick sort with advanced pivot selection and partitioning optimizations.
+    """
     if len(arr) <= 1:
         return arr
     first, mid, last = arr[0], arr[len(arr) // 2], arr[-1]

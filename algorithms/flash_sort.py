@@ -1,4 +1,12 @@
 def flash_sort(arr: list) -> list:
+    """
+    Flash Sort implementation.
+
+    Time Complexity: Expected O(n) for uniformly distributed data, Worst-case O(n²)
+    Space Complexity: O(n)
+
+    Divides the data into classes and sorts within them. Best applied when data distribution is known.
+    """
     n = len(arr)
     if n == 0:
         return arr

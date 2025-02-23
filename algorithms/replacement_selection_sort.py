@@ -3,6 +3,14 @@ from heapq import merge
 
 
 def replacement_selection_sort(arr: list) -> list:
+    """
+    Replacement Selection Sort implementation.
+
+    Time Complexity: O(n log n)
+    Space Complexity: O(n)
+
+    Commonly used in external sorting, it builds long initial runs by repeatedly replacing the root of a heap.
+    """
     if not arr:
         return arr
 

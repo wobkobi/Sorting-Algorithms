@@ -1,4 +1,12 @@
 def odd_even_sort(arr: list) -> list:
+    """
+    Odd-Even Sort implementation.
+    
+    Time Complexity: O(n²) worst-case
+    Space Complexity: O(1)
+    
+    Alternates between comparing odd-indexed and even-indexed pairs. Simple but not efficient on large arrays.
+    """
     n = len(arr)
     sorted_flag = False
     while not sorted_flag:

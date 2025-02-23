@@ -3,6 +3,14 @@ import time
 
 
 def sleep_sort(arr: list) -> list:
+    """
+    Sleep Sort implementation.
+
+    Time Complexity: Conceptually O(n) (when using concurrent sleep calls), but not practical
+    Space Complexity: O(n)
+
+    A novelty sorting algorithm that uses delays (sleep durations) based on element values. Primarily a humorous demonstration.
+    """
     if not arr:
         return arr
 
