@@ -1,4 +1,12 @@
 def radix_sort(arr: list) -> list:
+    """
+    Radix Sort implementation.
+
+    Time Complexity: O(nk) where k is the number of digits or characters in the keys
+    Space Complexity: O(n + k)
+
+    A non-comparative sort that processes the input digit by digit (or character by character), often using counting sort as a subroutine.
+    """
     if not arr:
         return arr
     max_val = max(arr)

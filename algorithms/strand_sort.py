@@ -1,4 +1,13 @@
 def strand_sort(arr: list) -> list:
+    """
+    Strand Sort implementation.
+
+    Time Complexity: Worst-case O(n²); may perform better on partially sorted data
+    Space Complexity: O(n)
+
+    Repeatedly extracts increasing subsequences (strands) from the list and merges them to form the sorted output.
+    """
+
     def merge_strands(a: list, b: list) -> list:
         result = []
         i = j = 0
@@ -14,6 +23,7 @@ def strand_sort(arr: list) -> list:
         return result
 
     output = []
+
     while arr:
         # Build a strand.
         strand = [arr.pop(0)]

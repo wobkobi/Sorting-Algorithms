@@ -9,6 +9,14 @@ def is_sorted(arr: list) -> bool:
 
 
 def bogo_sort(arr: list) -> list:
+    """
+    Bogo Sort implementation.
+
+    Time Complexity: Average-case O((n+1)!) (practically unbounded)
+    Space Complexity: O(1)
+
+    Randomly shuffles the array until sorted. Only useful for very small arrays or educational purposes.
+    """
     while not is_sorted(arr):
         random.shuffle(arr)
     return arr

@@ -44,7 +44,14 @@ def merge(arr: list, left: int, mid: int, right: int) -> None:
 
 
 def tim_sort(arr: list) -> list:
-    """Sorts the array using a genuine implementation of Tim Sort."""
+    """
+    Tim Sort implementation.
+
+    Time Complexity: Best-case O(n), Worst-case O(n log n)
+    Space Complexity: O(n)
+
+    A hybrid stable sort combining merge sort and insertion sort, highly optimized for real-world data and widely used in programming languages.
+    """
     n = len(arr)
     if n < 2:
         return arr

@@ -1,4 +1,12 @@
 def burst_sort(arr: list) -> list:
+    """
+    Burst Sort implementation.
+
+    Time Complexity: Expected O(n) average-case (for string data)
+    Space Complexity: O(n)
+
+    Uses a burst trie structure to sort large collections of strings with improved cache performance.
+    """
     if not arr:
         return arr
 

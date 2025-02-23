@@ -1,4 +1,12 @@
 def bead_sort(arr: list) -> list:
+    """
+    Bead Sort implementation.
+
+    Time Complexity: Expected O(n) average-case, Worst-case O(n^2)
+    Space Complexity: O(n)
+
+    Simulates gravity on beads arranged on rods. Best for sorting lists of natural numbers.
+    """
     if not arr:
         return arr
 

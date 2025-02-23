@@ -23,6 +23,14 @@ def inorder(root, arr):
 
 
 def tree_sort(arr: list) -> list:
+    """
+    Tree Sort implementation.
+
+    Time Complexity: Average-case O(n log n), Worst-case O(n²) if the tree becomes unbalanced
+    Space Complexity: O(n)
+
+    Inserts elements into a binary search tree and then performs an in-order traversal to yield a sorted list.
+    """
     if not arr:
         return arr
     root = None

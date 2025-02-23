@@ -3,6 +3,14 @@ from heapq import merge
 
 
 def block_sort(arr: list) -> list:
+    """
+    Block Sort implementation.
+
+    Time Complexity: O(n log n)
+    Space Complexity: O(n)
+
+    Divides the array into blocks, sorts each block, and then merges them. Suitable for large datasets.
+    """
     n = len(arr)
     if n <= 1:
         return arr

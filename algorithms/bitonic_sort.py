@@ -2,6 +2,14 @@ import concurrent.futures
 
 
 def bitonic_merge(arr: list, ascending: bool) -> list:
+    """
+    Bitonic Merge implementation.
+
+    Time Complexity: O(n log² n)
+    Space Complexity: O(n)
+
+    Merges two bitonic sequences.
+    """
     n = len(arr)
     if n <= 1:
         return arr
@@ -20,6 +28,9 @@ def _bitonic_sort_recursive(
     executor: concurrent.futures.ProcessPoolExecutor,
     threshold: int,
 ) -> list:
+    """
+    Recursive helper function for Bitonic Sort Parallel.
+    """
     n = len(arr)
     if n <= 1:
         return arr
@@ -44,6 +55,14 @@ def _bitonic_sort_recursive(
 def bitonic_sort_parallel(
     arr: list, ascending: bool = True, threshold: int = 1024
 ) -> list:
+    """
+    Bitonic Sort Parallel implementation.
+
+    Time Complexity: O(n log² n) sequentially, O(log² n) with full parallelism
+    Space Complexity: O(n)
+
+    Constructs bitonic sequences and merges them. Highly effective on parallel architectures.
+    """
     n = len(arr)
     if n == 0:
         return arr
