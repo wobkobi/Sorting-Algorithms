@@ -186,7 +186,7 @@ def run_sorting_tests():
     per_alg_results = {alg: [] for alg in algorithms().keys()}
     skip_list = set()
 
-    num_workers = max((os.cpu_count() * 3) // 4, 1)
+    num_workers = max((os.cpu_count() or 1) // 2, 1)
     print(f"Using {num_workers} worker(s) for parallel execution.")
 
     output_folder = "results"
