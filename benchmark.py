@@ -14,28 +14,23 @@ def generate_sizes():
     """
     Dynamically generate array sizes.
 
-    - For small sizes, generate a geometric progression from 5 to 100 (10 steps).
-    - For large sizes, use an exponential progression from 100 up to 1 trillion.
+    - For small sizes, generate a geometric progression from 3 to 100 over 15 steps.
+    - For larger sizes, use an exponential progression (doubling) from 100 up to 1 trillion.
 
     Returns:
         list: Sorted list of unique sizes.
     """
-    # Geometric progression for small sizes (10 steps from 5 to 100)
-    n_small = 10
+    n_small = 15
     small_sizes = [
-        int(round(5 * ((100 / 5) ** (i / (n_small - 1))))) for i in range(n_small)
+        int(round(5 * ((200 / 3) ** (i / (n_small - 1))))) for i in range(n_small)
     ]
-
-    # Exponential progression for larger sizes.
     large_sizes = []
     size = 100
     while size < 1e12:
         large_sizes.append(int(size))
         size *= 2
     large_sizes.append(int(1e12))
-
-    sizes = sorted(set(small_sizes + large_sizes))
-    return sizes
+    return sorted(set(small_sizes + large_sizes))
 
 
 def read_csv_results(csv_path):
@@ -118,12 +113,11 @@ def algorithms():
 
 def rebuild_readme(overall_totals, details_path, skip_list):
     """
-    Rebuild the main README.md using overall averages (based solely on current size's data)
-    and per-size details.
+    Rebuild the main README.md using overall averages and per-size details.
 
     The file includes an Overall Top 10 table (with links to per-algorithm files)
-    and a Skipped Algorithms section listing those algorithms removed from future sizes
-    because their current size's average exceeded the threshold.
+    and a Skipped Algorithms section listing algorithms removed from future sizes
+    because their current average exceeded the threshold.
 
     Parameters:
         overall_totals (dict): Mapping {algorithm: {"sum": total_time, "count": total_iterations}}.
@@ -131,7 +125,6 @@ def rebuild_readme(overall_totals, details_path, skip_list):
         skip_list (set): Set of algorithms being skipped.
     """
     overall = {}
-    # For this version, we compute overall averages per size (they may differ from the accumulated overall)
     for alg, totals in overall_totals.items():
         if totals["count"] > 0:
             overall[alg] = totals["sum"] / totals["count"]
@@ -150,7 +143,7 @@ def rebuild_readme(overall_totals, details_path, skip_list):
     if skip_list:
         lines.append("## Skipped Algorithms\n")
         lines.append(
-            "The following algorithms have been removed from future sizes because their current average exceeded the threshold:\n\n"
+            "The following algorithms have been removed from future sizes because their average on the current size exceeded the threshold:\n\n"
         )
         lines.append(", ".join(sorted(skip_list)) + "\n\n")
         print("Skipped Algorithms:", ", ".join(sorted(skip_list)))
@@ -177,23 +170,22 @@ def run_sorting_tests():
       - Update overall totals and per-algorithm results.
       - Append a per-size ranking table (averages only) to a details file.
       - Rebuild README.md with an Overall Top 10 table and a Skipped Algorithms section.
-      - For each algorithm, use the current size's average to decide if it should be added to the skip list.
-        (The current size's results are written before the algorithm is skipped for future sizes.)
-        When skipping, print a message.
+      - For each algorithm, immediately after its 250 runs are completed, print:
+            print(f"Average for {alg} on size {size}: {format_time(current_avg)}")
+        and use the current size's average to decide if it should be skipped for future sizes.
+        When skipping, print a message and insert a markdown comment indicating which algorithms were removed at that size.
 
-    After all sizes:
+    After processing all sizes:
       - Write per-algorithm Markdown files in "results/algorithms" (if not already present).
     """
     sizes = generate_sizes()
     iterations = 250
-    threshold = 300  # 5 minutes (300 seconds) per iteration cutoff
+    threshold = 300  # 5 minutes per iteration cutoff
 
-    # overall_totals stores the total elapsed time (as average*iterations) and total iteration count.
     overall_totals = {alg: {"sum": 0, "count": 0} for alg in algorithms().keys()}
     per_alg_results = {alg: [] for alg in algorithms().keys()}
     skip_list = set()
 
-    # Use 75% of available CPU cores.
     num_workers = max((os.cpu_count() * 3) // 4, 1)
     print(f"Using {num_workers} worker(s) for parallel execution.")
 
@@ -245,28 +237,42 @@ def run_sorting_tests():
                     if times:
                         avg = compute_average(times)
                         size_results[alg_name] = (avg, min(times), max(times))
+                        # Immediately print average after finishing 250 iterations.
+                        print(
+                            f"Average for {alg_name} on size {size}: {format_time(avg)}"
+                        )
+                        if avg > threshold and alg_name not in skip_list:
+                            skip_list.add(alg_name)
+                            print(
+                                f"Skipping {alg_name} for future sizes (current average > 5min)."
+                            )
                     else:
                         size_results[alg_name] = None
             print(f"Ran tests for size {size} and saved CSV.")
 
-        # Update overall totals and per-algorithm results for current size.
+        # Update overall totals and per-algorithm results for the current size.
         for alg, data in size_results.items():
             if data is not None:
-                # Multiply current average by iterations to get total time for this size.
                 overall_totals[alg]["sum"] += data[0] * iterations
                 overall_totals[alg]["count"] += iterations
                 per_alg_results[alg].append((size, data[0], data[1], data[2]))
 
-        # Use current size's average to update skip list.
+        # Insert markdown comment if new algorithms were skipped at this size.
+        previous_skip = set(skip_list)
         for alg, data in size_results.items():
             if data is not None:
                 current_avg = data[0]
-                print(f"Average for {alg} on size {size}: {format_time(current_avg)}")
+                # (The average is already printed above for each algorithm.)
                 if current_avg > threshold and alg not in skip_list:
                     skip_list.add(alg)
                     print(f"Skipping {alg} for future sizes (current average > 5min).")
+        new_skipped = skip_list - previous_skip
+        if new_skipped:
+            with open(details_path, "a") as f:
+                f.write(
+                    f"<!-- At size {size}, the following algorithms were removed: {', '.join(sorted(new_skipped))} -->\n\n"
+                )
 
-        # Append current size's markdown.
         with open(details_path, "a") as f:
             write_markdown(f, size, size_results)
 
@@ -306,7 +312,7 @@ def rebuild_readme(overall_totals, details_path, skip_list):
     if skip_list:
         lines.append("## Skipped Algorithms\n")
         lines.append(
-            "The following algorithms have been removed from future sizes because their average on a given size exceeded 15 minutes:\n\n"
+            "The following algorithms have been removed from future sizes because their average on the current size exceeded the threshold:\n\n"
         )
         lines.append(", ".join(sorted(skip_list)) + "\n\n")
         print("Skipped Algorithms:", ", ".join(sorted(skip_list)))
