@@ -148,7 +148,9 @@ def run_sorting_tests():
     skip_list = set()
 
     num_workers = max((os.cpu_count() or 1) // 2, 1)
-    print(f"Using {num_workers} worker(s) for parallel execution.")
+    print(
+        f"Using {num_workers} worker{'s' if num_workers > 1 else ''} for parallel execution."
+    )
 
     output_folder = "results"
     os.makedirs(output_folder, exist_ok=True)
