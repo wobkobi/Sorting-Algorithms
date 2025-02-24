@@ -17,6 +17,7 @@ def write_markdown(md_file, size, size_results, removed=None):
       - Rank, algorithm names, average time, and median time.
       - Algorithms with similar performance (within a specified margin) are grouped together.
 
+    A blank line is inserted after the title to ensure proper formatting.
     After the table, if any algorithms were removed at this size due to performance issues,
     a note is appended listing those algorithms.
 
@@ -26,7 +27,7 @@ def write_markdown(md_file, size, size_results, removed=None):
         size_results (dict): Mapping {algorithm: (avg, min, max, median, count, times)}.
         removed (list, optional): List of algorithm names removed at this size.
     """
-    # Write the title, then an empty line.
+    # Write title and add a blank line.
     md_file.write(f"## Array Size: {size}\n\n")
     ranking = [
         (alg, data[0], data[3])
@@ -65,9 +66,11 @@ def write_algorithm_markdown(per_alg_results):
     """
     Generate individual markdown files summarizing benchmark results for each algorithm.
 
-    Each algorithm's file is created in the "results/algorithms" directory (if it doesn't already exist)
-    and contains a table listing:
+    For each algorithm, a markdown file is created in the "results/algorithms" directory (if it doesn't exist),
+    containing a table that lists:
       - Array Size, Average Time, Median Time, Min Time, and Max Time.
+
+    The title and table header are separated by a blank line for consistent formatting.
 
     Parameters:
         per_alg_results (dict): Mapping {algorithm: [(array size, avg, min, max, median), ...]}.
@@ -106,6 +109,8 @@ def rebuild_readme(overall_totals, details_path, skip_list):
       - A section listing skipped algorithms (if any).
       - Detailed per-size benchmark information from the details file.
 
+    Extra blank lines are inserted between sections for consistent formatting.
+
     Parameters:
         overall_totals (dict): Mapping {algorithm: {"sum": total_time, "count": iterations}}.
         details_path (str): Path to the markdown file containing per-size details.
@@ -118,9 +123,9 @@ def rebuild_readme(overall_totals, details_path, skip_list):
     overall_ranking = sorted(overall.items(), key=lambda x: x[1])
 
     lines = []
-    # Write title and an empty line.
+    # Title and introduction.
     lines.append("# Sorting Algorithms Benchmark Results\n\n")
-    # Write overall ranking title with an empty line after.
+    # Overall ranking section.
     lines.append("## Overall Top 20 Algorithms (by average time across sizes)\n\n")
     lines.append("| Rank | Algorithm | Overall Average Time |\n")
     lines.append("| ---- | --------- | -------------------- |\n")
@@ -129,6 +134,7 @@ def rebuild_readme(overall_totals, details_path, skip_list):
         lines.append(f"| {rank} | {link} | {format_time(avg_time)} |\n")
     lines.append("\n")
 
+    # Skipped algorithms section.
     if skip_list:
         lines.append("## Skipped Algorithms\n\n")
         lines.append(
@@ -141,6 +147,7 @@ def rebuild_readme(overall_totals, details_path, skip_list):
         lines.append("No algorithms were skipped.\n\n")
         print("No algorithms were skipped.")
 
+    # Append detailed per-size information.
     with open(details_path, "r") as f:
         details_content = f.read()
 

@@ -3,10 +3,10 @@ main.py
 
 Entry point for the Sorting Algorithms Benchmark.
 
-This script prompts the user for benchmark parameters (number of iterations and threshold).
-You can exit at any prompt by typing "q" or "quit" or pressing Ctrl+C.
-If no input is provided, default values (250 iterations and 300 seconds threshold) are used.
-Then it calls run_sorting_tests() with the specified parameters.
+This script prompts the user for the number of iterations and threshold parameters.
+Users may exit at any prompt by typing "q" or "quit" or by pressing Ctrl+C.
+If no input is provided, the default values (250 iterations and 300 seconds threshold) are used.
+The specified parameters are then passed to the benchmark process.
 """
 
 import sys
@@ -17,15 +17,16 @@ def get_user_input(prompt, default):
     """
     Prompt the user for an integer input.
 
-    If the user types 'q' or 'quit', or triggers a KeyboardInterrupt/EOFError, the program exits gracefully.
-    If the input is empty or invalid, the default value is used.
+    - If the user types 'q' or 'quit', or triggers a KeyboardInterrupt/EOFError,
+      the program exits gracefully.
+    - If the input is empty or invalid, the default value is used.
 
     Parameters:
         prompt (str): The message displayed to the user.
-        default (int): The default value to use if input is empty or invalid.
+        default (int): The default value if no valid input is provided.
 
     Returns:
-        int: The input value or the default.
+        int: The user-supplied value or the default.
     """
     try:
         user_input = input(prompt)

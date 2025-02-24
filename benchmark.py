@@ -2,25 +2,26 @@
 benchmark.py
 
 This module implements the core logic for executing sorting benchmarks across multiple array sizes.
-It handles:
-  - Generating array sizes.
-  - Reading and writing CSV files using functions from csv_utils.py.
-  - Running benchmark iterations in parallel.
-  - Aggregating and updating overall statistics.
-  - Generating markdown reports (per-size ranking tables and individual algorithm reports).
+It performs the following tasks:
+  - Generates a list of array sizes for benchmarking.
+  - Reads and writes CSV files using functions from csv_utils.py.
+  - Executes benchmark iterations in parallel.
+  - Aggregates and updates overall statistics.
+  - Generates markdown reports (both per-size ranking tables and individual algorithm reports).
 
-If an algorithm's CSV data for a given size does not contain the desired number of iterations,
-the missing iterations are computed and appended. The CSV is then sorted alphabetically.
-A helper ensures that new data is appended on a new line if the process stops and restarts.
-
-The number of worker processes is determined based on the current time of day:
+If a CSV file for a given array size does not have the desired number of iterations,
+the missing iterations are executed and appended to the CSV.
+The CSV file is then sorted alphabetically.
+A helper function ensures that new data is appended on a new line if the process stops and later resumes.
+The number of worker processes is dynamically determined based on the current time of day:
   - Between 12 AM and 9 AM: 75% of available CPU cores are used.
   - Otherwise: 50% of available CPU cores are used.
-The worker count is re-evaluated for each array size, and a message is printed only if it changes.
+The worker count is re-evaluated for each array size and only printed if it changes.
 """
 
 import csv
 import os
+import time
 import datetime
 from collections import OrderedDict
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -51,8 +52,8 @@ def generate_sizes():
     """
     Generate a sorted list of unique array sizes for benchmarking.
 
-    Produces two progressions:
-      - A geometric progression for small sizes (from 3 to 100 over 15 steps).
+    This function produces two distinct progressions:
+      - A geometric progression for small sizes (from 3 to 100, distributed over 15 steps).
       - An exponential progression (doubling) for larger sizes (starting at 100 up to 1 trillion).
 
     Returns:
@@ -65,7 +66,7 @@ def generate_sizes():
     ]
     large_sizes = []
     size = 100
-    # Calculate large sizes by doubling until reaching 1 trillion.
+    # Doubling for large sizes until 1e12.
     while size < 1e12:
         large_sizes.append(int(size))
         size *= 2
@@ -77,8 +78,9 @@ def get_num_workers():
     """
     Determine the number of worker processes based on the current time of day.
 
-    If the current time is between 12 AM and 9 AM, 75% of available CPU cores are used.
-    Otherwise, 50% of available CPU cores are used.
+    Uses:
+      - 75% of available CPU cores if the time is between 12 AM and 9 AM.
+      - 50% of available CPU cores otherwise.
 
     Returns:
         int: The number of worker processes to use (at least 1).
@@ -94,7 +96,7 @@ def get_num_workers():
 
 def algorithms():
     """
-    Provide a dictionary mapping algorithm names to their corresponding sorting functions.
+    Provide a dictionary mapping algorithm names to their sorting functions.
 
     Returns:
         dict: Mapping {algorithm_name: sorting_function, ...}
@@ -154,27 +156,28 @@ def algorithms():
 
 def run_sorting_tests(iterations=250, threshold=300):
     """
-    Execute sorting benchmarks across various array sizes and compile the results.
+    Execute sorting benchmarks across multiple array sizes and compile the results.
 
     Parameters:
         iterations (int): Number of iterations per algorithm per array size (default: 250).
-        threshold (int): Threshold in seconds for average runtime; algorithms exceeding this are skipped (default: 300).
+        threshold (int): Time threshold (in seconds); algorithms exceeding this average are skipped (default: 300).
 
-    For each array size:
-      1. If a CSV file exists, read its contents using read_csv_results (from csv_utils.py) and check
-         whether each expected algorithm has recorded the desired iterations.
-         If an algorithm has fewer iterations, determine the number missing.
-      2. If the CSV file is new, create it and write the header row.
-      3. For each algorithm with missing iterations (or missing entirely), run additional iterations
-         and append the new rows to the CSV.
-      4. Ensure the CSV ends with a newline, then sort it alphabetically by algorithm name.
-      5. Update overall aggregated statistics and per-algorithm records.
-      6. Append a per-size markdown ranking table (with a note for any algorithms removed at that size)
-         to a details file.
-      7. Rebuild the main README.md file with overall top-20 rankings and the list of skipped algorithms.
+    Process for each array size:
+      1. Check for an existing CSV file. If it exists, read its data using read_csv_results.
+         Otherwise, create a new CSV file with the proper header.
+      2. Ensure the CSV file ends with a newline (to prevent appending on the same line).
+      3. Re-evaluate the number of worker processes via get_num_workers() for the current size.
+         Print the worker count only if it changes from the previous array size.
+      4. Identify algorithms that do not have the required number of iterations.
+         A consolidated message is printed (showing half the items, with a summary of the remainder).
+      5. For each algorithm with missing iterations, run the additional iterations in parallel
+         and append the new data to the CSV.
+      6. Sort the CSV alphabetically by algorithm name.
+      7. Update overall aggregated statistics and per-algorithm results.
+      8. Append a per-size markdown ranking table (with notes for any algorithms removed) to a details file.
+      9. Rebuild the main README.md with overall top-20 rankings and the list of skipped algorithms.
 
     Algorithms with an average runtime exceeding the threshold are skipped in future sizes.
-    The number of worker processes is re-evaluated for each size, and a message is printed only if it changes.
     """
     sizes = generate_sizes()
     expected_algs = list(algorithms().keys())
@@ -190,7 +193,9 @@ def run_sorting_tests(iterations=250, threshold=300):
     with open(details_path, "w") as f:
         f.write("")
 
-    prev_workers = None  # To track the previous worker count.
+    prev_workers = (
+        None  # Track previous worker count to print message only if it changes.
+    )
 
     # Process each array size.
     for size in sizes:
@@ -203,7 +208,7 @@ def run_sorting_tests(iterations=250, threshold=300):
             print(f"CSV file for size {size} exists; reading results.")
             size_results = read_csv_results(csv_path, expected_algs)
         else:
-            # Create new CSV file and write the header row.
+            # Create new CSV file and write the header.
             with open(csv_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
@@ -214,7 +219,7 @@ def run_sorting_tests(iterations=250, threshold=300):
         # Ensure the CSV ends with a newline.
         ensure_csv_ends_with_newline(csv_path)
 
-        # Re-evaluate the number of worker processes for this size.
+        # Re-evaluate worker count for the current size.
         current_workers = get_num_workers()
         if prev_workers is None or current_workers != prev_workers:
             if prev_workers is None:
@@ -243,7 +248,8 @@ def run_sorting_tests(iterations=250, threshold=300):
                     found_msgs.append(f"{alg} ({count})")
         if csv_exists and missing_algs:
             if found_msgs:
-                max_items = min(len(found_msgs) // 2, 15)
+                # Determine how many items to show: half of the found items (at least one).
+                max_items = max(1, len(found_msgs) // 2)
                 if len(found_msgs) > max_items:
                     display_msg = (
                         ", ".join(found_msgs[:max_items])
@@ -290,6 +296,7 @@ def run_sorting_tests(iterations=250, threshold=300):
                                 new_times = []
                                 break
                     if new_times:
+                        # Combine new times with any existing ones.
                         if size_results[alg_name] is None:
                             combined = new_times
                         else:
@@ -316,7 +323,7 @@ def run_sorting_tests(iterations=250, threshold=300):
                         size_results[alg_name] = None
             print(f"Updated CSV for size {size}.")
 
-        # Sort the CSV file alphabetically by algorithm name.
+        # Sort the CSV alphabetically by algorithm name.
         sort_csv_alphabetically(csv_path)
 
         # Update overall totals and per-algorithm results.
@@ -338,7 +345,7 @@ def run_sorting_tests(iterations=250, threshold=300):
         with open(details_path, "a") as f:
             write_markdown(f, size, size_results, removed=list(new_skipped))
 
-        # Rebuild the main README with updated overall totals and the skip list.
+        # Rebuild the main README with updated overall totals and skip list.
         rebuild_readme(overall_totals, details_path, skip_list)
 
     # Generate individual markdown files for each algorithm.

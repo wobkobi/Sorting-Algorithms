@@ -4,7 +4,7 @@ utils.py
 This module provides helper functions for:
   - Converting time durations into human-readable strings.
   - Grouping ranking results based on performance similarity.
-  - Running a single benchmark iteration.
+  - Executing a single benchmark iteration.
   - Calculating average and median values from a list of times.
 """
 
@@ -17,8 +17,8 @@ def format_time(seconds):
     Convert a duration in seconds to a human-readable string with abbreviated time units.
 
     Examples:
-      - "less than a ms" if duration < 0.001 s.
-      - "123ms" if duration < 1 s.
+      - "less than a ms" for durations < 0.001 s.
+      - "123ms" for durations < 1 s.
       - "3s 120ms" for durations between 1 and 60 s.
       - "2min 3s 120ms" for durations between 60 s and 1 hr.
       - "1hr 2min 3s" for durations >= 1 hr.
@@ -53,9 +53,9 @@ def format_time(seconds):
 
 def group_rankings(ranking, margin=1e-3):
     """
-    Group a sorted list of (algorithm, average time) tuples whose consecutive times differ by less than a given margin.
+    Group a sorted list of (algorithm, average time) tuples whose consecutive times differ by less than a specified margin.
 
-    This is used to cluster algorithms with similar performance metrics.
+    This function clusters algorithms with similar performance metrics.
 
     Parameters:
         ranking (list of tuple): Sorted list in the form (algorithm, average_time).
