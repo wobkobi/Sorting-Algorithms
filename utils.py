@@ -2,10 +2,10 @@
 utils.py
 
 This module provides helper functions for:
-  - Formatting time durations.
+  - Converting time durations into human-readable strings.
   - Grouping ranking results based on performance similarity.
-  - Running individual benchmark iterations.
-  - Computing average and median values.
+  - Executing a single benchmark iteration.
+  - Calculating average and median values from a list of times.
 """
 
 import time
@@ -16,18 +16,18 @@ def format_time(seconds):
     """
     Convert a duration in seconds to a human-readable string with abbreviated time units.
 
-    Formats:
-      - "less than a ms" if duration < 0.001 s.
-      - For durations < 1 s: e.g. "123ms".
-      - For 1–60 s: e.g. "3s 120ms".
-      - For 60 s–1 hr: e.g. "2min 3s 120ms".
-      - For >= 1 hr: e.g. "1hr 2min 3s".
+    Examples:
+      - "less than a ms" for durations < 0.001 s.
+      - "123ms" for durations < 1 s.
+      - "3s 120ms" for durations between 1 and 60 s.
+      - "2min 3s 120ms" for durations between 60 s and 1 hr.
+      - "1hr 2min 3s" for durations >= 1 hr.
 
     Parameters:
         seconds (float): Duration in seconds.
 
     Returns:
-        str: Formatted time string.
+        str: The formatted time string.
     """
     if seconds < 1e-3:
         return "less than a ms"
@@ -53,9 +53,9 @@ def format_time(seconds):
 
 def group_rankings(ranking, margin=1e-3):
     """
-    Group a sorted list of (algorithm, average time) tuples whose consecutive times differ by less than a margin.
+    Group a sorted list of (algorithm, average time) tuples whose consecutive times differ by less than a specified margin.
 
-    This is used to group algorithms with similar performance.
+    This function clusters algorithms with similar performance metrics.
 
     Parameters:
         ranking (list of tuple): Sorted list in the form (algorithm, average_time).
@@ -82,15 +82,15 @@ def run_iteration(sort_func, size):
     """
     Execute one iteration of a sorting algorithm on a randomly generated integer array and measure its runtime.
 
-    Generates a random array of integers, sorts a copy using the provided sort function,
-    and returns the elapsed time.
+    A random array of integers is generated and a copy is sorted using the provided sorting function.
+    The elapsed time for the sort is returned.
 
     Parameters:
         sort_func (function): The sorting function to execute.
         size (int): The size of the array.
 
     Returns:
-        float: Elapsed time in seconds.
+        float: The elapsed time in seconds.
     """
     arr = [random.randint(-1000000, 1000000) for _ in range(size)]
     start = time.perf_counter()
@@ -100,10 +100,10 @@ def run_iteration(sort_func, size):
 
 def compute_average(times):
     """
-    Calculate the average value from a list of numbers.
+    Calculate the average of a list of numbers.
 
     Parameters:
-        times (list of float): List of numerical values (e.g., execution times).
+        times (list of float): A list of execution times.
 
     Returns:
         float or None: The average value, or None if the list is empty.
@@ -118,7 +118,7 @@ def compute_median(times):
     For an even number of elements, returns the average of the two middle values.
 
     Parameters:
-        times (list of float): List of numerical values.
+        times (list of float): A list of execution times.
 
     Returns:
         float or None: The median value, or None if the list is empty.
