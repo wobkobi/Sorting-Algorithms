@@ -4,7 +4,7 @@ benchmark.py
 This module implements the core logic for executing sorting benchmarks across multiple array sizes.
 It handles:
   - Generating array sizes.
-  - Reading and writing CSV files using csv_utils.py.
+  - Reading and writing CSV files using functions from csv_utils.py.
   - Running benchmark iterations in parallel.
   - Aggregating and updating overall statistics.
   - Generating markdown reports (per-size ranking tables and individual algorithm reports).
@@ -12,10 +12,16 @@ It handles:
 If an algorithm's CSV data for a given size does not contain the desired number of iterations,
 the missing iterations are computed and appended. The CSV is then sorted alphabetically.
 A helper ensures that new data is appended on a new line if the process stops and restarts.
+
+The number of worker processes is determined based on the current time of day:
+  - Between 12 AM and 9 AM: 75% of available CPU cores are used.
+  - Otherwise: 50% of available CPU cores are used.
+The worker count is re-evaluated for each array size, and a message is printed only if it changes.
 """
 
 import csv
 import os
+import datetime
 from collections import OrderedDict
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -30,7 +36,7 @@ from utils import (
     compute_average,
 )
 
-# Import CSV utilities.
+# Import CSV utility functions from csv_utils.py.
 from csv_utils import (
     read_csv_results,
     ensure_csv_ends_with_newline,
@@ -65,6 +71,25 @@ def generate_sizes():
         size *= 2
     large_sizes.append(int(1e12))
     return sorted(set(small_sizes + large_sizes))
+
+
+def get_num_workers():
+    """
+    Determine the number of worker processes based on the current time of day.
+
+    If the current time is between 12 AM and 9 AM, 75% of available CPU cores are used.
+    Otherwise, 50% of available CPU cores are used.
+
+    Returns:
+        int: The number of worker processes to use (at least 1).
+    """
+    total = os.cpu_count() or 1
+    now = datetime.datetime.now().time()
+    if now.hour < 9:
+        workers = max(int(total * 0.75), 1)
+    else:
+        workers = max(int(total * 0.5), 1)
+    return workers
 
 
 def algorithms():
@@ -137,17 +162,19 @@ def run_sorting_tests(iterations=250, threshold=300):
 
     For each array size:
       1. If a CSV file exists, read its contents using read_csv_results (from csv_utils.py) and check
-         whether each expected algorithm has the desired number of iterations.
-         If an algorithm has fewer iterations, determine how many are missing.
+         whether each expected algorithm has recorded the desired iterations.
+         If an algorithm has fewer iterations, determine the number missing.
       2. If the CSV file is new, create it and write the header row.
-      3. For each algorithm with missing iterations (or missing entirely), run the additional iterations
+      3. For each algorithm with missing iterations (or missing entirely), run additional iterations
          and append the new rows to the CSV.
-      4. Ensure the CSV ends with a newline, then sort it alphabetically by the algorithm name.
+      4. Ensure the CSV ends with a newline, then sort it alphabetically by algorithm name.
       5. Update overall aggregated statistics and per-algorithm records.
-      6. Append a per-size markdown ranking table (with a note for any algorithms removed at that size) to a details file.
-      7. Rebuild the main README.md file to display overall top-20 rankings and the list of skipped algorithms.
+      6. Append a per-size markdown ranking table (with a note for any algorithms removed at that size)
+         to a details file.
+      7. Rebuild the main README.md file with overall top-20 rankings and the list of skipped algorithms.
 
     Algorithms with an average runtime exceeding the threshold are skipped in future sizes.
+    The number of worker processes is re-evaluated for each size, and a message is printed only if it changes.
     """
     sizes = generate_sizes()
     expected_algs = list(algorithms().keys())
@@ -156,18 +183,14 @@ def run_sorting_tests(iterations=250, threshold=300):
     per_alg_results = {alg: [] for alg in expected_algs}
     skip_list = set()
 
-    # Get the initial number of worker processes.
-    num_workers = max((os.cpu_count() or 1) // 2, 1)
-    print(
-        f"Using {num_workers} worker{'s' if num_workers > 1 else ''} for parallel execution."
-    )
-
     output_folder = "results"
     os.makedirs(output_folder, exist_ok=True)
 
     details_path = "details.md"
     with open(details_path, "w") as f:
         f.write("")
+
+    prev_workers = None  # To track the previous worker count.
 
     # Process each array size.
     for size in sizes:
@@ -180,7 +203,7 @@ def run_sorting_tests(iterations=250, threshold=300):
             print(f"CSV file for size {size} exists; reading results.")
             size_results = read_csv_results(csv_path, expected_algs)
         else:
-            # Create a new CSV file and write the header row.
+            # Create new CSV file and write the header row.
             with open(csv_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
@@ -188,8 +211,21 @@ def run_sorting_tests(iterations=250, threshold=300):
                 )
             size_results = OrderedDict((alg, None) for alg in expected_algs)
 
-        # Ensure the CSV file ends with a newline.
+        # Ensure the CSV ends with a newline.
         ensure_csv_ends_with_newline(csv_path)
+
+        # Re-evaluate the number of worker processes for this size.
+        current_workers = get_num_workers()
+        if prev_workers is None or current_workers != prev_workers:
+            if prev_workers is None:
+                print(
+                    f"Using {current_workers} worker{'s' if current_workers > 1 else ''} for array size {size}."
+                )
+            else:
+                print(
+                    f"Changing workers from {prev_workers} to {current_workers} for array size {size}."
+                )
+            prev_workers = current_workers
 
         # Identify missing iterations for each algorithm.
         missing_algs = {}
@@ -201,26 +237,34 @@ def run_sorting_tests(iterations=250, threshold=300):
             if data is None:
                 missing_algs[alg] = iterations
             else:
-                count = data[4]  # Number of iterations recorded.
+                count = data[4]  # Number of iterations already recorded.
                 if count < iterations:
                     missing_algs[alg] = iterations - count
-                    found_msgs.append(f"{alg} ({count} iterations)")
+                    found_msgs.append(f"{alg} ({count})")
         if csv_exists and missing_algs:
             if found_msgs:
+                max_items = min(len(found_msgs) // 2, 15)
+                if len(found_msgs) > max_items:
+                    display_msg = (
+                        ", ".join(found_msgs[:max_items])
+                        + f", and {len(found_msgs) - max_items} others"
+                    )
+                else:
+                    display_msg = ", ".join(found_msgs)
                 print(
-                    f"Found existing results for: {', '.join(found_msgs)}; running additional iterations."
+                    f"Found existing results for: {display_msg}; running additional iterations."
                 )
             else:
                 print(f"Missing iterations for: {', '.join(missing_algs.keys())}")
 
-        # Run additional iterations for each algorithm that is missing iterations.
+        # Run additional iterations for algorithms with missing data.
         if missing_algs:
             with open(csv_path, "a", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 for alg_name, additional in missing_algs.items():
                     sort_func = algorithms()[alg_name]
                     new_times = []
-                    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+                    with ProcessPoolExecutor(max_workers=current_workers) as executor:
                         futures = [
                             executor.submit(run_iteration, sort_func, size)
                             for _ in range(additional)
@@ -290,7 +334,7 @@ def run_sorting_tests(iterations=250, threshold=300):
                 skip_list.add(alg)
         new_skipped = skip_list - previous_skip
 
-        # Append the per-size markdown ranking table with a note for any algorithms removed.
+        # Append the per-size markdown ranking table with a note for removed algorithms.
         with open(details_path, "a") as f:
             write_markdown(f, size, size_results, removed=list(new_skipped))
 
