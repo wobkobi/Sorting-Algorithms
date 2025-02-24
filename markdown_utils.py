@@ -119,10 +119,10 @@ def rebuild_readme(overall_totals, details_path, skip_list):
 
     lines = []
     lines.append("# Sorting Algorithms Benchmark Results\n\n")
-    lines.append("## Overall Top 10 Algorithms (by average time across sizes)\n")
+    lines.append("## Overall Top 20 Algorithms (by average time across sizes)\n")
     lines.append("| Rank | Algorithm | Overall Average Time |\n")
     lines.append("| ---- | --------- | -------------------- |\n")
-    for rank, (alg, avg_time) in enumerate(overall_ranking[:10], start=1):
+    for rank, (alg, avg_time) in enumerate(overall_ranking[:20], start=1):
         link = f"[{alg}](results/algorithms/{alg.replace(' ', '_')}.md)"
         lines.append(f"| {rank} | {link} | {format_time(avg_time)} |\n")
     lines.append("\n")
