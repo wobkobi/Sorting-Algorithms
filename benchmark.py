@@ -253,7 +253,7 @@ def update_missing_iterations_concurrent(
             size_results[alg] = (avg, min(times), max(times), median, len(times), times)
             print(f"Average for {alg} on size {size}: {format_time(avg)}")
             if avg > threshold and alg not in skip_list:
-                skip_list.add(alg)
+                skip_list[alg] = size
                 print(f"Skipping {alg} for future sizes (average > 5min).")
     return size_results, skip_list
 
@@ -315,11 +315,11 @@ def process_size(
     if process_size.workers is None or current_workers != process_size.workers:
         if process_size.workers is None:
             print(
-                f"Using {current_workers} worker{'s' if current_workers > 1 else ''} for array size {size}."
+                f"Using {current_workers} worker{'s' if current_workers > 1 else ''}."
             )
         else:
             print(
-                f"Changing workers from {process_size.workers} to {current_workers} for array size {size}."
+                f"Changing workers from {process_size.workers} worker{'s' if current_workers > 1 else ''} to {current_workers} worker{'s' if current_workers > 1 else ''}."
             )
         process_size.workers = current_workers
 
@@ -367,7 +367,7 @@ def run_sorting_tests(iterations=250, threshold=300):
 
     overall_totals = {alg: {"sum": 0, "count": 0} for alg in expected_algs}
     per_alg_results = {alg: [] for alg in expected_algs}
-    skip_list = set()
+    skip_list = {}
 
     output_folder = "results"
     os.makedirs(output_folder, exist_ok=True)
@@ -390,15 +390,17 @@ def run_sorting_tests(iterations=250, threshold=300):
         )
 
         # Determine newly skipped algorithms for this size.
-        previous_skip = set(skip_list)
+        previous_skip = set(skip_list.keys())
         for alg, data in size_results.items():
-            if data is not None and data[0] > threshold:
-                skip_list.add(alg)
-        new_skipped = skip_list - previous_skip
+            if data is not None and data[0] > threshold and alg not in skip_list:
+                skip_list[alg] = size
+        new_skipped = {
+            alg: skip_list[alg] for alg in skip_list if alg not in previous_skip
+        }
 
         # Append per-size markdown ranking table with a note for any newly skipped algorithms.
         with open(details_path, "a") as f:
-            write_markdown(f, size, size_results, removed=list(new_skipped))
+            write_markdown(f, size, size_results, removed=list(new_skipped.keys()))
 
         # Rebuild the main README with updated overall totals and skip list.
         rebuild_readme(overall_totals, details_path, skip_list)

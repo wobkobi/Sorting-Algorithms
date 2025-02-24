@@ -46,7 +46,7 @@ def format_time(seconds, detailed=False):
         ms = total_us // 1000
         remainder_us = total_us % 1000
         if detailed and remainder_us:
-            return f"{ms}ms {remainder_us}µs"
+            return f"{ms}ms {remainder_us}us"
         else:
             return f"{ms}ms"
     # Durations between 1 second and 1 minute.
