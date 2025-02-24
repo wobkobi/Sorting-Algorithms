@@ -6,7 +6,7 @@ It creates per-size ranking tables, individual algorithm reports, and rebuilds t
 """
 
 import os
-from utils import format_time, group_rankings
+from utils import format_time, group_rankings, ordinal
 
 
 def write_markdown(md_file, size, size_results, removed=None):
@@ -17,7 +17,6 @@ def write_markdown(md_file, size, size_results, removed=None):
       - Rank, algorithm names, average time, and median time.
       - Algorithms with similar performance (within a specified margin) are grouped together.
 
-    A blank line is inserted after the title to ensure proper formatting.
     After the table, if any algorithms were removed at this size due to performance issues,
     a note is appended listing those algorithms.
 
@@ -27,7 +26,7 @@ def write_markdown(md_file, size, size_results, removed=None):
         size_results (dict): Mapping {algorithm: (avg, min, max, median, count, times)}.
         removed (list, optional): List of algorithm names removed at this size.
     """
-    # Write title and add a blank line.
+    # Write the title followed by a blank line.
     md_file.write(f"## Array Size: {size}\n\n")
     ranking = [
         (alg, data[0], data[3])
@@ -41,16 +40,15 @@ def write_markdown(md_file, size, size_results, removed=None):
         md_file.write("| Rank | Algorithm(s) | Average Time | Median Time |\n")
         md_file.write("| ---- | ------------ | ------------ | ----------- |\n")
         for group in groups:
-            start = current_rank
-            end = current_rank + len(group) - 1
+            # Determine the rank for the group (using ordinal format).
+            rank_str = ordinal(current_rank)
+            algs = ", ".join(alg for alg, _, _ in group)
             avg_time = group[0][1]
             median_time = group[0][2]
-            algs = ", ".join(alg for alg, _, _ in group)
-            rank_str = f"{start}" if start == end else f"{start}-{end}"
             md_file.write(
                 f"| {rank_str} | {algs} | {format_time(avg_time)} | {format_time(median_time)} |\n"
             )
-            current_rank = end + 1
+            current_rank += len(group)
         md_file.write("\n")
     else:
         md_file.write("No algorithms produced a result for this array size.\n\n")
@@ -66,11 +64,9 @@ def write_algorithm_markdown(per_alg_results):
     """
     Generate individual markdown files summarizing benchmark results for each algorithm.
 
-    For each algorithm, a markdown file is created in the "results/algorithms" directory (if it doesn't exist),
-    containing a table that lists:
+    Each algorithm's file is created in the "results/algorithms" directory (if it doesn't already exist)
+    and contains a table listing:
       - Array Size, Average Time, Median Time, Min Time, and Max Time.
-
-    The title and table header are separated by a blank line for consistent formatting.
 
     Parameters:
         per_alg_results (dict): Mapping {algorithm: [(array size, avg, min, max, median), ...]}.
@@ -105,36 +101,53 @@ def rebuild_readme(overall_totals, details_path, skip_list):
 
     The README includes:
       - A title and introduction.
-      - An overall top 20 ranking of algorithms (by average time across sizes).
+      - An overall top 20 ranking of algorithms (by average time across sizes), with tied algorithms
+        grouped on a single row if their average times differ by less than one microsecond.
+        For example, if three algorithms are tied for 1st, they are all labeled "1st"
+        and the next rank will be "4th".
       - A section listing skipped algorithms (if any).
       - Detailed per-size benchmark information from the details file.
-
-    Extra blank lines are inserted between sections for consistent formatting.
 
     Parameters:
         overall_totals (dict): Mapping {algorithm: {"sum": total_time, "count": iterations}}.
         details_path (str): Path to the markdown file containing per-size details.
         skip_list (set): Set of algorithm names that were skipped.
     """
+    # Compute overall average times.
     overall = {}
     for alg, totals in overall_totals.items():
         if totals["count"] > 0:
             overall[alg] = totals["sum"] / totals["count"]
+
+    # Sort algorithms by average time (lowest first).
     overall_ranking = sorted(overall.items(), key=lambda x: x[1])
 
+    # Group algorithms if the difference between average times is less than 1e-6 seconds.
+    groups = group_rankings(overall_ranking, margin=1e-6)
+
     lines = []
-    # Title and introduction.
     lines.append("# Sorting Algorithms Benchmark Results\n\n")
-    # Overall ranking section.
     lines.append("## Overall Top 20 Algorithms (by average time across sizes)\n\n")
-    lines.append("| Rank | Algorithm | Overall Average Time |\n")
-    lines.append("| ---- | --------- | -------------------- |\n")
-    for rank, (alg, avg_time) in enumerate(overall_ranking[:20], start=1):
-        link = f"[{alg}](results/algorithms/{alg.replace(' ', '_')}.md)"
-        lines.append(f"| {rank} | {link} | {format_time(avg_time)} |\n")
+    lines.append("| Rank | Algorithms | Overall Average Time |\n")
+    lines.append("| ---- | ---------- | -------------------- |\n")
+
+    current_rank = 1
+    count = 0  # Total number of algorithms printed.
+    for group in groups:
+        group_size = len(group)
+        # Stop if we've printed 20 algorithms.
+        if count >= 20:
+            break
+        # Convert the current rank to its ordinal representation.
+        rank_str = ordinal(current_rank)
+        # Combine algorithm names from the group.
+        algs = ", ".join(alg for alg, _ in group)
+        avg_time = group[0][1]  # All in the group share nearly the same average time.
+        lines.append(f"| {rank_str} | {algs} | {format_time(avg_time,True)} |\n")
+        count += group_size
+        current_rank += group_size
     lines.append("\n")
 
-    # Skipped algorithms section.
     if skip_list:
         lines.append("## Skipped Algorithms\n\n")
         lines.append(
@@ -147,7 +160,6 @@ def rebuild_readme(overall_totals, details_path, skip_list):
         lines.append("No algorithms were skipped.\n\n")
         print("No algorithms were skipped.")
 
-    # Append detailed per-size information.
     with open(details_path, "r") as f:
         details_content = f.read()
 
