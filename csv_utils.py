@@ -1,11 +1,11 @@
 """
 csv_utils.py
 
-This module provides utility functions for handling CSV files used in the sorting benchmarks.
-Functions include:
-  - read_csv_results: Read benchmark results from a CSV file and compute statistics.
-  - ensure_csv_ends_with_newline: Ensure that a CSV file ends with a newline.
-  - sort_csv_alphabetically: Sort the CSV file rows alphabetically based on the first column (Algorithm).
+This module provides utility functions for handling CSV files in the benchmark system.
+It includes functions to:
+  - Read CSV results and compute statistics.
+  - Ensure that a CSV file ends with a newline (so new data is appended on a new line).
+  - Sort the CSV rows alphabetically by the algorithm name.
 """
 
 import csv
@@ -16,13 +16,13 @@ from utils import compute_median, compute_average
 
 def read_csv_results(csv_path, expected_algs):
     """
-    Read benchmark results from a CSV file for a specific array size and collect raw timing data.
+    Read benchmark results from a CSV file for a given array size and collect timing data.
 
-    The CSV file should have a header and rows formatted as:
+    The CSV file must have a header and rows in the following format:
       [Algorithm, Array Size, Iteration, Elapsed Time (seconds)]
 
-    For each expected algorithm (provided in expected_algs), this function collects all recorded times
-    and then computes:
+    For each expected algorithm (as listed in expected_algs), all recorded times are collected,
+    and the following statistics are computed:
       - Average elapsed time.
       - Minimum elapsed time.
       - Maximum elapsed time.
@@ -30,14 +30,15 @@ def read_csv_results(csv_path, expected_algs):
       - Count of iterations.
 
     If an algorithm is missing from the CSV, its value is set to None.
-    The results are returned in an OrderedDict that preserves the order of expected_algs.
+    Results are returned in an OrderedDict preserving the order given by expected_algs.
 
     Parameters:
         csv_path (str): Path to the CSV file.
         expected_algs (list): List of expected algorithm names.
 
     Returns:
-        OrderedDict: Mapping {algorithm: (avg, min, max, median, count, times)} or None if missing.
+        OrderedDict: Mapping {algorithm: (avg, min, max, median, count, times)}
+                     or None for algorithms with no data.
     """
     # Initialize an ordered dictionary with an empty list for each expected algorithm.
     algorithm_times = OrderedDict((alg, []) for alg in expected_algs)
@@ -68,7 +69,8 @@ def ensure_csv_ends_with_newline(csv_path):
     """
     Ensure that the CSV file at csv_path ends with a newline character.
 
-    This prevents new data from being appended to the last line if the file was not properly terminated.
+    This prevents new rows from being appended to an incomplete final line,
+    which could occur if the process stopped abruptly.
 
     Parameters:
         csv_path (str): Path to the CSV file.
@@ -88,10 +90,10 @@ def ensure_csv_ends_with_newline(csv_path):
 
 def sort_csv_alphabetically(csv_path):
     """
-    Sort the CSV file at csv_path alphabetically by the first column (Algorithm).
+    Sort the CSV file at csv_path alphabetically based on the first column (Algorithm).
 
-    Reads all rows from the CSV (excluding the header), sorts them based on the first column,
-    and then rewrites the CSV file with the header row followed by the sorted data rows.
+    Reads all rows (excluding the header), sorts them by the algorithm name,
+    and then rewrites the CSV file with the header preserved followed by the sorted rows.
 
     Parameters:
         csv_path (str): Path to the CSV file.

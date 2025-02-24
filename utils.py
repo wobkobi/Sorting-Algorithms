@@ -55,7 +55,7 @@ def group_rankings(ranking, margin=1e-3):
     """
     Group a sorted list of (algorithm, average time) tuples whose consecutive times differ by less than a given margin.
 
-    This function is used to group algorithms with similar performance metrics.
+    This is used to cluster algorithms with similar performance metrics.
 
     Parameters:
         ranking (list of tuple): Sorted list in the form (algorithm, average_time).
@@ -82,8 +82,8 @@ def run_iteration(sort_func, size):
     """
     Execute one iteration of a sorting algorithm on a randomly generated integer array and measure its runtime.
 
-    Generates a random array of integers, sorts a copy using the provided sorting function,
-    and returns the elapsed time.
+    A random array of integers is generated and a copy is sorted using the provided sorting function.
+    The elapsed time for the sort is returned.
 
     Parameters:
         sort_func (function): The sorting function to execute.
@@ -103,7 +103,7 @@ def compute_average(times):
     Calculate the average of a list of numbers.
 
     Parameters:
-        times (list of float): List of numerical values (e.g., execution times).
+        times (list of float): A list of execution times.
 
     Returns:
         float or None: The average value, or None if the list is empty.
@@ -118,7 +118,7 @@ def compute_median(times):
     For an even number of elements, returns the average of the two middle values.
 
     Parameters:
-        times (list of float): List of numerical values.
+        times (list of float): A list of execution times.
 
     Returns:
         float or None: The median value, or None if the list is empty.

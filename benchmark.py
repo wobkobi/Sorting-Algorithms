@@ -4,14 +4,14 @@ benchmark.py
 This module implements the core logic for executing sorting benchmarks across multiple array sizes.
 It handles:
   - Generating array sizes.
-  - Reading and writing CSV files (using functions from csv_utils.py).
+  - Reading and writing CSV files using csv_utils.py.
   - Running benchmark iterations in parallel.
   - Aggregating and updating overall statistics.
   - Generating markdown reports (per-size ranking tables and individual algorithm reports).
 
-If an algorithm's CSV data for a given size does not have the desired number of iterations,
+If an algorithm's CSV data for a given size does not contain the desired number of iterations,
 the missing iterations are computed and appended. The CSV is then sorted alphabetically.
-A helper ensures that if the process stops and later restarts, new data is appended on a new line.
+A helper ensures that new data is appended on a new line if the process stops and restarts.
 """
 
 import csv
@@ -30,7 +30,7 @@ from utils import (
     compute_average,
 )
 
-# Import CSV utility functions from csv_utils.py.
+# Import CSV utilities.
 from csv_utils import (
     read_csv_results,
     ensure_csv_ends_with_newline,
@@ -53,11 +53,13 @@ def generate_sizes():
         list: Sorted list of unique array sizes.
     """
     n_small = 15
+    # Calculate small sizes using a geometric progression.
     small_sizes = [
         int(round(5 * ((200 / 3) ** (i / (n_small - 1))))) for i in range(n_small)
     ]
     large_sizes = []
     size = 100
+    # Calculate large sizes by doubling until reaching 1 trillion.
     while size < 1e12:
         large_sizes.append(int(size))
         size *= 2
@@ -67,7 +69,7 @@ def generate_sizes():
 
 def algorithms():
     """
-    Provide a dictionary mapping algorithm names to their sorting functions.
+    Provide a dictionary mapping algorithm names to their corresponding sorting functions.
 
     Returns:
         dict: Mapping {algorithm_name: sorting_function, ...}
@@ -134,16 +136,16 @@ def run_sorting_tests(iterations=250, threshold=300):
         threshold (int): Threshold in seconds for average runtime; algorithms exceeding this are skipped (default: 300).
 
     For each array size:
-      1. If a CSV file exists, read its contents using read_csv_results (from csv_utils.py) and
-         verify that each expected algorithm has the required number of iterations.
-         If an algorithm has fewer iterations, determine the number missing.
+      1. If a CSV file exists, read its contents using read_csv_results (from csv_utils.py) and check
+         whether each expected algorithm has the desired number of iterations.
+         If an algorithm has fewer iterations, determine how many are missing.
       2. If the CSV file is new, create it and write the header row.
       3. For each algorithm with missing iterations (or missing entirely), run the additional iterations
          and append the new rows to the CSV.
-      4. Ensure the CSV ends with a newline and then sort it alphabetically by the algorithm name.
+      4. Ensure the CSV ends with a newline, then sort it alphabetically by the algorithm name.
       5. Update overall aggregated statistics and per-algorithm records.
       6. Append a per-size markdown ranking table (with a note for any algorithms removed at that size) to a details file.
-      7. Rebuild the main README.md file with overall top-10 rankings and the list of skipped algorithms.
+      7. Rebuild the main README.md file to display overall top-20 rankings and the list of skipped algorithms.
 
     Algorithms with an average runtime exceeding the threshold are skipped in future sizes.
     """
@@ -154,7 +156,7 @@ def run_sorting_tests(iterations=250, threshold=300):
     per_alg_results = {alg: [] for alg in expected_algs}
     skip_list = set()
 
-    # Get initial worker count.
+    # Get the initial number of worker processes.
     num_workers = max((os.cpu_count() or 1) // 2, 1)
     print(
         f"Using {num_workers} worker{'s' if num_workers > 1 else ''} for parallel execution."
@@ -178,7 +180,7 @@ def run_sorting_tests(iterations=250, threshold=300):
             print(f"CSV file for size {size} exists; reading results.")
             size_results = read_csv_results(csv_path, expected_algs)
         else:
-            # Create new CSV and write header.
+            # Create a new CSV file and write the header row.
             with open(csv_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
@@ -186,10 +188,10 @@ def run_sorting_tests(iterations=250, threshold=300):
                 )
             size_results = OrderedDict((alg, None) for alg in expected_algs)
 
-        # Ensure the CSV ends with a newline.
+        # Ensure the CSV file ends with a newline.
         ensure_csv_ends_with_newline(csv_path)
 
-        # Determine missing iterations for each algorithm.
+        # Identify missing iterations for each algorithm.
         missing_algs = {}
         found_msgs = []
         for alg in expected_algs:
@@ -199,7 +201,7 @@ def run_sorting_tests(iterations=250, threshold=300):
             if data is None:
                 missing_algs[alg] = iterations
             else:
-                count = data[4]  # Number of iterations already recorded.
+                count = data[4]  # Number of iterations recorded.
                 if count < iterations:
                     missing_algs[alg] = iterations - count
                     found_msgs.append(f"{alg} ({count} iterations)")
@@ -211,7 +213,7 @@ def run_sorting_tests(iterations=250, threshold=300):
             else:
                 print(f"Missing iterations for: {', '.join(missing_algs.keys())}")
 
-        # Run additional iterations for algorithms with missing data.
+        # Run additional iterations for each algorithm that is missing iterations.
         if missing_algs:
             with open(csv_path, "a", newline="") as csv_file:
                 writer = csv.writer(csv_file)
@@ -270,7 +272,7 @@ def run_sorting_tests(iterations=250, threshold=300):
                         size_results[alg_name] = None
             print(f"Updated CSV for size {size}.")
 
-        # Sort the CSV alphabetically by the algorithm name.
+        # Sort the CSV file alphabetically by algorithm name.
         sort_csv_alphabetically(csv_path)
 
         # Update overall totals and per-algorithm results.
@@ -288,11 +290,11 @@ def run_sorting_tests(iterations=250, threshold=300):
                 skip_list.add(alg)
         new_skipped = skip_list - previous_skip
 
-        # Append per-size markdown ranking table with a note for removed algorithms.
+        # Append the per-size markdown ranking table with a note for any algorithms removed.
         with open(details_path, "a") as f:
             write_markdown(f, size, size_results, removed=list(new_skipped))
 
-        # Rebuild the main README with updated overall totals and skip list.
+        # Rebuild the main README with updated overall totals and the skip list.
         rebuild_readme(overall_totals, details_path, skip_list)
 
     # Generate individual markdown files for each algorithm.

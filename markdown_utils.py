@@ -26,13 +26,13 @@ def write_markdown(md_file, size, size_results, removed=None):
         size_results (dict): Mapping {algorithm: (avg, min, max, median, count, times)}.
         removed (list, optional): List of algorithm names removed at this size.
     """
-    md_file.write(f"## Array Size: {size}\n")
+    # Write the title, then an empty line.
+    md_file.write(f"## Array Size: {size}\n\n")
     ranking = [
         (alg, data[0], data[3])
         for alg, data in size_results.items()
         if data is not None
     ]
-
     if ranking:
         ranking.sort(key=lambda x: x[1])
         groups = group_rankings(ranking, margin=1e-3)
@@ -65,8 +65,8 @@ def write_algorithm_markdown(per_alg_results):
     """
     Generate individual markdown files summarizing benchmark results for each algorithm.
 
-    For each algorithm, a markdown file is created in the "results/algorithms" directory (if it doesn't already exist),
-    containing a table that lists:
+    Each algorithm's file is created in the "results/algorithms" directory (if it doesn't already exist)
+    and contains a table listing:
       - Array Size, Average Time, Median Time, Min Time, and Max Time.
 
     Parameters:
@@ -102,7 +102,7 @@ def rebuild_readme(overall_totals, details_path, skip_list):
 
     The README includes:
       - A title and introduction.
-      - An overall top-10 ranking of algorithms (by average time across sizes).
+      - An overall top 20 ranking of algorithms (by average time across sizes).
       - A section listing skipped algorithms (if any).
       - Detailed per-size benchmark information from the details file.
 
@@ -118,8 +118,10 @@ def rebuild_readme(overall_totals, details_path, skip_list):
     overall_ranking = sorted(overall.items(), key=lambda x: x[1])
 
     lines = []
+    # Write title and an empty line.
     lines.append("# Sorting Algorithms Benchmark Results\n\n")
-    lines.append("## Overall Top 20 Algorithms (by average time across sizes)\n")
+    # Write overall ranking title with an empty line after.
+    lines.append("## Overall Top 20 Algorithms (by average time across sizes)\n\n")
     lines.append("| Rank | Algorithm | Overall Average Time |\n")
     lines.append("| ---- | --------- | -------------------- |\n")
     for rank, (alg, avg_time) in enumerate(overall_ranking[:20], start=1):
@@ -128,14 +130,14 @@ def rebuild_readme(overall_totals, details_path, skip_list):
     lines.append("\n")
 
     if skip_list:
-        lines.append("## Skipped Algorithms\n")
+        lines.append("## Skipped Algorithms\n\n")
         lines.append(
             "The following algorithms were removed from future sizes because their average exceeded the threshold:\n\n"
         )
         lines.append(", ".join(sorted(skip_list)) + "\n\n")
         print("Skipped Algorithms:", ", ".join(sorted(skip_list)))
     else:
-        lines.append("## Skipped Algorithms\n")
+        lines.append("## Skipped Algorithms\n\n")
         lines.append("No algorithms were skipped.\n\n")
         print("No algorithms were skipped.")
 
