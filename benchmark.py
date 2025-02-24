@@ -19,7 +19,6 @@ The number of worker processes is determined dynamically based on the current ti
 This worker count is re-evaluated for each array size, and a message is printed only if it changes.
 """
 
-from main import main
 import csv
 import os
 import datetime
