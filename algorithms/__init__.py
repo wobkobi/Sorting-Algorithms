@@ -16,7 +16,7 @@ from .franceschinis_method import franceschinis_method
 from .gnome_sort import gnome_sort
 from .heap_sort import heap_sort
 from .hyper_quick import hyper_quick
-from .icant_believe_it_can_sort import icant_believe_it_can_sort
+from .i_cant_believe_it_can_sort import i_cant_believe_it_can_sort
 from .insertion_sort import insertion_sort
 from .intro_sort import intro_sort
 from .library_sort import library_sort
@@ -68,7 +68,7 @@ __all__ = [
     "gnome_sort",
     "heap_sort",
     "hyper_quick",
-    "icant_believe_it_can_sort",
+    "i_cant_believe_it_can_sort",
     "insertion_sort",
     "intro_sort",
     "library_sort",

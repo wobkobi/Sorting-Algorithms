@@ -87,7 +87,7 @@ def algorithms():
         "Gnome Sort": gnome_sort,
         "Heap Sort": heap_sort,
         "Hyper Quick": hyper_quick,
-        "I-Can't-Believe-It-Can-Sort": icant_believe_it_can_sort,
+        "I Can't Believe It Can Sort": i_cant_believe_it_can_sort,
         "Insertion Sort": insertion_sort,
         "Intro Sort": intro_sort,
         "Library Sort": library_sort,
