@@ -1,52 +1,77 @@
+"""
+markdown_utils.py
+
+This module provides functions for generating markdown reports
+based on benchmark results, including per-size ranking tables,
+individual algorithm reports, and the main README file.
+"""
+
 import os
 from utils import format_time, group_rankings
 
 
-def write_markdown(md_file, size, size_results):
+def write_markdown(md_file, size, size_results, removed=None):
     """
-    Write a per-size ranking table (averages only) to the given Markdown file.
+    Write a markdown table summarizing benchmark results for a specific array size.
+
+    The table includes:
+      - Rank, algorithm names, average time, and median time.
+      - Algorithms with similar performance (within a specified margin) are grouped together.
+
+    After the table, if any algorithms were removed at this size due to performance issues,
+    a note is appended listing those algorithms.
 
     Parameters:
-        md_file: Open file handle.
-        size (int): Array size.
-        size_results (dict): Mapping {algorithm: (avg, min, max)}.
+        md_file (file object): Open file handle for writing markdown.
+        size (int): The array size for the benchmark.
+        size_results (dict): Mapping {algorithm: (avg, min, max, median)}.
+        removed (list, optional): List of algorithm names removed at this size.
     """
     md_file.write(f"## Array Size: {size}\n")
-    ranking = [(alg, data[0]) for alg, data in size_results.items() if data is not None]
+    ranking = [
+        (alg, data[0], data[3])
+        for alg, data in size_results.items()
+        if data is not None
+    ]
+
     if ranking:
-        if all(t < 1e-3 for _, t in ranking):
+        ranking.sort(key=lambda x: x[1])
+        groups = group_rankings(ranking, margin=1e-3)
+        current_rank = 1
+        md_file.write("| Rank | Algorithm(s) | Average Time | Median Time |\n")
+        md_file.write("| ---- | ------------ | ------------ | ----------- |\n")
+        for group in groups:
+            start = current_rank
+            end = current_rank + len(group) - 1
+            avg_time = group[0][1]
+            median_time = group[0][2]
+            algs = ", ".join(alg for alg, _, _ in group)
+            rank_str = f"{start}" if start == end else f"{start}-{end}"
             md_file.write(
-                "All algorithms ran in less than 1ms on this array size; differences are negligible.\n\n"
+                f"| {rank_str} | {algs} | {format_time(avg_time)} | {format_time(median_time)} |\n"
             )
-        else:
-            ranking.sort(key=lambda x: x[1])
-            groups = group_rankings(ranking, margin=1e-3)
-            current_rank = 1
-            md_file.write("| Rank | Algorithm(s) | Average Time |\n")
-            md_file.write("| ---- | ------------ | ------------ |\n")
-            for group in groups:
-                start = current_rank
-                end = current_rank + len(group) - 1
-                rep = group[0][1]
-                algs = ", ".join(alg for alg, _ in group)
-                rank_str = f"{start}" if start == end else f"{start}-{end}"
-                md_file.write(f"| {rank_str} | {algs} | {format_time(rep)} |\n")
-                current_rank = end + 1
-            md_file.write("\n")
+            current_rank = end + 1
+        md_file.write("\n")
     else:
         md_file.write("No algorithms produced a result for this array size.\n\n")
+
+    if removed:
+        md_file.write(
+            f"**Note:** The following algorithm{'s' if len(removed) != 1 else ''} were removed for this array size due to performance issues: {', '.join(sorted(removed))}.\n\n"
+        )
     md_file.flush()
 
 
 def write_algorithm_markdown(per_alg_results):
     """
-    Write separate Markdown files for each algorithm summarizing its results.
+    Generate individual markdown files summarizing benchmark results for each algorithm.
 
-    Each file is saved in 'results/algorithms' and contains a table with array size, average, min, and max times.
-    Files are created only if they do not already exist.
+    For each algorithm, a markdown file is created in "results/algorithms" (if it doesn't already exist),
+    containing a table that lists:
+      - Array Size, Average Time, Median Time, Min Time, and Max Time.
 
     Parameters:
-        per_alg_results (dict): Mapping {algorithm: [(size, avg, min, max), ...]}.
+        per_alg_results (dict): Mapping {algorithm: [(array size, avg, min, max, median), ...]}.
     """
     alg_folder = os.path.join("results", "algorithms")
     os.makedirs(alg_folder, exist_ok=True)
@@ -56,11 +81,15 @@ def write_algorithm_markdown(per_alg_results):
         if not os.path.exists(filepath):
             with open(filepath, "w") as f:
                 f.write(f"# {alg} Benchmark Results\n\n")
-                f.write("| Array Size | Average Time | Min Time | Max Time |\n")
-                f.write("| ---------- | ------------ | -------- | -------- |\n")
-                for size, avg, mn, mx in sorted(results, key=lambda x: x[0]):
+                f.write(
+                    "| Array Size | Average Time | Median Time | Min Time | Max Time |\n"
+                )
+                f.write(
+                    "| ---------- | ------------ | ----------- | -------- | -------- |\n"
+                )
+                for size, avg, mn, mx, median in sorted(results, key=lambda x: x[0]):
                     f.write(
-                        f"| {size} | {format_time(avg)} | {format_time(mn)} | {format_time(mx)} |\n"
+                        f"| {size} | {format_time(avg)} | {format_time(median)} | {format_time(mn)} | {format_time(mx)} |\n"
                     )
                 f.write("\n")
             print(f"Wrote results for {alg} to {filepath}")
@@ -70,12 +99,18 @@ def write_algorithm_markdown(per_alg_results):
 
 def rebuild_readme(overall_totals, details_path, skip_list):
     """
-    Rebuild the main README.md using overall averages and per-size details.
+    Rebuild the main README.md file using aggregated benchmark results and per-size details.
+
+    The README includes:
+      - A title and introduction.
+      - An overall top-10 ranking of algorithms (by average time across sizes).
+      - A section listing skipped algorithms (if any).
+      - Detailed per-size benchmark information from the details file.
 
     Parameters:
-        overall_totals (dict): Mapping {algorithm: {"sum": total_time, "count": total_iterations}}.
-        details_path (str): Path to the details markdown file.
-        skip_list (set): Set of algorithms being skipped.
+        overall_totals (dict): Mapping {algorithm: {"sum": total_time, "count": iterations}}.
+        details_path (str): Path to the markdown file containing per-size details.
+        skip_list (set): Set of algorithm names that were skipped.
     """
     overall = {}
     for alg, totals in overall_totals.items():
@@ -96,7 +131,7 @@ def rebuild_readme(overall_totals, details_path, skip_list):
     if skip_list:
         lines.append("## Skipped Algorithms\n")
         lines.append(
-            "The following algorithms have been removed from future sizes because their average on the current size exceeded the threshold:\n\n"
+            "The following algorithms were removed from future sizes because their average exceeded the threshold:\n\n"
         )
         lines.append(", ".join(sorted(skip_list)) + "\n\n")
         print("Skipped Algorithms:", ", ".join(sorted(skip_list)))
