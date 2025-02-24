@@ -1,4 +1,4 @@
-def icant_believe_it_can_sort(arr):
+def i_cant_believe_it_can_sort(arr: list) -> list:
     """
     I Can't Believe It Can Sort.
 
@@ -10,8 +10,8 @@ def icant_believe_it_can_sort(arr):
     if len(arr) <= 1:
         return arr
     mid = len(arr) // 2
-    left = icant_believe_it_can_sort(arr[:mid])
-    right = icant_believe_it_can_sort(arr[mid:])
+    left = i_cant_believe_it_can_sort(arr[:mid])
+    right = i_cant_believe_it_can_sort(arr[mid:])
     i = j = 0
     merged = []
     while i < len(left) and j < len(right):

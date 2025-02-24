@@ -1,10 +1,10 @@
 def postman_sort(arr: list) -> list:
     """
     Postman Sort implementation.
-    
+
     Time Complexity: Expected O(n log n)
     Space Complexity: O(n)
-    
+
     A lesser-known method that uses a multi-phase merging or message-passing strategy. Details may vary with implementation.
     """
     if not arr:

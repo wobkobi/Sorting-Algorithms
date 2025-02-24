@@ -80,15 +80,23 @@ def algorithms():
         "Cocktail Sort": cocktail_sort,
         "Comb Sort": comb_sort,
         "Cycle Sort": cycle_sort,
+        "Exchange Sort": exchange_sort,
         "External Merge Sort": external_merge_sort,
         "Flash Sort": flash_sort,
+        "Franceschini's Method": franceschinis_method,
         "Gnome Sort": gnome_sort,
         "Heap Sort": heap_sort,
         "Hyper Quick": hyper_quick,
+        "I Can't Believe It Can Sort": i_cant_believe_it_can_sort,
         "Insertion Sort": insertion_sort,
         "Intro Sort": intro_sort,
+        "Library Sort": library_sort,
+        "Merge Insertion Sort": merge_insertion_sort,
         "Merge Sort": merge_sort,
+        "MSD Radix Sort": msd_radix_sort,
+        "MSD Radix Sort In-Place": msd_radix_sort_inplace,
         "Odd-Even Sort": odd_even_sort,
+        "P-Merge Sort": p_merge_sort,
         "Pancake Sort": pancake_sort,
         "Patience Sort": patience_sort,
         "Pigeonhole Sort": pigeonhole_sort,
@@ -101,24 +109,16 @@ def algorithms():
         "Selection Sort": selection_sort,
         "Shell Sort": shell_sort,
         "Sleep Sort": sleep_sort,
+        "Slowsort": slowsort,
         "Smooth Sort": smooth_sort,
+        "Sorting Network": sorting_network,
         "Spaghetti Sort": spaghetti_sort,
+        "Spreadsort": spreadsort,
         "Stooge Sort": stooge_sort,
         "Strand Sort": strand_sort,
         "Tim Sort": tim_sort,
         "Tournament Sort": tournament_sort,
         "Tree Sort": tree_sort,
-        "Exchange Sort": exchange_sort,
-        "Franceschini's Method": franceschinis_method,
-        "I-Can't-Believe-It-Can-Sort": icant_believe_it_can_sort,
-        "Library Sort": library_sort,
-        "Merge Insertion Sort": merge_insertion_sort,
-        "MSD Radix Sort": msd_radix_sort,
-        "MSD Radix Sort In-Place": msd_radix_sort_inplace,
-        "P-Merge Sort": p_merge_sort,
-        "Slowsort": slowsort,
-        "Sorting Network": sorting_network,
-        "Spreadsort": spreadsort,
     }
 
 
@@ -148,7 +148,9 @@ def run_sorting_tests():
     skip_list = set()
 
     num_workers = max((os.cpu_count() or 1) // 2, 1)
-    print(f"Using {num_workers} worker(s) for parallel execution.")
+    print(
+        f"Using {num_workers} worker{'s' if num_workers > 1 else ''} for parallel execution."
+    )
 
     output_folder = "results"
     os.makedirs(output_folder, exist_ok=True)

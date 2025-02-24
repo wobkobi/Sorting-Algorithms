@@ -1,13 +1,14 @@
 def franceschinis_method(arr: list) -> list:
     """
     Franceschini's Method.
-    
+
     Time Complexity: O(n log n) average-case
     Space Complexity: O(log n) average due to recursion
-    
+
     A custom 3-way partitioning quicksort implementation that recursively sorts
     the list without using any built-in sort.
     """
+
     def _three_way_quicksort(lst, low, high):
         if low >= high:
             return
@@ -28,6 +29,6 @@ def franceschinis_method(arr: list) -> list:
                 i += 1
         _three_way_quicksort(lst, low, lt - 1)
         _three_way_quicksort(lst, gt + 1, high)
-    
+
     _three_way_quicksort(arr, 0, len(arr) - 1)
     return arr

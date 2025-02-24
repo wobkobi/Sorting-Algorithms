@@ -1,10 +1,10 @@
-def merge_insertion_sort(arr : list) -> list:
+def merge_insertion_sort(arr: list) -> list:
     """
     Merge Insertion Sort.
-    
+
     Time Complexity: O(n²) for small arrays (insertion sort), O(n log n) overall
     Space Complexity: O(n)
-    
+
     Uses insertion sort for small subarrays and merge sort for larger ones.
     """
     if len(arr) <= 16:
