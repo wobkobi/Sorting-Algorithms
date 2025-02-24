@@ -77,17 +77,20 @@ def get_num_workers():
 
     If the current time is between 11:30 PM and 9:30 AM, 75% of available CPU cores are used.
     Otherwise, 50% of available CPU cores are used.
+    If the SLOW_MODE environment variable is set to "true", the number of workers is halved.
 
     Returns:
         int: The number of worker processes to use (at least 1).
     """
     total = os.cpu_count() or 1
     now = datetime.datetime.now().time()
-    # If current time is 11:30 PM or later, or before 9:30 AM.
     if datetime.time(23, 30) <= now or now <= datetime.time(9, 30):
         workers = max(int(total * 0.75), 1)
     else:
         workers = max(int(total * 0.5), 1)
+    # If slow mode is enabled, use half the number of workers.
+    if os.environ.get("SLOW_MODE", "").lower() == "true":
+        workers = max(int(workers * 0.5), 1)
     return workers
 
 
@@ -375,6 +378,12 @@ def run_sorting_tests(iterations=250, threshold=300):
     details_path = "details.md"
     with open(details_path, "w") as f:
         f.write("")
+
+    # Determine and print the initial worker count before processing any sizes.
+    initial_workers = get_num_workers()
+    print(f"Using {initial_workers} worker{'s' if initial_workers > 1 else ''}.")
+    # Set the initial worker count in process_size so it doesn't re-print for the first iteration.
+    process_size.workers = initial_workers
 
     # Process each array size.
     for size in sizes:
