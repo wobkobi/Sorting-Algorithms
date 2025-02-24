@@ -6,19 +6,20 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from algorithms import *
 
 # Import helper functions.
-from utils import format_time, run_iteration, compute_average
+from utils import compute_median, format_time, run_iteration, compute_average
 from markdown_utils import rebuild_readme, write_markdown, write_algorithm_markdown
 
 
 def generate_sizes():
     """
-    Dynamically generate array sizes.
+    Generate a sorted list of unique array sizes for benchmarking.
 
-    - For small sizes, generate a geometric progression from 3 to 100 over 15 steps.
-    - For larger sizes, use an exponential progression (doubling) from 100 up to 1 trillion.
+    This function creates two progressions of sizes:
+      - A geometric progression for small sizes ranging from 3 to 100, distributed over 15 steps.
+      - An exponential progression (doubling) for larger sizes, starting from 100 and going up to 1 trillion.
 
     Returns:
-        list: Sorted list of unique sizes.
+        list: A sorted list of unique integer array sizes.
     """
     n_small = 15
     small_sizes = [
@@ -35,18 +36,27 @@ def generate_sizes():
 
 def read_csv_results(csv_path):
     """
-    Read CSV file for an array size and compute average, min, and max times per algorithm.
+    Read a CSV file containing benchmark results for a specific array size and compute statistics.
+
+    The CSV file is expected to have a header and rows containing:
+      [Algorithm, Array Size, Iteration, Elapsed Time (seconds)]
+    For each algorithm, this function computes:
+      - Average elapsed time.
+      - Minimum elapsed time.
+      - Maximum elapsed time.
+      - Median elapsed time.
 
     Parameters:
-        csv_path (str): Path to the CSV file.
+        csv_path (str): The file path to the CSV file containing benchmark data.
 
     Returns:
-        dict: Mapping {algorithm: (avg, min, max)}.
+        dict: A mapping from algorithm names to a tuple of computed statistics:
+              (average time, minimum time, maximum time, median time).
     """
     algorithm_times = {}
     with open(csv_path, "r", newline="") as csvfile:
         reader = csv.reader(csvfile)
-        next(reader)  # Skip header
+        next(reader)  # Skip the header row
         for row in reader:
             alg = row[0]
             try:
@@ -54,20 +64,24 @@ def read_csv_results(csv_path):
             except Exception:
                 continue
             algorithm_times.setdefault(alg, []).append(t)
+
     results = {}
     for alg, times in algorithm_times.items():
         avg = compute_average(times)
+        median = compute_median(times)
         if avg is not None:
-            results[alg] = (avg, min(times), max(times))
+            results[alg] = (avg, min(times), max(times), median)
     return results
 
 
 def algorithms():
     """
-    Return mapping of algorithm names to their sorting functions.
+    Provide a mapping from algorithm names to their corresponding sorting functions.
+
+    This mapping is used to iterate through the available sorting algorithms during benchmarking.
 
     Returns:
-        dict: {algorithm_name: sort_function, ...}
+        dict: A dictionary where keys are algorithm names (str) and values are the sorting function objects.
     """
     return {
         "Bead Sort": bead_sort,
@@ -124,25 +138,28 @@ def algorithms():
 
 def run_sorting_tests():
     """
-    Run sorting benchmarks over dynamically generated array sizes.
+    Execute a series of sorting benchmarks across various array sizes and compile the results.
 
-    For each size:
-      - If a CSV exists for that size, read it; otherwise, perform 250 iterations per algorithm in parallel.
-      - Update overall totals and per-algorithm results.
-      - Append a per-size ranking table (averages only) to a details file.
-      - Rebuild README.md with an Overall Top 10 table and a Skipped Algorithms section.
-      - For each algorithm, immediately after its 250 runs are completed, print:
-            print(f"Average for {alg} on size {size}: {format_time(current_avg)}")
-        and use the current size's average to decide if it should be skipped for future sizes.
-        When skipping, print a message and insert a markdown comment indicating which algorithms were removed at that size.
+    The process for each array size includes:
+      - Checking if a CSV file with previous benchmark results exists; if so, reading from it.
+      - If no CSV exists, running 250 iterations per algorithm (in parallel) to gather benchmark data,
+        writing the results to a CSV file.
+      - Updating overall totals and per-algorithm results for later reporting.
+      - Appending a per-size ranking table to a details markdown file.
+      - Rebuilding the main README.md file with an overall top 10 ranking and a list of skipped algorithms.
+      - Immediately printing each algorithm's average time after completing its iterations, and
+        skipping algorithms (for future sizes) if their average exceeds a 5-minute threshold.
 
-    After processing all sizes:
-      - Write per-algorithm Markdown files in "results/algorithms" (if not already present).
+    After all sizes are processed, individual markdown files for each algorithm are generated under
+    "results/algorithms" (if they don't already exist).
+
+    This function ties together the CSV reading/writing, parallel execution, and markdown reporting.
     """
     sizes = generate_sizes()
     iterations = 250
-    threshold = 300  # 5 minutes per iteration cutoff
+    threshold = 300  # 5 minutes per iteration cutoff in seconds
 
+    # Initialize overall totals and per-algorithm results for aggregation.
     overall_totals = {alg: {"sum": 0, "count": 0} for alg in algorithms().keys()}
     per_alg_results = {alg: [] for alg in algorithms().keys()}
     skip_list = set()
@@ -159,16 +176,19 @@ def run_sorting_tests():
     with open(details_path, "w") as f:
         f.write("")
 
+    # Iterate over all generated array sizes.
     for size in sizes:
         print(f"\nTesting array size: {size}")
         csv_filename = f"results_{size}.csv"
         csv_path = os.path.join(output_folder, csv_filename)
         size_results = {}
 
+        # If CSV results already exist for this size, load them.
         if os.path.exists(csv_path):
             print(f"CSV file for size {size} exists; reading results.")
             size_results = read_csv_results(csv_path)
         else:
+            # Otherwise, run benchmark tests and write results to CSV.
             with open(csv_path, "w", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 writer.writerow(
@@ -199,11 +219,13 @@ def run_sorting_tests():
                                 break
                     if times:
                         avg = compute_average(times)
+                        # Record the average, minimum, and maximum times.
                         size_results[alg_name] = (avg, min(times), max(times))
-                        # Immediately print average after finishing 250 iterations.
+                        # Print the average time immediately.
                         print(
                             f"Average for {alg_name} on size {size}: {format_time(avg)}"
                         )
+                        # If the average exceeds the threshold, mark the algorithm to be skipped in future sizes.
                         if avg > threshold and alg_name not in skip_list:
                             skip_list.add(alg_name)
                             print(
@@ -213,14 +235,14 @@ def run_sorting_tests():
                         size_results[alg_name] = None
             print(f"Ran tests for size {size} and saved CSV.")
 
-        # Update overall totals and per-algorithm results for the current size.
+        # Update overall totals and record per-algorithm results for the current size.
         for alg, data in size_results.items():
             if data is not None:
                 overall_totals[alg]["sum"] += data[0] * iterations
                 overall_totals[alg]["count"] += iterations
                 per_alg_results[alg].append((size, data[0], data[1], data[2]))
 
-        # Insert markdown comment if new algorithms were skipped at this size.
+        # Insert a markdown comment in the details file if new algorithms are being skipped at this size.
         previous_skip = set(skip_list)
         for alg, data in size_results.items():
             if data is not None:
@@ -236,11 +258,14 @@ def run_sorting_tests():
                     f"<!-- At size {size}, the following algorithms were removed: {', '.join(sorted(new_skipped))} -->\n\n"
                 )
 
+        # Append the per-size markdown ranking table.
         with open(details_path, "a") as f:
             write_markdown(f, size, size_results)
 
+        # Rebuild the main README with updated overall and skipped algorithms information.
         rebuild_readme(overall_totals, details_path, skip_list)
 
+    # After processing all sizes, write individual markdown files for each algorithm.
     write_algorithm_markdown(per_alg_results)
     print(
         "\nBenchmark complete: CSV files saved, README.md updated, and per-algorithm files created in 'results/algorithms'."

@@ -4,18 +4,20 @@ import random
 
 def format_time(seconds):
     """
-    Convert seconds into a human-readable string using abbreviated units with no space between number and unit.
+    Convert a duration in seconds to a human-readable string with abbreviated time units.
 
-    - "less than a ms" if < 0.001 s.
-    - For < 1 s: e.g. "123ms".
-    - For 1–60 s: e.g. "3s120ms".
-    - For 60 s–1 hr: e.g. "2min3s120ms".
-    - For >= 1 hr: e.g. "1hr2min3s".
+    The format is as follows:
+      - "less than a ms" if the duration is less than 0.001 seconds.
+      - For durations < 1 second: e.g. "123ms".
+      - For durations between 1 and 60 seconds: e.g. "3s 120ms".
+      - For durations between 60 seconds and 1 hour: e.g. "2min 3s 120ms".
+      - For durations of 1 hour or more: e.g. "1hr 2min 3s".
 
     Parameters:
-        seconds (float): Duration in seconds.
+        seconds (float): The duration in seconds.
+
     Returns:
-        str: Formatted time.
+        str: The formatted time string.
     """
     if seconds < 1e-3:
         return "less than a ms"
@@ -41,14 +43,16 @@ def format_time(seconds):
 
 def group_rankings(ranking, margin=1e-3):
     """
-    Group sorted (algorithm, avg_time) tuples if consecutive differences are less than margin.
+    Group a sorted list of (algorithm, time) tuples where consecutive entries differ by less than a specified margin.
+
+    This function is used to group algorithms that have nearly identical performance metrics.
 
     Parameters:
-        ranking (list): Sorted list of (algorithm, avg_time).
-        margin (float): Maximum difference (seconds) for grouping.
+        ranking (list of tuple): A sorted list of tuples in the form (algorithm, avg_time).
+        margin (float): The maximum allowed difference (in seconds) between consecutive times to be grouped together.
 
     Returns:
-        list: List of groups.
+        list of list: A list of groups, where each group is a list of (algorithm, avg_time) tuples.
     """
     groups = []
     if not ranking:
@@ -66,14 +70,17 @@ def group_rankings(ranking, margin=1e-3):
 
 def run_iteration(sort_func, size):
     """
-    Run one iteration of a sorting function on a random integer array.
+    Execute one iteration of a sorting algorithm on a randomly generated integer array and measure its runtime.
+
+    The function generates an array of random integers of the specified size, runs the provided sorting
+    function on a copy of the array, and returns the elapsed time.
 
     Parameters:
-        sort_func (function): Sorting algorithm.
-        size (int): Array size.
+        sort_func (function): The sorting function to be executed.
+        size (int): The size of the randomly generated integer array.
 
     Returns:
-        float: Elapsed time in seconds.
+        float: The elapsed time in seconds for the sorting operation.
     """
     arr = [random.randint(-1000000, 1000000) for _ in range(size)]
     start = time.perf_counter()
@@ -83,12 +90,34 @@ def run_iteration(sort_func, size):
 
 def compute_average(times):
     """
-    Compute the average of a list of numbers.
+    Calculate the average of a list of numerical values.
 
     Parameters:
-        times (list): List of numbers.
+        times (list of float): A list of numerical values (e.g., execution times).
 
     Returns:
-        float or None: Average, or None if list empty.
+        float or None: The average of the values, or None if the list is empty.
     """
     return sum(times) / len(times) if times else None
+
+
+def compute_median(times):
+    """
+    Compute the median value from a list of numbers.
+
+    The function returns the median, which is the middle value in the sorted list. If the list has an even number
+    of elements, the median is calculated as the average of the two middle values.
+
+    Parameters:
+        times (list of float): A list of numbers (e.g., execution times).
+
+    Returns:
+        float or None: The median value, or None if the list is empty.
+    """
+    n = len(times)
+    if n == 0:
+        return None
+    sorted_times = sorted(times)
+    if n % 2 == 0:
+        return (sorted_times[n // 2 - 1] + sorted_times[n // 2]) / 2
+    return sorted_times[n // 2]
