@@ -8,9 +8,6 @@ in parallel, aggregating results, and generating markdown reports.
 
 import csv
 import os
-import math
-import time
-import psutil
 from collections import OrderedDict
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
