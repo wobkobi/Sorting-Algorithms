@@ -1,5 +1,8 @@
 import csv
 import os
+import math
+import time
+import psutil
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # Import all sorting functions from the algorithms package.
@@ -136,6 +139,26 @@ def algorithms():
     }
 
 
+def get_num_workers():
+    """
+    Determine the number of worker processes to use, targeting a usage of at most 70%
+    of the CPU cores, and reducing that number further if overall CPU usage is high.
+
+    The calculation uses the formula:
+        available = total_cores * 0.7 * (1 - (current_cpu_usage / 100))
+
+    This ensures that if the system is idle (0% usage), up to 70% of the cores are used.
+    If the CPU usage increases, the number of worker processes decreases accordingly.
+
+    Returns:
+        int: The number of worker processes to use (at least 1).
+    """
+    total = os.cpu_count() or 1
+    current_usage = psutil.cpu_percent(interval=0.1)
+    available = total * 0.7 * (1 - (current_usage / 100.0))
+    return max(math.floor(available), 1)
+
+
 def run_sorting_tests():
     """
     Execute a series of sorting benchmarks across various array sizes and compile the results.
@@ -158,16 +181,12 @@ def run_sorting_tests():
     sizes = generate_sizes()
     iterations = 250
     threshold = 300  # 5 minutes per iteration cutoff in seconds
+    batch_size = 10  # Number of iterations per batch
 
     # Initialize overall totals and per-algorithm results for aggregation.
     overall_totals = {alg: {"sum": 0, "count": 0} for alg in algorithms().keys()}
     per_alg_results = {alg: [] for alg in algorithms().keys()}
     skip_list = set()
-
-    num_workers = max((os.cpu_count() or 1) // 2, 1)
-    print(
-        f"Using {num_workers} worker{'s' if num_workers > 1 else ''} for parallel execution."
-    )
 
     output_folder = "results"
     os.makedirs(output_folder, exist_ok=True)
@@ -176,7 +195,7 @@ def run_sorting_tests():
     with open(details_path, "w") as f:
         f.write("")
 
-    # Iterate over all generated array sizes.
+    # Iterate over each generated array size.
     for size in sizes:
         print(f"\nTesting array size: {size}")
         csv_filename = f"results_{size}.csv"
@@ -194,38 +213,75 @@ def run_sorting_tests():
                 writer.writerow(
                     ["Algorithm", "Array Size", "Iteration", "Elapsed Time (seconds)"]
                 )
+                # Process each algorithm.
                 for alg_name, sort_func in algorithms().items():
                     if alg_name in skip_list:
                         size_results[alg_name] = None
                         continue
 
-                    times = []
-                    with ProcessPoolExecutor(max_workers=num_workers) as executor:
-                        futures = [
-                            executor.submit(run_iteration, sort_func, size)
-                            for _ in range(iterations)
-                        ]
-                        for i, future in enumerate(as_completed(futures), start=1):
-                            try:
-                                t = future.result()
-                                times.append(t)
-                                writer.writerow([alg_name, size, i, f"{t:.8f}"])
-                                csv_file.flush()
-                            except Exception as e:
-                                print(
-                                    f"{alg_name} error on size {size} iteration {i}: {e}"
-                                )
-                                times = []
-                                break
-                    if times:
-                        avg = compute_average(times)
-                        # Record the average, minimum, and maximum times.
-                        size_results[alg_name] = (avg, min(times), max(times))
-                        # Print the average time immediately.
+                    all_times = []
+                    # To track previous worker count for this algorithm.
+                    prev_workers = None
+                    # Record when we last updated the worker count.
+                    last_update = time.time()
+
+                    # Process iterations in batches.
+                    for batch_start in range(0, iterations, batch_size):
+                        # Check if at least 5 minutes have passed since last update.
+                        now = time.time()
+                        if now - last_update >= 300:
+                            new_workers = get_num_workers()
+                            if prev_workers is None or new_workers != prev_workers:
+                                if prev_workers is None:
+                                    print(
+                                        f"Using {new_workers} worker{'s' if new_workers != 1 else ''} for {alg_name} on size {size}."
+                                    )
+                                else:
+                                    print(
+                                        f"Changing workers from {prev_workers} to {new_workers} for {alg_name} on size {size}."
+                                    )
+                                prev_workers = new_workers
+                            last_update = now
+
+                        # If it's the first batch, initialize and print if needed.
+                        if prev_workers is None:
+                            prev_workers = get_num_workers()
+                            print(
+                                f"Using {prev_workers} worker{'s' if prev_workers != 1 else ''} for {alg_name} on size {size}."
+                            )
+
+                        current_workers = prev_workers
+                        # Create a new executor for the current batch.
+                        with ProcessPoolExecutor(
+                            max_workers=current_workers
+                        ) as executor:
+                            batch_end = min(batch_start + batch_size, iterations)
+                            futures = [
+                                executor.submit(run_iteration, sort_func, size)
+                                for _ in range(batch_start, batch_end)
+                            ]
+                            for i, future in enumerate(
+                                as_completed(futures), start=batch_start + 1
+                            ):
+                                try:
+                                    t = future.result()
+                                    all_times.append(t)
+                                    writer.writerow([alg_name, size, i, f"{t:.8f}"])
+                                    csv_file.flush()
+                                except Exception as e:
+                                    print(
+                                        f"{alg_name} error on size {size} iteration {i}: {e}"
+                                    )
+                                    all_times = []
+                                    break
+
+                    if all_times:
+                        avg = compute_average(all_times)
+                        # Record average, minimum, and maximum times. (Median can be added if desired.)
+                        size_results[alg_name] = (avg, min(all_times), max(all_times))
                         print(
                             f"Average for {alg_name} on size {size}: {format_time(avg)}"
                         )
-                        # If the average exceeds the threshold, mark the algorithm to be skipped in future sizes.
                         if avg > threshold and alg_name not in skip_list:
                             skip_list.add(alg_name)
                             print(
@@ -235,19 +291,18 @@ def run_sorting_tests():
                         size_results[alg_name] = None
             print(f"Ran tests for size {size} and saved CSV.")
 
-        # Update overall totals and record per-algorithm results for the current size.
+        # Update overall totals and record per-algorithm results.
         for alg, data in size_results.items():
             if data is not None:
                 overall_totals[alg]["sum"] += data[0] * iterations
                 overall_totals[alg]["count"] += iterations
                 per_alg_results[alg].append((size, data[0], data[1], data[2]))
 
-        # Insert a markdown comment in the details file if new algorithms are being skipped at this size.
+        # Log skipped algorithms for this size.
         previous_skip = set(skip_list)
         for alg, data in size_results.items():
             if data is not None:
                 current_avg = data[0]
-                # (The average is already printed above for each algorithm.)
                 if current_avg > threshold and alg not in skip_list:
                     skip_list.add(alg)
                     print(f"Skipping {alg} for future sizes (current average > 5min).")
@@ -258,14 +313,11 @@ def run_sorting_tests():
                     f"<!-- At size {size}, the following algorithms were removed: {', '.join(sorted(new_skipped))} -->\n\n"
                 )
 
-        # Append the per-size markdown ranking table.
         with open(details_path, "a") as f:
             write_markdown(f, size, size_results)
 
-        # Rebuild the main README with updated overall and skipped algorithms information.
         rebuild_readme(overall_totals, details_path, skip_list)
 
-    # After processing all sizes, write individual markdown files for each algorithm.
     write_algorithm_markdown(per_alg_results)
     print(
         "\nBenchmark complete: CSV files saved, README.md updated, and per-algorithm files created in 'results/algorithms'."
