@@ -114,7 +114,7 @@ def sort_csv_alphabetically(csv_path):
 
 def get_csv_results_for_size(size, expected_algs, output_folder="results"):
     """
-    Get the CSV results for a given array size.
+    Retrieve CSV results for a given array size.
 
     If a CSV file exists for the specified size, read its contents using read_csv_results.
     Otherwise, create a new CSV file with the proper header and return an initial OrderedDict.
@@ -122,7 +122,7 @@ def get_csv_results_for_size(size, expected_algs, output_folder="results"):
     Parameters:
         size (int): The current array size.
         expected_algs (list): List of expected algorithm names.
-        output_folder (str): Directory for CSV files.
+        output_folder (str): Directory where CSV files are stored.
 
     Returns:
         tuple: (csv_path, size_results)
