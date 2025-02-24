@@ -16,6 +16,7 @@ A helper ensures that new data is appended on a new line if the process stops an
 The number of worker processes is determined dynamically based on the current time of day:
   - Between 11:30 PM and 9:30 AM: 75% of available CPU cores are used.
   - Otherwise: 50% of available CPU cores are used.
+If the SLOW_MODE environment variable is set to "true", the worker count is halved.
 The worker count is re-evaluated for each array size and printed only if it changes.
 """
 
@@ -28,18 +29,11 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from algorithms import *
 
 # Import helper functions from utils.
-from utils import (
-    compute_median,
-    format_time,
-    run_iteration,
-    compute_average,  # Used to format ordinal numbers.
-)
+from utils import compute_median, format_time, run_iteration, compute_average
+
 
 # Import CSV utility functions from csv_utils.py.
-from csv_utils import (
-    get_csv_results_for_size,
-    sort_csv_alphabetically,
-)
+from csv_utils import get_csv_results_for_size, sort_csv_alphabetically
 
 # Import markdown report functions.
 from markdown_utils import rebuild_readme, write_markdown, write_algorithm_markdown
@@ -63,7 +57,7 @@ def generate_sizes():
     ]
     large_sizes = []
     size = 100
-    # Calculate large sizes by doubling until reaching 1 trillion.
+    # Double the size until reaching 1 trillion.
     while size < 1e12:
         large_sizes.append(int(size))
         size *= 2
@@ -77,13 +71,14 @@ def get_num_workers():
 
     If the current time is between 11:30 PM and 9:30 AM, 75% of available CPU cores are used.
     Otherwise, 50% of available CPU cores are used.
-    If the SLOW_MODE environment variable is set to "true", the number of workers is halved.
+    Additionally, if the SLOW_MODE environment variable is set to "true", the worker count is halved.
 
     Returns:
         int: The number of worker processes to use (at least 1).
     """
     total = os.cpu_count() or 1
     now = datetime.datetime.now().time()
+    # Determine worker ratio based on the time of day.
     if datetime.time(23, 30) <= now or now <= datetime.time(9, 30):
         workers = max(int(total * 0.75), 1)
     else:
@@ -169,8 +164,7 @@ def update_missing_iterations_concurrent(
 
     For each algorithm (not in skip_list) with fewer than the desired iterations, determine the number
     of missing iterations. Then, submit a task for each missing iteration concurrently using a global pool.
-    As each future completes, its result is immediately appended to the CSV.
-    New times are accumulated and used to update the algorithm's results.
+    As each future completes, its result is immediately written to the CSV file and accumulated in the results.
 
     Parameters:
         csv_path (str): Path to the CSV file.
@@ -178,7 +172,7 @@ def update_missing_iterations_concurrent(
         expected_algs (list): List of expected algorithm names.
         size_results (OrderedDict): Existing results for this size.
         iterations (int): Desired iterations per algorithm.
-        skip_list (set): Set of algorithms to skip.
+        skip_list (dict): Dictionary mapping algorithm names to the size at which they were skipped.
         threshold (int): Runtime threshold (in seconds) to decide if an algorithm should be skipped.
         num_workers (int): Number of worker processes to use.
 
@@ -194,11 +188,11 @@ def update_missing_iterations_concurrent(
         if data is None:
             missing_algs[alg] = iterations
         else:
-            count = data[4]
+            count = data[4]  # Number of iterations already recorded.
             if count < iterations:
                 missing_algs[alg] = iterations - count
                 found_msgs.append(f"{alg} ({count})")
-    # Print a consolidated message.
+    # Print a consolidated message for debugging.
     if missing_algs:
         if found_msgs:
             max_items = min(len(found_msgs) // 2, 10)
@@ -216,7 +210,7 @@ def update_missing_iterations_concurrent(
             )
         else:
             print(f"Missing iterations for: {', '.join(missing_algs.keys())}")
-
+        # Run missing iterations concurrently.
         with ProcessPoolExecutor(max_workers=num_workers) as executor:
             tasks = {}
             for alg, missing in missing_algs.items():
@@ -236,28 +230,29 @@ def update_missing_iterations_concurrent(
                         csv_file.flush()
                         if size_results[alg] is None:
                             size_results[alg] = (None, None, None, None, 0, [])
-                        # Update the recorded count and append the new time.
+                        # Update the count and append the new time.
                         size_results[alg] = (
-                            None,  # avg (will be recalculated)
-                            None,  # min (will be recalculated)
-                            None,  # max (will be recalculated)
-                            None,  # median (will be recalculated)
+                            None,  # avg (to be recalculated)
+                            None,  # min (to be recalculated)
+                            None,  # max (to be recalculated)
+                            None,  # median (to be recalculated)
                             size_results[alg][4] + 1,
                             size_results[alg][5] + [t],
                         )
                     except Exception as e:
                         print(f"{alg} error on size {size} iteration {iter_index}: {e}")
-                        # Do not update if an error occurs.
-        # Recalculate statistics for algorithms with new data.
+        # Recalculate statistics for each algorithm with new data.
         for alg in missing_algs.keys():
             times = size_results[alg][5]
             avg = compute_average(times)
             median = compute_median(times)
             size_results[alg] = (avg, min(times), max(times), median, len(times), times)
-            print(f"Average for {alg} on size {size}: {format_time(avg)}")
+            print(f"Average for {alg} on size {size}: {format_time(avg, False)}")
             if avg > threshold and alg not in skip_list:
                 skip_list[alg] = size
-                print(f"Skipping {alg} for future sizes (average > 5min).")
+                print(
+                    f"Skipping {alg} for future sizes (average > 5min, skipped at size {size})."
+                )
     return size_results, skip_list
 
 
@@ -306,13 +301,13 @@ def process_size(
         expected_algs (list): List of expected algorithm names.
         overall_totals (dict): Aggregated overall totals (updated in place).
         per_alg_results (dict): Per-algorithm results (updated in place).
-        skip_list (set): Set of algorithms to skip (updated in place).
+        skip_list (dict): Dictionary mapping algorithms to the size at which they were skipped (updated in place).
 
     Returns:
         tuple: (updated size_results, updated skip_list)
     """
     csv_path, size_results = get_csv_results_for_size(size, expected_algs)
-    # Re-evaluate worker count for this size.
+    # Re-evaluate the worker count for this size.
     current_workers = get_num_workers()
     process_size.workers = getattr(process_size, "workers", None)
     if process_size.workers is None or current_workers != process_size.workers:
@@ -322,7 +317,7 @@ def process_size(
             )
         else:
             print(
-                f"Changing workers from {process_size.workers} worker{'s' if current_workers > 1 else ''} to {current_workers} worker{'s' if current_workers > 1 else ''}."
+                f"Changing workers from {process_size.workers} worker{'s' if process_size.workers > 1 else ''} to {current_workers} worker{'s' if current_workers > 1 else ''}."
             )
         process_size.workers = current_workers
 
@@ -337,7 +332,7 @@ def process_size(
         threshold,
         current_workers,
     )
-    # Sort CSV alphabetically (order doesn't matter for initial write).
+    # Sort the CSV file alphabetically.
     sort_csv_alphabetically(csv_path)
     # Update aggregated overall statistics.
     update_overall_results(
@@ -360,7 +355,7 @@ def run_sorting_tests(iterations=250, threshold=300):
       3. Identify algorithms with missing iterations and run additional iterations concurrently.
       4. Ensure the CSV ends with a newline, then sort it alphabetically.
       5. Update aggregated overall totals and per-algorithm records.
-      6. Append a per-size markdown ranking table (with notes for any skipped algorithms) to a details file.
+      6. Append a per-size markdown ranking table (with notes for any newly skipped algorithms) to a details file.
       7. Rebuild the main README.md file with overall top-20 rankings and the list of skipped algorithms.
 
     Algorithms with an average runtime exceeding the threshold are skipped in future sizes.
@@ -382,7 +377,6 @@ def run_sorting_tests(iterations=250, threshold=300):
     # Determine and print the initial worker count before processing any sizes.
     initial_workers = get_num_workers()
     print(f"Using {initial_workers} worker{'s' if initial_workers > 1 else ''}.")
-    # Set the initial worker count in process_size so it doesn't re-print for the first iteration.
     process_size.workers = initial_workers
 
     # Process each array size.
@@ -407,7 +401,7 @@ def run_sorting_tests(iterations=250, threshold=300):
             alg: skip_list[alg] for alg in skip_list if alg not in previous_skip
         }
 
-        # Append per-size markdown ranking table with a note for any newly skipped algorithms.
+        # Append per-size markdown ranking table with notes for any newly skipped algorithms.
         with open(details_path, "a") as f:
             write_markdown(f, size, size_results, removed=list(new_skipped.keys()))
 
