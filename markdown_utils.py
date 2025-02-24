@@ -1,9 +1,8 @@
 """
 markdown_utils.py
 
-This module provides functions for generating markdown reports
-based on benchmark results, including per-size ranking tables,
-individual algorithm reports, and the main README file.
+This module provides functions for generating markdown reports based on benchmark results.
+It creates per-size ranking tables, individual algorithm reports, and rebuilds the main README file.
 """
 
 import os
@@ -23,8 +22,8 @@ def write_markdown(md_file, size, size_results, removed=None):
 
     Parameters:
         md_file (file object): Open file handle for writing markdown.
-        size (int): The array size for the benchmark.
-        size_results (dict): Mapping {algorithm: (avg, min, max, median)}.
+        size (int): The array size used for the benchmark.
+        size_results (dict): Mapping {algorithm: (avg, min, max, median, count, times)}.
         removed (list, optional): List of algorithm names removed at this size.
     """
     md_file.write(f"## Array Size: {size}\n")
@@ -66,7 +65,7 @@ def write_algorithm_markdown(per_alg_results):
     """
     Generate individual markdown files summarizing benchmark results for each algorithm.
 
-    For each algorithm, a markdown file is created in "results/algorithms" (if it doesn't already exist),
+    For each algorithm, a markdown file is created in the "results/algorithms" directory (if it doesn't already exist),
     containing a table that lists:
       - Array Size, Average Time, Median Time, Min Time, and Max Time.
 
@@ -99,7 +98,7 @@ def write_algorithm_markdown(per_alg_results):
 
 def rebuild_readme(overall_totals, details_path, skip_list):
     """
-    Rebuild the main README.md file using aggregated benchmark results and per-size details.
+    Rebuild the main README.md file using aggregated benchmark results and detailed per-size reports.
 
     The README includes:
       - A title and introduction.
