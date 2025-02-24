@@ -4,12 +4,15 @@ main.py
 Entry point for the Sorting Algorithms Benchmark.
 
 This script prompts the user for the number of iterations and threshold parameters.
-Users may exit at any prompt by typing "q" or "quit" or by pressing Ctrl+C.
+Users can exit at any prompt by typing "q" or "quit" or by pressing Ctrl+C.
 If no input is provided, the default values (250 iterations and 300 seconds threshold) are used.
+If the word "slow" is provided as a command-line argument (e.g., "python main.py slow"),
+the benchmark will run using half the number of workers (as determined by get_num_workers()).
 The specified parameters are then passed to the benchmark process.
 """
 
 import sys
+import os
 from benchmark import run_sorting_tests
 
 
@@ -17,61 +20,65 @@ def get_user_input(prompt, default):
     """
     Prompt the user for an integer input.
 
-    This function:
-      - Displays a prompt message to the user.
-      - If the user types 'q' or 'quit', or if a KeyboardInterrupt/EOFError is raised,
-        it exits the program gracefully.
-      - If the input is empty, the default value is returned.
-      - If the input cannot be converted to an integer, it prints a message and returns the default.
+    This function displays a prompt message and reads user input from the console.
+    It gracefully handles exit conditions:
+      - If the user types 'q' or 'quit', the program exits.
+      - If a KeyboardInterrupt or EOFError occurs, the program exits.
+    If the input is empty or invalid (i.e., cannot be converted to an integer),
+    the default value is returned.
 
     Parameters:
-        prompt (str): The message displayed to the user.
-        default (int): The default value if no valid input is provided.
+        prompt (str): The message to display to the user.
+        default (int): The default value to return if input is empty or invalid.
 
     Returns:
         int: The user-supplied value or the default.
     """
     try:
-        # Get user input from the console.
         user_input = input(prompt)
     except (KeyboardInterrupt, EOFError):
-        # If the user interrupts (e.g., with Ctrl+C), exit gracefully.
         print("\nExiting as requested.")
         sys.exit(0)
-    # Check if the user wants to quit.
     if user_input.strip().lower() in ("q", "quit"):
         print("Exiting as requested.")
         sys.exit(0)
-    # Return the default value if no input is provided.
     if user_input.strip() == "":
         return default
     try:
-        # Try converting the input to an integer.
         return int(user_input)
     except ValueError:
-        # If conversion fails, print a message and return the default value.
         print("Invalid input. Using default value.")
         return default
 
 
 def main():
     """
-    Main function to prompt the user for parameters and run the sorting benchmarks.
+    Main function to run the benchmark.
 
-    This function:
-      - Prompts the user for the number of iterations.
-      - Prompts the user for the threshold (in seconds).
-      - Calls run_sorting_tests() with the user-specified or default parameters.
+    The function performs the following steps:
+      1. Checks for a command-line argument "slow". If present, sets the SLOW_MODE environment variable,
+         which causes the benchmark process to use half the normal number of workers.
+      2. Prompts the user for the number of iterations and the threshold (in seconds).
+      3. Calls run_sorting_tests() with the chosen parameters.
     """
+    # Check for the "slow" command-line argument.
+    if len(sys.argv) > 1 and sys.argv[1].lower() == "slow":
+        os.environ["SLOW_MODE"] = "true"
+        print("Slow mode enabled: Using half the workers.")
+    else:
+        os.environ["SLOW_MODE"] = "false"
+
+    # Prompt the user for benchmark parameters.
     iterations = get_user_input(
         "Enter number of iterations (default 250, or 'q' to quit): ", 250
     )
     threshold = get_user_input(
         "Enter threshold in seconds (default 300, or 'q' to quit): ", 300
     )
+
+    # Run the sorting benchmark using the specified parameters.
     run_sorting_tests(iterations=iterations, threshold=threshold)
 
 
 if __name__ == "__main__":
-    # When the script is run directly, call the main function.
     main()
