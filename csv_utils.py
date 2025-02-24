@@ -110,3 +110,33 @@ def sort_csv_alphabetically(csv_path):
         writer = csv.writer(f)
         writer.writerow(header)
         writer.writerows(data_rows)
+
+
+def get_csv_results_for_size(size, expected_algs, output_folder="results"):
+    """
+    Get the CSV results for a given array size.
+
+    If a CSV file exists for the specified size, read its contents using read_csv_results.
+    Otherwise, create a new CSV file with the proper header and return an initial OrderedDict.
+
+    Parameters:
+        size (int): The current array size.
+        expected_algs (list): List of expected algorithm names.
+        output_folder (str): Directory for CSV files.
+
+    Returns:
+        tuple: (csv_path, size_results)
+    """
+    csv_filename = f"results_{size}.csv"
+    csv_path = os.path.join(output_folder, csv_filename)
+    if os.path.exists(csv_path):
+        size_results = read_csv_results(csv_path, expected_algs)
+    else:
+        with open(csv_path, "w", newline="") as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(
+                ["Algorithm", "Array Size", "Iteration", "Elapsed Time (seconds)"]
+            )
+        size_results = OrderedDict((alg, None) for alg in expected_algs)
+    ensure_csv_ends_with_newline(csv_path)
+    return csv_path, size_results
