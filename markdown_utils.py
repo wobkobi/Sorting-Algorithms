@@ -13,43 +13,62 @@ def write_markdown(md_file, size, size_results, removed=None):
     """
     Write a markdown table summarizing benchmark results for a specific array size.
 
-    The table includes:
-      - Rank, algorithm names, and average time.
-      - Algorithms with similar performance (within a specified margin) are grouped together.
+    This function writes a header for the given array size, followed by a table that shows:
+      - The rank (in ordinal format),
+      - The algorithm names (grouped if their performance is nearly identical),
+      - The average time, and
+      - The median time for each group.
 
-    After the table, if any algorithms were removed at this size due to performance issues,
-    a note is appended listing those algorithms.
+    If any algorithms were removed at this size (due to performance issues), a note is added
+    after the table listing those algorithms.
 
     Parameters:
-        md_file (file object): Open file handle for writing markdown.
+        md_file (file object): An open file handle for writing markdown.
         size (int): The array size used for the benchmark.
         size_results (dict): Mapping {algorithm: (avg, min, max, median, count, times)}.
         removed (list, optional): List of algorithm names removed at this size.
     """
-    # Write the header for this size with a blank line.
+    # Write the header for the current array size and add a blank line.
     md_file.write(f"## Array Size: {size}\n\n")
-    ranking = [(alg, data[0]) for alg, data in size_results.items() if data is not None]
+    # Create a ranking list that includes algorithm name, average time, and median time.
+    ranking = [
+        (alg, data[0], data[3])
+        for alg, data in size_results.items()
+        if data is not None
+    ]
+
     if ranking:
-        # If all times are extremely short.
-        if all(t < 1e-3 for _, t in ranking):
+        # If every algorithm ran extremely fast (less than 1ms), state that differences are negligible.
+        if all(t < 1e-3 for _, t, _ in ranking):
             md_file.write(
                 "All algorithms ran in less than 1ms on this array size; differences are negligible.\n\n"
             )
         else:
+            # Sort the ranking by average time in ascending order.
             ranking.sort(key=lambda x: x[1])
+            # Group algorithms that are tied (difference < 1e-3 seconds).
             groups = group_rankings(ranking, margin=1e-3)
             current_rank = 1
-            md_file.write("| Rank | Algorithms | Average Time |\n")
-            md_file.write("| ---- | ---------- | ------------ |\n")
+            # Write the table header.
+            md_file.write("| Rank | Algorithm(s) | Average Time | Median Time |\n")
+            md_file.write("| ---- | ------------ | ------------ | ----------- |\n")
+            # Iterate over each group and write a row for each.
             for group in groups:
                 rank_str = ordinal(current_rank)
-                algs = ", ".join(alg for alg, _ in group)
+                # Join algorithm names in the group with a comma.
+                algs = ", ".join(alg for alg, _, _ in group)
+                # Use the average and median time from the first tuple in the group (they're tied).
                 avg_time = group[0][1]
-                md_file.write(f"| {rank_str} | {algs} | {format_time(avg_time)} |\n")
+                median_time = group[0][2]
+                md_file.write(
+                    f"| {rank_str} | {algs} | {format_time(avg_time, True)} | {format_time(median_time, True)} |\n"
+                )
                 current_rank += len(group)
             md_file.write("\n")
     else:
         md_file.write("No algorithms produced a result for this array size.\n\n")
+
+    # If any algorithms were removed at this size, append a note.
     if removed:
         md_file.write(
             f"**Note:** The following algorithm{'s' if len(removed) != 1 else ''} were removed for this array size due to performance issues: {', '.join(sorted(removed))}.\n\n"
@@ -61,9 +80,9 @@ def write_algorithm_markdown(per_alg_results):
     """
     Generate individual markdown files summarizing benchmark results for each algorithm.
 
-    Each algorithm's file is created in the "results/algorithms" directory (if it doesn't already exist)
-    and contains a table that lists:
-      - Array Size, Average Time, Median Time, Min Time, and Max Time.
+    For each algorithm, a separate markdown file is created (if it doesn't already exist)
+    in the "results/algorithms" directory. Each file contains a table that lists:
+      - Array Size, Average Time, Median Time, Min Time, and Max Time for that algorithm.
 
     Parameters:
         per_alg_results (dict): Mapping {algorithm: [(array size, avg, min, max, median), ...]}.
@@ -73,6 +92,7 @@ def write_algorithm_markdown(per_alg_results):
     for alg, results in per_alg_results.items():
         filename = f"{alg.replace(' ', '_')}.md"
         filepath = os.path.join(alg_folder, filename)
+        # Only write the file if it does not already exist.
         if not os.path.exists(filepath):
             with open(filepath, "w") as f:
                 f.write(f"# {alg} Benchmark Results\n\n")
@@ -102,9 +122,9 @@ def rebuild_readme(overall_totals, details_path, skip_list):
         grouped on a single row if their average times differ by less than one microsecond.
         For example, if three algorithms are tied for 1st, they are all labeled "1st"
         and the next rank will be "4th".
-      - If the 20th spot is within a tie group, the entire group is shown and a note is added
+      - If the 20th spot falls within a tie group, the entire group is shown and a note is added
         indicating that more than 20 algorithms are effectively tied.
-      - A section listing skipped algorithms along with the size at which each was skipped.
+      - A table listing skipped algorithms along with the size at which each was skipped.
       - Detailed per-size benchmark information from the details file.
 
     Parameters:
@@ -112,16 +132,16 @@ def rebuild_readme(overall_totals, details_path, skip_list):
         details_path (str): Path to the markdown file containing per-size details.
         skip_list (dict): Dictionary mapping algorithm names to the size at which they were skipped.
     """
-    # Compute overall average times for each algorithm.
+    # Calculate overall average times for each algorithm.
     overall = {}
     for alg, totals in overall_totals.items():
         if totals["count"] > 0:
             overall[alg] = totals["sum"] / totals["count"]
 
-    # Sort algorithms by average time (lowest first).
+    # Sort the overall averages in ascending order.
     overall_ranking = sorted(overall.items(), key=lambda x: x[1])
 
-    # Group algorithms that are tied (difference less than 1e-6 seconds).
+    # Group algorithms by ties (if the difference is less than 1e-6 seconds).
     groups = group_rankings(overall_ranking, margin=1e-6)
 
     lines = []
@@ -131,29 +151,29 @@ def rebuild_readme(overall_totals, details_path, skip_list):
     lines.append("| ---- | ---------- | -------------------- |\n")
 
     current_rank = 1
-    count = 0  # Total number of algorithms printed.
+    printed_count = 0  # Total number of algorithms printed in the ranking.
+    # Iterate through each tie group.
     for group in groups:
-        # If adding the next group would push count over 20, still add the whole group.
-        if count < 20:
+        # Check if printing this group will cause us to exceed 20 algorithms.
+        if printed_count < 20:
+            # Always print the entire tie group even if it pushes the count over 20.
             rank_str = ordinal(current_rank)
             algs = ", ".join(alg for alg, _ in group)
-            avg_time = group[0][
-                1
-            ]  # All in the group share nearly the same average time.
+            avg_time = group[0][1]  # They share nearly the same average time.
             lines.append(f"| {rank_str} | {algs} | {format_time(avg_time, True)} |\n")
-            count += len(group)
+            printed_count += len(group)
             current_rank += len(group)
         else:
             break
     lines.append("\n")
 
-    # If the total number printed exceeds 20, add a note.
-    if count > 20:
+    # Add a note if the printed count exceeds 20 (i.e. if the 20th rank falls within a tie group).
+    if printed_count > 20:
         lines.append(
             "*Note: The 20th rank falls within a tie group, so all tied algorithms are shown.*\n\n"
         )
 
-    # Build the Skipped Algorithms table.
+    # Build a table for skipped algorithms.
     lines.append("## Skipped Algorithms\n\n")
     if skip_list:
         lines.append("| Algorithm | Skipped At Size |\n")
@@ -171,9 +191,11 @@ def rebuild_readme(overall_totals, details_path, skip_list):
         lines.append("No algorithms were skipped.\n\n")
         print("No algorithms were skipped.")
 
+    # Read the per-size details from the details file.
     with open(details_path, "r") as f:
         details_content = f.read()
 
+    # Write the final README content.
     with open("README.md", "w") as md_file:
         md_file.writelines(lines)
         md_file.write(details_content)
