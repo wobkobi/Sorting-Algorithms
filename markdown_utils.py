@@ -153,16 +153,14 @@ def rebuild_readme(overall_totals, details_path, skip_list):
             "*Note: The 20th rank falls within a tie group, so all tied algorithms are shown.*\n\n"
         )
 
-    # Build the skipped algorithms section.
+    # Build the Skipped Algorithms table.
+    lines.append("## Skipped Algorithms\n\n")
     if skip_list:
-        lines.append("## Skipped Algorithms\n\n")
-        lines.append(
-            "The following algorithms were removed from future sizes because their average exceeded the threshold, along with the size at which they were skipped:\n\n"
-        )
-        skipped_list = [
-            f"{alg} (at size {skip_list[alg]})" for alg in sorted(skip_list.keys())
-        ]
-        lines.append(", ".join(skipped_list) + "\n\n")
+        lines.append("| Algorithm | Skipped At Size |\n")
+        lines.append("| --------- | --------------- |\n")
+        for alg in sorted(skip_list.keys()):
+            lines.append(f"| {alg} | {skip_list[alg]} |\n")
+        lines.append("\n")
         print(
             "Skipped Algorithms:",
             ", ".join(
@@ -170,7 +168,6 @@ def rebuild_readme(overall_totals, details_path, skip_list):
             ),
         )
     else:
-        lines.append("## Skipped Algorithms\n\n")
         lines.append("No algorithms were skipped.\n\n")
         print("No algorithms were skipped.")
 
