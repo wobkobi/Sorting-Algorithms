@@ -314,12 +314,10 @@ def process_size(
     process_size.workers = getattr(process_size, "workers", None)
     if process_size.workers is None or current_workers != process_size.workers:
         if process_size.workers is None:
-            print(
-                f"Using {current_workers} worker{'s' if current_workers > 1 else ''} for array size {size}."
-            )
+            print(f"Using {current_workers} worker{'s' if current_workers > 1 else ''}")
         else:
             print(
-                f"Changing workers from {process_size.workers} to {current_workers} for array size {size}."
+                f"Changing workers from {process_size.workers} worker{'s' if current_workers > 1 else ''}to {current_workers} worker{'s' if current_workers > 1 else ''}"
             )
         process_size.workers = current_workers
 
