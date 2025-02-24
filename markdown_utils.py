@@ -61,7 +61,7 @@ def write_markdown(md_file, size, size_results, removed=None):
                 avg_time = group[0][1]
                 median_time = group[0][2]
                 md_file.write(
-                    f"| {rank_str} | {algs} | {format_time(avg_time, True)} | {format_time(median_time, True)} |\n"
+                    f"| {rank_str} | {algs} | {format_time(avg_time, False)} | {format_time(median_time, False)} |\n"
                 )
                 current_rank += len(group)
             md_file.write("\n")
@@ -104,7 +104,7 @@ def write_algorithm_markdown(per_alg_results):
                 )
                 for size, avg, mn, mx, median in sorted(results, key=lambda x: x[0]):
                     f.write(
-                        f"| {size} | {format_time(avg, True)} | {format_time(median, True)} | {format_time(mn, True)} | {format_time(mx, True)} |\n"
+                        f"| {size} | {format_time(avg, False)} | {format_time(median, False)} | {format_time(mn, False)} | {format_time(mx, False)} |\n"
                     )
                 f.write("\n")
             print(f"Wrote results for {alg} to {filepath}")
