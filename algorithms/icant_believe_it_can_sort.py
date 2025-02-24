@@ -1,4 +1,4 @@
-def icant_believe_it_can_sort(arr):
+def icant_believe_it_can_sort(arr: list) -> list:
     """
     I Can't Believe It Can Sort.
 
