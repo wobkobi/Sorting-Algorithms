@@ -37,7 +37,7 @@ def format_time(seconds, detailed=False):
         if detailed:
             # Convert to microseconds.
             us = int(round(seconds * 1e6))
-            return f"{us}µs"
+            return f"{us}us"
         else:
             return "less than a ms"
     # Durations between 1 millisecond and 1 second.
