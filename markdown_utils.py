@@ -160,7 +160,8 @@ def rebuild_readme(overall_totals, details_path, skip_list):
             rank_str = ordinal(current_rank)
             algs = ", ".join(alg for alg, _ in group)
             avg_time = group[0][1]  # They share nearly the same average time.
-            lines.append(f"| {rank_str} | {algs} | {format_time(avg_time, True)} |\n")
+            link = f"[{alg}](results/algorithms/{alg.replace(' ', '_')}.md)"
+            lines.append(f"| {rank_str} | {link} | {format_time(avg_time, True)} |\n")
             printed_count += len(group)
             current_rank += len(group)
         else:
