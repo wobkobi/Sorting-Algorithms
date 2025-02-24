@@ -6,18 +6,18 @@ def format_time(seconds):
     """
     Convert a duration in seconds to a human-readable string with abbreviated time units.
 
-    The format is as follows:
-      - "less than a ms" if the duration is less than 0.001 seconds.
-      - For durations < 1 second: e.g. "123ms".
-      - For durations between 1 and 60 seconds: e.g. "3s 120ms".
-      - For durations between 60 seconds and 1 hour: e.g. "2min 3s 120ms".
-      - For durations of 1 hour or more: e.g. "1hr 2min 3s".
+    Formats:
+      - "less than a ms" if < 0.001 s.
+      - For durations < 1 s: e.g. "123ms".
+      - For 1–60 s: e.g. "3s 120ms".
+      - For 60 s–1 hr: e.g. "2min 3s 120ms".
+      - For >= 1 hr: e.g. "1hr 2min 3s".
 
     Parameters:
-        seconds (float): The duration in seconds.
+        seconds (float): Duration in seconds.
 
     Returns:
-        str: The formatted time string.
+        str: Formatted time string.
     """
     if seconds < 1e-3:
         return "less than a ms"
@@ -43,16 +43,16 @@ def format_time(seconds):
 
 def group_rankings(ranking, margin=1e-3):
     """
-    Group a sorted list of (algorithm, time) tuples where consecutive entries differ by less than a specified margin.
+    Group a sorted list of (algorithm, time) tuples whose consecutive times differ by less than a specified margin.
 
-    This function is used to group algorithms that have nearly identical performance metrics.
+    Used to group algorithms with similar performance.
 
     Parameters:
-        ranking (list of tuple): A sorted list of tuples in the form (algorithm, avg_time).
-        margin (float): The maximum allowed difference (in seconds) between consecutive times to be grouped together.
+        ranking (list of tuple): Sorted list in the form (algorithm, average_time).
+        margin (float): Maximum allowed difference between consecutive times for grouping.
 
     Returns:
-        list of list: A list of groups, where each group is a list of (algorithm, avg_time) tuples.
+        list of list: Groups of (algorithm, average_time) tuples.
     """
     groups = []
     if not ranking:
@@ -72,15 +72,15 @@ def run_iteration(sort_func, size):
     """
     Execute one iteration of a sorting algorithm on a randomly generated integer array and measure its runtime.
 
-    The function generates an array of random integers of the specified size, runs the provided sorting
-    function on a copy of the array, and returns the elapsed time.
+    Generates an array of random integers (within a fixed range), copies the array,
+    sorts it using the provided sort function, and returns the elapsed time.
 
     Parameters:
-        sort_func (function): The sorting function to be executed.
-        size (int): The size of the randomly generated integer array.
+        sort_func (function): Sorting function to execute.
+        size (int): Size of the array.
 
     Returns:
-        float: The elapsed time in seconds for the sorting operation.
+        float: Elapsed time in seconds.
     """
     arr = [random.randint(-1000000, 1000000) for _ in range(size)]
     start = time.perf_counter()
@@ -90,13 +90,13 @@ def run_iteration(sort_func, size):
 
 def compute_average(times):
     """
-    Calculate the average of a list of numerical values.
+    Calculate the average of a list of numbers.
 
     Parameters:
-        times (list of float): A list of numerical values (e.g., execution times).
+        times (list of float): List of numbers (e.g., execution times).
 
     Returns:
-        float or None: The average of the values, or None if the list is empty.
+        float or None: Average value or None if list is empty.
     """
     return sum(times) / len(times) if times else None
 
@@ -105,14 +105,13 @@ def compute_median(times):
     """
     Compute the median value from a list of numbers.
 
-    The function returns the median, which is the middle value in the sorted list. If the list has an even number
-    of elements, the median is calculated as the average of the two middle values.
+    For even number of elements, returns the average of the two middle numbers.
 
     Parameters:
-        times (list of float): A list of numbers (e.g., execution times).
+        times (list of float): List of numbers.
 
     Returns:
-        float or None: The median value, or None if the list is empty.
+        float or None: The median value or None if list is empty.
     """
     n = len(times)
     if n == 0:
