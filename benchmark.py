@@ -170,8 +170,8 @@ def update_missing_iterations_concurrent(
     For each algorithm (not in skip_list) that has fewer than the desired iterations,
     determine the number of missing iterations and submit tasks for them concurrently.
     As each future completes, its result is immediately written to the CSV and accumulated.
-    After all tasks complete, recalculate statistics for each algorithm that received new iterations.
-    The average is printed only for algorithms that had new iterations executed (not just read from CSV).
+    As soon as an algorithm finishes all its missing iterations, its average is recalculated and printed.
+    If the average exceeds the threshold, the algorithm is skipped for future sizes.
 
     Parameters:
         csv_path: Path to the CSV file.
@@ -200,17 +200,15 @@ def update_missing_iterations_concurrent(
             if count < iterations:
                 missing_algs[alg] = iterations - count
                 found_msgs.append(f"{alg} ({count})")
-    # Print a consolidated message if there are missing iterations.
-    if missing_algs:
+    # Only print missing iteration messages if the CSV file already had some data.
+    if missing_algs and any(data is not None for data in size_results.values()):
         if found_msgs:
-            # Limit display to at most half of the found messages, with a maximum of ten.
-            max_items = max(1, min(len(found_msgs) // 2, 10))
-            if len(found_msgs) == len(expected_algs) - len(missing_algs):
-                display_msg = "all algorithms"
-            elif len(found_msgs) > max_items:
+            # Limit display to at most 10 found messages.
+            max_items = min(10, len(found_msgs))
+            if len(found_msgs) > max_items:
                 display_msg = (
                     ", ".join(found_msgs[:max_items])
-                    + f", and {len(found_msgs) - max_items} others"
+                    + f", and {len(found_msgs) - max_items} more..."
                 )
             else:
                 display_msg = ", ".join(found_msgs)
@@ -218,51 +216,75 @@ def update_missing_iterations_concurrent(
                 f"Found existing results for: {display_msg}; running additional iterations."
             )
         else:
-            print(f"Missing iterations for: {', '.join(missing_algs.keys())}")
-        # Execute missing iterations concurrently.
-        with ProcessPoolExecutor(max_workers=num_workers) as executor:
-            tasks = {}
-            for alg, missing in missing_algs.items():
-                start_iter = (
-                    size_results[alg][4] + 1 if size_results[alg] is not None else 1
+            # Limit display to at most 10 missing algorithms.
+            missing_keys = list(missing_algs.keys())
+            max_items = min(10, len(missing_keys))
+            if len(missing_keys) > max_items:
+                display_msg = (
+                    ", ".join(missing_keys[:max_items])
+                    + f", and {len(missing_keys) - max_items} more..."
                 )
-                for i in range(missing):
-                    future = executor.submit(run_iteration, algorithms()[alg], size)
-                    tasks[future] = (alg, start_iter + i)
-            # Write each completed iteration to the CSV.
-            with open(csv_path, "a", newline="") as csv_file:
-                writer = csv.writer(csv_file)
-                for future in as_completed(tasks):
-                    alg, iter_index = tasks[future]
-                    try:
-                        t = future.result()
-                        writer.writerow([alg, size, iter_index, f"{t:.8f}"])
-                        csv_file.flush()
-                        if size_results[alg] is None:
-                            size_results[alg] = (None, None, None, None, 0, [])
-                        # Update iteration count and append the new time.
+            else:
+                display_msg = ", ".join(missing_keys)
+            print(f"Missing iterations for: {display_msg}")
+    # Create a dictionary to track completed missing iterations per algorithm.
+    completed_counts = {alg: 0 for alg in missing_algs.keys()}
+    # Execute missing iterations concurrently.
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        tasks = {}
+        for alg, missing in missing_algs.items():
+            start_iter = (
+                size_results[alg][4] + 1 if size_results[alg] is not None else 1
+            )
+            for i in range(missing):
+                future = executor.submit(run_iteration, algorithms()[alg], size)
+                tasks[future] = (alg, start_iter + i)
+        # Write each completed iteration to the CSV.
+        with open(csv_path, "a", newline="") as csv_file:
+            writer = csv.writer(csv_file)
+            for future in as_completed(tasks):
+                alg, iter_index = tasks[future]
+                try:
+                    t = future.result()
+                    writer.writerow([alg, size, iter_index, f"{t:.8f}"])
+                    csv_file.flush()
+                    if size_results[alg] is None:
+                        size_results[alg] = (None, None, None, None, 0, [])
+                    # Update iteration count and append the new time.
+                    size_results[alg] = (
+                        None,  # Average (to be recalculated)
+                        None,  # Min (to be recalculated)
+                        None,  # Max (to be recalculated)
+                        None,  # Median (to be recalculated)
+                        size_results[alg][4] + 1,
+                        size_results[alg][5] + [t],
+                    )
+                except Exception as e:
+                    print(f"{alg} error on size {size} iteration {iter_index}: {e}")
+                # Update completed count for this algorithm.
+                if alg in completed_counts:
+                    completed_counts[alg] += 1
+                    # If all missing iterations for this algorithm are complete, recalc stats and print average.
+                    if completed_counts[alg] == missing_algs[alg]:
+                        times = size_results[alg][5]
+                        avg = compute_average(times)
+                        median = compute_median(times)
                         size_results[alg] = (
-                            None,  # Average (to be recalculated)
-                            None,  # Min (to be recalculated)
-                            None,  # Max (to be recalculated)
-                            None,  # Median (to be recalculated)
-                            size_results[alg][4] + 1,
-                            size_results[alg][5] + [t],
+                            avg,
+                            min(times),
+                            max(times),
+                            median,
+                            len(times),
+                            times,
                         )
-                    except Exception as e:
-                        print(f"{alg} error on size {size} iteration {iter_index}: {e}")
-        # Recalculate statistics for algorithms that received new iterations.
-        for alg in missing_algs.keys():
-            times = size_results[alg][5]
-            avg = compute_average(times)
-            median = compute_median(times)
-            size_results[alg] = (avg, min(times), max(times), median, len(times), times)
-            print(f"Average for {alg} on size {size}: {format_time(avg, False)}")
-            if avg > threshold and alg not in skip_list:
-                skip_list[alg] = size
-                print(
-                    f"Skipping {alg} for future sizes (average > 5min, skipped at size {size})."
-                )
+                        print(
+                            f"Average for {alg} on size {size}: {format_time(avg, False)}"
+                        )
+                        if avg > threshold and alg not in skip_list:
+                            skip_list[alg] = size
+                            print(
+                                f"Skipping {alg} for future sizes (average > 5min, skipped at size {size})."
+                            )
     return size_results, skip_list
 
 

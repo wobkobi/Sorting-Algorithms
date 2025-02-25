@@ -125,8 +125,8 @@ def sort_csv_alphabetically(csv_path):
     header = rows[0]
     # Filter out any rows that are empty or don't have at least one column.
     data_rows = [row for row in rows[1:] if row and len(row) > 0]
-    # Sort rows based on the first column.
-    data_rows.sort(key=lambda row: row[0])
+    # Sort rows by Algorithm (first column) and then by Iteration (third column converted to int)
+    data_rows.sort(key=lambda row: (row[0], int(row[2])))
 
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
