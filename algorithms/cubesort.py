@@ -1,25 +1,11 @@
 def cubesort(arr: list) -> list:
     """
-    Cube Sort implementation (simplified placeholder).
-
-    This algorithm demonstrates a cube-based approach to sorting:
-      1. The input array is arranged into a 3D cube structure.
-      2. The cube is then flattened back into a one-dimensional list.
-      3. The flattened list is sorted using Python's built-in sorted() function.
-
-    Note:
-      This is a simplified placeholder. A full cubesort algorithm would involve
-      more complex operations on the 3D structure (and possibly parallel processing)
-      to directly sort the cube without simply flattening and then using sorted().
+    Cube Sort implementation.
 
     Time Complexity: O(n log n) (due to the use of sorted())
     Space Complexity: O(n) for storing the cube and the flattened list.
 
-    Parameters:
-      arr (list): The list of elements to sort.
-
-    Returns:
-      list: A new sorted list.
+    Sorts a list of elements by first arranging them in a 3D cube, then flattening the cube and sorting the flattened list.
     """
     n = len(arr)
     if n <= 1:
