@@ -22,6 +22,9 @@ def strand_sort(arr: list) -> list:
         result.extend(b[j:])
         return result
 
+    if not arr:
+        return arr
+
     output = []
 
     while arr:

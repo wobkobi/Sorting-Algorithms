@@ -10,6 +10,9 @@ def intro_sort(arr: list) -> list:
 
     Begins with quick sort and switches to heap sort when the recursion depth exceeds a threshold, ensuring robust performance.
     """
+    if not arr:
+        return arr
+
     maxdepth = math.floor(math.log2(len(arr))) * 2 if arr else 0
 
     def _introsort(a, start, end, depth):

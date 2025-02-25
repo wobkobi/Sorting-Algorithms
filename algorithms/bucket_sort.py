@@ -7,6 +7,9 @@ def bucket_sort(arr: list) -> list:
 
     Distributes elements into buckets, sorts each bucket, then concatenates. Works best when data is uniformly distributed.
     """
+    if not arr:
+        return arr
+
     if len(arr) == 0:
         return arr
     min_val = min(arr)

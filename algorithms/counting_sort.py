@@ -9,6 +9,7 @@ def counting_sort(arr: list) -> list:
     """
     if not arr:
         return arr
+
     min_val = min(arr)
     max_val = max(arr)
     range_of_elements = max_val - min_val + 1

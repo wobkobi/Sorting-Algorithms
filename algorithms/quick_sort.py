@@ -7,6 +7,9 @@ def quick_sort(arr: list) -> list:
 
     Selects a pivot to partition the array and recursively sorts the subarrays. Widely used for its average performance.
     """
+    if not arr:
+        return arr
+
     if len(arr) <= 1:
         return arr
     pivot = arr[len(arr) // 2]

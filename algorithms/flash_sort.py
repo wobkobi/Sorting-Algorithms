@@ -7,6 +7,9 @@ def flash_sort(arr: list) -> list:
 
     Divides the data into classes and sorts within them. Best applied when data distribution is known.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     if n == 0:
         return arr

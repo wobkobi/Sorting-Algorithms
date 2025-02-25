@@ -7,6 +7,9 @@ def selection_sort(arr: list) -> list:
 
     Repeatedly finds the minimum element from the unsorted portion and swaps it with the first unsorted element.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     for i in range(n):
         min_index = i

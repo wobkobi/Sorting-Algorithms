@@ -30,5 +30,8 @@ def franceschinis_method(arr: list) -> list:
         _three_way_quicksort(lst, low, lt - 1)
         _three_way_quicksort(lst, gt + 1, high)
 
+    if not arr:
+        return arr
+
     _three_way_quicksort(arr, 0, len(arr) - 1)
     return arr

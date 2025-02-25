@@ -33,6 +33,7 @@ def tree_sort(arr: list) -> list:
     """
     if not arr:
         return arr
+
     root = None
     for num in arr:
         root = insert(root, num)

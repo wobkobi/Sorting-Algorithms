@@ -9,6 +9,7 @@ def radix_sort(arr: list) -> list:
     """
     if not arr:
         return arr
+
     max_val = max(arr)
     exp = 1
     while max_val // exp > 0:

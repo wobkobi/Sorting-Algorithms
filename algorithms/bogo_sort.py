@@ -17,6 +17,9 @@ def bogo_sort(arr: list) -> list:
 
     Randomly shuffles the array until sorted. Only useful for very small arrays or educational purposes.
     """
+    if not arr:
+        return arr
+
     while not is_sorted(arr):
         random.shuffle(arr)
     return arr

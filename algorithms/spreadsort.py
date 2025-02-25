@@ -8,10 +8,10 @@ def spreadsort(arr: list) -> list:
     A bucket-based sorting algorithm that first "spreads" the elements into buckets
     based on their normalized value, then sorts each bucket using insertion sort.
     """
-    n = len(arr)
-    if n == 0:
+    if not arr:
         return arr
 
+    n = len(arr)
     # Determine the minimum and maximum values.
     minimum = arr[0]
     maximum = arr[0]

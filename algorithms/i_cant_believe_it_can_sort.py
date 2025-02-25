@@ -7,6 +7,9 @@ def i_cant_believe_it_can_sort(arr: list) -> list:
 
     An intentionally over-engineered recursive sort that merges the array in a surprising way.
     """
+    if not arr:
+        return arr
+
     if len(arr) <= 1:
         return arr
     mid = len(arr) // 2

@@ -7,6 +7,9 @@ def bubble_sort(arr: list) -> list:
 
     Repeatedly compares and swaps adjacent elements. Simple but inefficient on large lists.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     for i in range(n):
         for j in range(0, n - i - 1):

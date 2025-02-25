@@ -10,6 +10,7 @@ def library_sort(arr: list) -> list:
     """
     if not arr:
         return arr
+
     n = len(arr)
     gap_factor = 2  # Determines the spacing; tweak as needed.
     lib = [None] * (gap_factor * n)
