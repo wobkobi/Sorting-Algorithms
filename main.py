@@ -1,6 +1,4 @@
 """
-main.py
-
 Entry point for the Sorting Algorithms Benchmark.
 
 This script prompts the user for the number of iterations and threshold parameters.
@@ -22,8 +20,8 @@ def get_user_input(prompt, default):
 
     This function displays a prompt message and reads user input from the console.
     It gracefully handles exit conditions:
-      - If the user types 'q' or 'quit', the program exits.
-      - If a KeyboardInterrupt or EOFError occurs, the program exits.
+    - If the user types 'q' or 'quit', the program exits.
+    - If a KeyboardInterrupt or EOFError occurs, the program exits.
     If the input is empty or invalid (i.e., cannot be converted to an integer),
     the default value is returned.
 
@@ -56,10 +54,10 @@ def main():
     Main function to run the benchmark.
 
     The function performs the following steps:
-      1. Checks for a command-line argument "slow". If present, sets the SLOW_MODE environment variable,
-         which causes the benchmark process to use half the normal number of workers.
-      2. Prompts the user for the number of iterations and the threshold (in seconds).
-      3. Calls run_sorting_tests() with the chosen parameters.
+    1. Checks for a command-line argument "slow". If present, sets the SLOW_MODE environment variable,
+       which causes the benchmark process to use half the normal number of workers.
+    2. Prompts the user for the number of iterations and the threshold (in seconds).
+    3. Calls run_sorting_tests() with the chosen parameters.
     """
     # Check for the "slow" command-line argument.
     if len(sys.argv) > 1 and sys.argv[1].lower() == "slow":
