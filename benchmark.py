@@ -61,7 +61,11 @@ def generate_sizes():
         large_sizes.append(int(size))
         size *= 2
     large_sizes.append(int(1e12))
-    return sorted(set(small_sizes + large_sizes))
+    # print full list of sizes
+    sizes = sorted(set(small_sizes + large_sizes))
+    print(f"Sizes: {sizes}")
+
+    return sizes
 
 
 def get_num_workers():
