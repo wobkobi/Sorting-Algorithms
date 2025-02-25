@@ -31,7 +31,6 @@ from algorithms import *
 # Import helper functions from utils.
 from utils import compute_median, format_time, run_iteration, compute_average
 
-
 # Import CSV utility functions from csv_utils.py.
 from csv_utils import get_csv_results_for_size, sort_csv_alphabetically
 
@@ -62,7 +61,11 @@ def generate_sizes():
         large_sizes.append(int(size))
         size *= 2
     large_sizes.append(int(1e12))
-    return sorted(set(small_sizes + large_sizes))
+    # print full list of sizes
+    sizes = sorted(set(small_sizes + large_sizes))
+    print(f"Sizes: {sizes}")
+
+    return sizes
 
 
 def get_num_workers():
@@ -106,9 +109,10 @@ def algorithms():
         "Burst Sort": burst_sort,
         "Cocktail Sort": cocktail_sort,
         "Comb Sort": comb_sort,
+        "Counting Sort": counting_sort,
+        "Cubesort": cubesort,
         "Cycle Sort": cycle_sort,
         "Exchange Sort": exchange_sort,
-        "External Merge Sort": external_merge_sort,
         "Flash Sort": flash_sort,
         "Franceschini's Method": franceschinis_method,
         "Gnome Sort": gnome_sort,
@@ -118,12 +122,13 @@ def algorithms():
         "Insertion Sort": insertion_sort,
         "Intro Sort": intro_sort,
         "Library Sort": library_sort,
+        "LSD Radix Sort": lsd_radix_sort,
         "Merge Insertion Sort": merge_insertion_sort,
         "Merge Sort": merge_sort,
+        "Merge Sort In-Place": merge_sort_inplace,
         "MSD Radix Sort": msd_radix_sort,
         "MSD Radix Sort In-Place": msd_radix_sort_inplace,
         "Odd-Even Sort": odd_even_sort,
-        "P-Merge Sort": p_merge_sort,
         "Pancake Sort": pancake_sort,
         "Patience Sort": patience_sort,
         "Pigeonhole Sort": pigeonhole_sort,
@@ -160,27 +165,30 @@ def update_missing_iterations_concurrent(
     num_workers,
 ):
     """
-    Identify missing iterations for each algorithm and run them concurrently across all algorithms.
+    Identify missing iterations for each algorithm and run them concurrently.
 
-    For each algorithm (not in skip_list) with fewer than the desired iterations, determine the number
-    of missing iterations. Then, submit a task for each missing iteration concurrently using a global pool.
-    As each future completes, its result is immediately written to the CSV file and accumulated in the results.
+    For each algorithm (not in skip_list) that has fewer than the desired iterations,
+    determine the number of missing iterations and submit tasks for them concurrently.
+    As each future completes, its result is immediately written to the CSV and accumulated.
+    After all tasks complete, recalculate statistics for each algorithm that received new iterations.
+    The average is printed only for algorithms that had new iterations executed (not just read from CSV).
 
     Parameters:
-        csv_path (str): Path to the CSV file.
-        size (int): The current array size.
-        expected_algs (list): List of expected algorithm names.
-        size_results (OrderedDict): Existing results for this size.
-        iterations (int): Desired iterations per algorithm.
-        skip_list (dict): Dictionary mapping algorithm names to the size at which they were skipped.
-        threshold (int): Runtime threshold (in seconds) to decide if an algorithm should be skipped.
-        num_workers (int): Number of worker processes to use.
+        csv_path: Path to the CSV file.
+        size: The current array size.
+        expected_algs: List of expected algorithm names.
+        size_results: Existing results for this size (an OrderedDict).
+        iterations: Desired iterations per algorithm.
+        skip_list: Dictionary mapping algorithm names to the size at which they were skipped.
+        threshold: Runtime threshold (in seconds) for skipping an algorithm.
+        num_workers: Number of worker processes to use.
 
     Returns:
-        tuple: (updated size_results, updated skip_list)
+        A tuple (updated size_results, updated skip_list).
     """
     missing_algs = {}
     found_msgs = []
+    # Determine missing iterations per algorithm.
     for alg in expected_algs:
         if alg in skip_list:
             continue
@@ -192,10 +200,11 @@ def update_missing_iterations_concurrent(
             if count < iterations:
                 missing_algs[alg] = iterations - count
                 found_msgs.append(f"{alg} ({count})")
-    # Print a consolidated message for debugging.
+    # Print a consolidated message if there are missing iterations.
     if missing_algs:
         if found_msgs:
-            max_items = min(len(found_msgs) // 2, 10)
+            # Limit display to at most half of the found messages, with a maximum of ten.
+            max_items = max(1, min(len(found_msgs) // 2, 10))
             if len(found_msgs) == len(expected_algs) - len(missing_algs):
                 display_msg = "all algorithms"
             elif len(found_msgs) > max_items:
@@ -210,7 +219,7 @@ def update_missing_iterations_concurrent(
             )
         else:
             print(f"Missing iterations for: {', '.join(missing_algs.keys())}")
-        # Run missing iterations concurrently.
+        # Execute missing iterations concurrently.
         with ProcessPoolExecutor(max_workers=num_workers) as executor:
             tasks = {}
             for alg, missing in missing_algs.items():
@@ -220,6 +229,7 @@ def update_missing_iterations_concurrent(
                 for i in range(missing):
                     future = executor.submit(run_iteration, algorithms()[alg], size)
                     tasks[future] = (alg, start_iter + i)
+            # Write each completed iteration to the CSV.
             with open(csv_path, "a", newline="") as csv_file:
                 writer = csv.writer(csv_file)
                 for future in as_completed(tasks):
@@ -230,18 +240,18 @@ def update_missing_iterations_concurrent(
                         csv_file.flush()
                         if size_results[alg] is None:
                             size_results[alg] = (None, None, None, None, 0, [])
-                        # Update the count and append the new time.
+                        # Update iteration count and append the new time.
                         size_results[alg] = (
-                            None,  # avg (to be recalculated)
-                            None,  # min (to be recalculated)
-                            None,  # max (to be recalculated)
-                            None,  # median (to be recalculated)
+                            None,  # Average (to be recalculated)
+                            None,  # Min (to be recalculated)
+                            None,  # Max (to be recalculated)
+                            None,  # Median (to be recalculated)
                             size_results[alg][4] + 1,
                             size_results[alg][5] + [t],
                         )
                     except Exception as e:
                         print(f"{alg} error on size {size} iteration {iter_index}: {e}")
-        # Recalculate statistics for each algorithm with new data.
+        # Recalculate statistics for algorithms that received new iterations.
         for alg in missing_algs.keys():
             times = size_results[alg][5]
             avg = compute_average(times)
@@ -263,12 +273,12 @@ def update_overall_results(
     Update the aggregated overall totals and per-algorithm results for a given array size.
 
     Parameters:
-        size (int): The current array size.
-        size_results (OrderedDict): Benchmark results for this size.
-        expected_algs (list): List of expected algorithm names.
-        overall_totals (dict): Aggregated totals (updated in place).
-        per_alg_results (dict): Per-algorithm results (updated in place).
-        iterations (int): Desired iterations per algorithm.
+        size: The current array size.
+        size_results: Benchmark results for this size.
+        expected_algs: List of expected algorithm names.
+        overall_totals: Aggregated totals (updated in place).
+        per_alg_results: Per-algorithm results (updated in place).
+        iterations: Desired iterations per algorithm.
     """
     for alg in expected_algs:
         data = size_results[alg]
@@ -288,23 +298,24 @@ def process_size(
     skip_list,
 ):
     """
-    Process a single array size:
-      - Retrieve or create CSV results.
-      - Re-evaluate the number of worker processes for the current size and print a message if it changes.
+    Process a single array size by performing the following steps:
+      - Retrieve or create CSV results for the size.
+      - Re-evaluate the number of worker processes for the current size, printing a message if it changes.
       - Update missing iterations concurrently across all algorithms.
-      - Sort the CSV file and update aggregated overall statistics.
+      - Sort the CSV file alphabetically.
+      - Update aggregated overall statistics.
 
     Parameters:
-        size (int): The current array size.
-        iterations (int): Desired iterations per algorithm.
-        threshold (int): Runtime threshold (in seconds).
-        expected_algs (list): List of expected algorithm names.
-        overall_totals (dict): Aggregated overall totals (updated in place).
-        per_alg_results (dict): Per-algorithm results (updated in place).
-        skip_list (dict): Dictionary mapping algorithms to the size at which they were skipped (updated in place).
+        size: The current array size.
+        iterations: Desired iterations per algorithm.
+        threshold: Runtime threshold (in seconds).
+        expected_algs: List of expected algorithm names.
+        overall_totals: Aggregated overall totals (updated in place).
+        per_alg_results: Per-algorithm results (updated in place).
+        skip_list: Dictionary mapping algorithm names to the size at which they were skipped (updated in place).
 
     Returns:
-        tuple: (updated size_results, updated skip_list)
+        A tuple (updated size_results, updated skip_list).
     """
     csv_path, size_results = get_csv_results_for_size(size, expected_algs)
     # Re-evaluate the worker count for this size.
@@ -345,10 +356,6 @@ def run_sorting_tests(iterations=250, threshold=300):
     """
     Execute sorting benchmarks across various array sizes and compile the results.
 
-    Parameters:
-        iterations (int): Number of iterations per algorithm per array size (default: 250).
-        threshold (int): Threshold in seconds for average runtime; algorithms exceeding this are skipped (default: 300).
-
     For each array size:
       1. Retrieve or create the CSV file and read its current contents.
       2. Re-evaluate the number of worker processes for the current size.
@@ -359,6 +366,10 @@ def run_sorting_tests(iterations=250, threshold=300):
       7. Rebuild the main README.md file with overall top-20 rankings and the list of skipped algorithms.
 
     Algorithms with an average runtime exceeding the threshold are skipped in future sizes.
+
+    Parameters:
+        iterations: Number of iterations per algorithm per array size (default: 250).
+        threshold: Runtime threshold (in seconds) for skipping algorithms (default: 300).
     """
     sizes = generate_sizes()
     expected_algs = list(algorithms().keys())

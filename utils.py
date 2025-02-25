@@ -17,50 +17,53 @@ def format_time(seconds, detailed=False):
     """
     Convert a duration in seconds to a human-readable string with abbreviated time units.
 
+    Depending on the value of 'detailed', very short durations are displayed with additional precision.
+
     Examples:
-      - If duration < 0.001 s and detailed is False, returns "less than a ms".
-      - If duration < 0.001 s and detailed is True, returns the time in microseconds (e.g., "123µs").
-      - "123ms" if duration < 1 s.
-      - "3s 120ms" for durations between 1 and 60 s.
-      - "2min 3s 120ms" for durations between 60 s and 1 hr.
-      - "1hr 2min 3s" for durations >= 1 hr.
+      - If seconds < 0.001 and detailed is False, returns "less than a ms".
+      - If seconds < 0.001 and detailed is True, returns the time in microseconds (e.g., "123us").
+      - For durations < 1 s, returns the time in milliseconds (e.g., "123ms").
+      - For durations between 1 and 60 s, returns seconds and milliseconds (e.g., "3s 120ms").
+      - For durations between 60 s and 1 hr, returns minutes, seconds, and milliseconds (e.g., "2min 3s 120ms").
+      - For durations >= 1 hr, returns hours, minutes, and seconds (e.g., "1hr 2min 3s").
 
     Parameters:
-        seconds (float): Duration in seconds.
-        detailed (bool): If True, show sub-millisecond details for durations below 1 s.
+      - seconds: The duration in seconds.
+      - detailed: If True, show sub-millisecond details (microseconds) for very short durations.
 
     Returns:
-        str: The formatted time string.
+      A formatted string representing the duration.
     """
-    # Very short durations: less than 1 millisecond.
+    # For durations shorter than 1 millisecond.
     if seconds < 1e-3:
         if detailed:
-            # Convert to microseconds.
+            # Calculate microseconds and return as e.g. "123us"
             us = int(round(seconds * 1e6))
             return f"{us}us"
         else:
             return "less than a ms"
-    # Durations between 1 millisecond and 1 second.
+    # For durations between 1 millisecond and 1 second.
     elif seconds < 1:
         total_us = int(round(seconds * 1e6))
         ms = total_us // 1000
         remainder_us = total_us % 1000
+        # If detailed mode is on and there is a remainder, include microseconds.
         if detailed and remainder_us:
             return f"{ms}ms {remainder_us}us"
         else:
             return f"{ms}ms"
-    # Durations between 1 second and 1 minute.
+    # For durations between 1 second and 1 minute.
     elif seconds < 60:
         sec = int(seconds)
         ms = int(round((seconds - sec) * 1000))
         return f"{sec}s {ms}ms"
-    # Durations between 1 minute and 1 hour.
+    # For durations between 1 minute and 1 hour.
     elif seconds < 3600:
         minutes = int(seconds // 60)
         sec = int(seconds % 60)
         ms = int(round((seconds - minutes * 60 - sec) * 1000))
         return f"{minutes}min {sec}s {ms}ms"
-    # Durations of 1 hour or more.
+    # For durations of 1 hour or more.
     else:
         hr = int(seconds // 3600)
         rem = seconds % 3600
@@ -71,28 +74,37 @@ def format_time(seconds, detailed=False):
 
 def group_rankings(ranking, margin=1e-3):
     """
-    Group a sorted list of (algorithm, average time) tuples whose consecutive times differ by less than a given margin.
+    Group a sorted list of (algorithm, average time) tuples whose consecutive times differ
+    by less than a given margin. This clusters algorithms with similar performance.
 
-    This function clusters algorithms with similar performance.
+    It is assumed that the input 'ranking' list is already sorted by average time.
 
     Parameters:
-        ranking (list of tuple): Sorted list in the form (algorithm, average_time).
-        margin (float): Maximum allowed difference between consecutive times for grouping.
+      - ranking: A sorted list of tuples in the form (algorithm, average_time).
+      - margin: The maximum allowed difference between consecutive times to be considered tied.
 
     Returns:
-        list of list: A list of groups, where each group is a list of (algorithm, average_time) tuples.
+      A list of groups, where each group is a list of (algorithm, average time) tuples.
     """
-    groups = []
     if not ranking:
-        return groups
-    current = [ranking[0]]
+        return []
+
+    groups = []
+    # Start with the first tuple in the current group.
+    current_group = [ranking[0]]
+
+    # Iterate over the remaining items.
     for item in ranking[1:]:
-        if item[1] - current[-1][1] < margin:
-            current.append(item)
+        # If the difference between the current item's average time and the last in the group is within the margin,
+        # add it to the current group.
+        if item[1] - current_group[-1][1] < margin:
+            current_group.append(item)
         else:
-            groups.append(current)
-            current = [item]
-    groups.append(current)
+            groups.append(current_group)
+            current_group = [item]
+
+    # Append the last group.
+    groups.append(current_group)
     return groups
 
 
@@ -100,16 +112,17 @@ def run_iteration(sort_func, size):
     """
     Execute one iteration of a sorting algorithm on a randomly generated integer array and measure its runtime.
 
-    Generates a random array of integers, sorts a copy using the provided sorting function,
-    and returns the elapsed time.
+    Generates a random array of integers of the specified size, sorts a copy of the array using the provided
+    sorting function, and returns the elapsed time.
 
     Parameters:
-        sort_func (function): The sorting function to execute.
-        size (int): The size of the array.
+      - sort_func: The sorting function to be executed.
+      - size: The size of the array.
 
     Returns:
-        float: The elapsed time in seconds.
+      The elapsed time in seconds.
     """
+    # Create an array of random integers.
     arr = [random.randint(-1000000, 1000000) for _ in range(size)]
     start = time.perf_counter()
     sort_func(arr.copy())
@@ -118,15 +131,17 @@ def run_iteration(sort_func, size):
 
 def compute_average(times):
     """
-    Calculate the average of a list of numbers.
+    Compute the average of a list of numbers.
 
     Parameters:
-        times (list of float): A list of execution times.
+      - times: A list of numerical values (e.g., execution times).
 
     Returns:
-        float or None: The average value, or None if the list is empty.
+      The average of the values, or None if the list is empty.
     """
-    return sum(times) / len(times) if times else None
+    if times:
+        return sum(times) / len(times)
+    return None
 
 
 def compute_median(times):
@@ -136,17 +151,19 @@ def compute_median(times):
     For an even number of elements, returns the average of the two middle values.
 
     Parameters:
-        times (list of float): A list of execution times.
+      - times: A list of numerical values (e.g., execution times).
 
     Returns:
-        float or None: The median value, or None if the list is empty.
+      The median value, or None if the list is empty.
     """
     n = len(times)
     if n == 0:
         return None
     sorted_times = sorted(times)
+    # If even, return the average of the two middle numbers.
     if n % 2 == 0:
         return (sorted_times[n // 2 - 1] + sorted_times[n // 2]) / 2
+    # If odd, return the middle element.
     return sorted_times[n // 2]
 
 
@@ -161,13 +178,15 @@ def ordinal(n):
       - 4 becomes "4th"
 
     Parameters:
-        n (int): The integer to convert.
+      - n: The integer to convert.
 
     Returns:
-        str: The ordinal string representation.
+      The ordinal string representation of the integer.
     """
+    # Numbers between 10 and 20 (inclusive) always use "th"
     if 10 <= n % 100 <= 20:
         suffix = "th"
     else:
+        # Otherwise, use the last digit to determine the suffix.
         suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
     return f"{n}{suffix}"

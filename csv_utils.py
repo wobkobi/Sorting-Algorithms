@@ -42,17 +42,32 @@ def read_csv_results(csv_path, expected_algs):
     """
     # Initialize an ordered dictionary with an empty list for each expected algorithm.
     algorithm_times = OrderedDict((alg, []) for alg in expected_algs)
+
+    # Open the CSV file.
     with open(csv_path, "r", newline="") as csvfile:
         reader = csv.reader(csvfile)
-        next(reader)  # Skip header row
+        try:
+            header = next(reader)  # Skip header row.
+        except StopIteration:
+            # CSV file is empty.
+            return algorithm_times
+
+        # Process each row.
         for row in reader:
+            # Skip empty rows or rows with insufficient columns.
+            if not row or len(row) < 4:
+                continue
             alg = row[0]
             try:
                 t = float(row[3])
             except Exception:
+                # Skip rows where the elapsed time cannot be converted.
                 continue
+            # Only record if the algorithm is expected.
             if alg in algorithm_times:
                 algorithm_times[alg].append(t)
+
+    # Compute statistics for each algorithm.
     results = OrderedDict()
     for alg in expected_algs:
         times = algorithm_times[alg]
@@ -92,8 +107,9 @@ def sort_csv_alphabetically(csv_path):
     """
     Sort the CSV file at csv_path alphabetically based on the first column (Algorithm).
 
-    Reads all rows (excluding the header), sorts them by the algorithm name,
-    and then rewrites the CSV file with the header preserved followed by the sorted rows.
+    This function reads all rows (excluding the header), filters out any rows that are empty or
+    do not have at least one element, sorts the remaining rows by the algorithm name, and then
+    rewrites the CSV file with the header preserved followed by the sorted rows.
 
     Parameters:
         csv_path (str): Path to the CSV file.
@@ -101,11 +117,17 @@ def sort_csv_alphabetically(csv_path):
     with open(csv_path, "r", newline="") as f:
         reader = csv.reader(f)
         rows = list(reader)
+
+    # If there are no rows, do nothing.
     if not rows:
         return
+
     header = rows[0]
-    data_rows = rows[1:]
+    # Filter out any rows that are empty or don't have at least one column.
+    data_rows = [row for row in rows[1:] if row and len(row) > 0]
+    # Sort rows based on the first column.
     data_rows.sort(key=lambda row: row[0])
+
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(header)

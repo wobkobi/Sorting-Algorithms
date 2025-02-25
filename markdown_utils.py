@@ -154,14 +154,18 @@ def rebuild_readme(overall_totals, details_path, skip_list):
     printed_count = 0  # Total number of algorithms printed in the ranking.
     # Iterate through each tie group.
     for group in groups:
-        # Check if printing this group will cause us to exceed 20 algorithms.
+        # Add the entire tie group even if it pushes printed_count over 20.
         if printed_count < 20:
-            # Always print the entire tie group even if it pushes the count over 20.
+            # Convert the current rank to ordinal format.
             rank_str = ordinal(current_rank)
-            algs = ", ".join(alg for alg, _ in group)
-            avg_time = group[0][1]  # They share nearly the same average time.
-            link = f"[{alg}](results/algorithms/{alg.replace(' ', '_')}.md)"
-            lines.append(f"| {rank_str} | {link} | {format_time(avg_time, True)} |\n")
+            # Build a comma-separated string of algorithm links for the group.
+            algs = ", ".join(
+                f"[{alg}](results/algorithms/{alg.replace(' ', '_')}.md)"
+                for alg, _ in group
+            )
+            # Use the average time from the first element (all in group are tied).
+            avg_time = group[0][1]
+            lines.append(f"| {rank_str} | {algs} | {format_time(avg_time, True)} |\n")
             printed_count += len(group)
             current_rank += len(group)
         else:
