@@ -52,6 +52,9 @@ def tim_sort(arr: list) -> list:
 
     A hybrid stable sort combining merge sort and insertion sort, highly optimized for real-world data and widely used in programming languages.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     if n < 2:
         return arr

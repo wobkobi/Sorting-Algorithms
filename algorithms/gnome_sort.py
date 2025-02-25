@@ -7,6 +7,9 @@ def gnome_sort(arr: list) -> list:
 
     Similar to insertion sort but uses a simpler mechanism of swapping elements back until order is restored.
     """
+    if not arr:
+        return arr
+
     index = 0
     n = len(arr)
     while index < n:

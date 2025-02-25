@@ -10,6 +10,9 @@ def bitonic_merge(arr: list, ascending: bool) -> list:
 
     Merges two bitonic sequences.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     if n <= 1:
         return arr

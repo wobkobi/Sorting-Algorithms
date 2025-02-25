@@ -7,6 +7,9 @@ def exchange_sort(arr: list) -> list:
 
     This is a stub implementation.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     for i in range(n - 1):
         for j in range(i + 1, n):

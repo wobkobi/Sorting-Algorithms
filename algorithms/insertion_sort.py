@@ -7,6 +7,9 @@ def insertion_sort(arr: list) -> list:
 
     Builds the sorted array one element at a time by inserting each new element into its proper place.
     """
+    if not arr:
+        return arr
+
     for i in range(1, len(arr)):
         key = arr[i]
         j = i - 1

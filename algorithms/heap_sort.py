@@ -7,6 +7,9 @@ def heap_sort(arr: list) -> list:
 
     Converts the list into a heap data structure, then repeatedly extracts the maximum (or minimum) element.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     # Build a max heap.
     for i in range(n // 2 - 1, -1, -1):

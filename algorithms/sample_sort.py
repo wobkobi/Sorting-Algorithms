@@ -13,6 +13,7 @@ def sample_sort(arr: list) -> list:
     """
     if not arr:
         return arr
+
     n = len(arr)
     # Choose number of partitions (e.g. √n)
     k = int(math.sqrt(n)) or 1

@@ -7,6 +7,9 @@ def cubesort(arr: list) -> list:
 
     Sorts a list of elements by first arranging them in a 3D cube, then flattening the cube and sorting the flattened list.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     if n <= 1:
         return arr

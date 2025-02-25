@@ -7,6 +7,9 @@ def odd_even_sort(arr: list) -> list:
 
     Alternates between comparing odd-indexed and even-indexed pairs. Simple but not efficient on large arrays.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     sorted_flag = False
     while not sorted_flag:

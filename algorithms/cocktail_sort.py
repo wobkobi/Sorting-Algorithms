@@ -7,6 +7,9 @@ def cocktail_sort(arr: list) -> list:
 
     A bidirectional variation of bubble sort that traverses the list in both directions on each pass.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     start = 0
     end = n - 1

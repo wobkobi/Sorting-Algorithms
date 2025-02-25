@@ -7,6 +7,9 @@ def merge_sort(arr: list) -> list:
 
     Recursively splits the array into halves, sorts them, and then merges the sorted halves.
     """
+    if not arr:
+        return arr
+
     if len(arr) <= 1:
         return arr
     mid = len(arr) // 2

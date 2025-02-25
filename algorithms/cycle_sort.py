@@ -7,6 +7,9 @@ def cycle_sort(arr: list) -> list:
 
     Minimizes the number of writes by determining cycles in the permutation and rotating elements accordingly.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     for cycle_start in range(0, n - 1):
         item = arr[cycle_start]

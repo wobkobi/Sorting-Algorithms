@@ -7,6 +7,9 @@ def patience_sort(arr: list) -> list:
 
     Inspired by the card game 'patience', it builds piles (or strands) and then merges them to form the sorted array.
     """
+    if not arr:
+        return arr
+
     piles = []
     for x in arr:
         placed = False

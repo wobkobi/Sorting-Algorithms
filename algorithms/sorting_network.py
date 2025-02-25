@@ -10,6 +10,9 @@ def sorting_network(arr: list) -> list:
     """
     import math
 
+    if not arr:
+        return arr
+
     n = len(arr)
     power = 2 ** int(math.ceil(math.log2(n)))
     padded = arr[:] + [float("inf")] * (power - n)

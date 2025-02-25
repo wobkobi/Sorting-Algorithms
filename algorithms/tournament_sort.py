@@ -12,6 +12,7 @@ def tournament_sort(arr: list) -> list:
     """
     if not arr:
         return arr
+
     n = len(arr)
     size = 2 ** math.ceil(math.log2(n))
     tree = [None] * (2 * size)

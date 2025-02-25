@@ -37,5 +37,8 @@ def merge_sort_inplace(arr: list) -> list:
             merge_sort_recursive(arr, mid, end)
             merge_inplace(arr, start, mid, end)
 
+    if not arr:
+        return arr
+
     merge_sort_recursive(arr, 0, len(arr))
     return arr

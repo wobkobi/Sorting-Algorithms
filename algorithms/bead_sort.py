@@ -1,34 +1,37 @@
 def bead_sort(arr: list) -> list:
     """
-    Bead Sort implementation.
+    Optimized Bead Sort implementation that reduces memory usage by avoiding
+    the construction of a full 2D grid. This version supports all integers
+    (including negative numbers) by shifting the input so that all numbers are non-negative,
+    sorting the shifted values, and then undoing the shift.
 
-    Time Complexity: Expected O(n) average-case, Worst-case O(n^2)
-    Space Complexity: O(n)
-
-    Simulates gravity on beads arranged on rods. Best for sorting lists of natural numbers.
+    Time Complexity: O(n * (max(arr) - min(arr)))
+    Space Complexity: O(n + (max(arr) - min(arr)))
     """
     if not arr:
         return arr
 
-    # Shift numbers if there are negatives.
+    # Determine the shift to apply if there are negative numbers.
     min_val = min(arr)
-    shifted = False
-    if min_val < 0:
-        offset = -min_val
-        arr = [x + offset for x in arr]
-        shifted = True
+    shift = -min_val if min_val < 0 else 0
+    shifted_arr = [x + shift for x in arr]
 
-    max_beads = max(arr)
-    n = len(arr)
-    # Create a 2D grid of beads.
-    beads = [[1 if j < arr[i] else 0 for j in range(max_beads)] for i in range(n)]
-    # Let beads "fall"
-    for j in range(max_beads):
-        sum_beads = sum(beads[i][j] for i in range(n))
-        for i in range(n):
-            beads[i][j] = 1 if i >= n - sum_beads else 0
-    sorted_arr = [sum(row) for row in beads]
+    max_val = max(shifted_arr)
+    # Create a beads list to count beads in each "column"
+    beads = [0] * max_val
 
-    if shifted:
-        sorted_arr = [x - offset for x in sorted_arr]
-    return sorted_arr
+    # Simulate dropping beads for each number in the shifted array.
+    for number in shifted_arr:
+        for j in range(number):
+            beads[j] += 1
+
+    # Reconstruct the sorted (in descending order) shifted array.
+    n = len(shifted_arr)
+    sorted_desc = []
+    for i in range(n):
+        row_count = sum(1 for count in beads if count > i)
+        sorted_desc.append(row_count)
+
+    # Reverse to obtain ascending order and then undo the shift.
+    sorted_shifted = sorted_desc[::-1]
+    return [x - shift for x in sorted_shifted]

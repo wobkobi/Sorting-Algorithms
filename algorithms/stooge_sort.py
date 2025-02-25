@@ -11,6 +11,9 @@ def stooge_sort_recursive(arr: list, i: int, j: int) -> list:
 
     A recursive sorting algorithm primarily of academic interest due to its very poor performance.
     """
+    if not arr:
+        return arr
+
     if arr[j] < arr[i]:
         arr[i], arr[j] = arr[j], arr[i]
     if j - i + 1 > 2:

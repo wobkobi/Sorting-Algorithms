@@ -7,6 +7,9 @@ def lsd_radix_sort(arr: list) -> list:
 
     This implementation sorts the array using the least-significant-digit radix sort algorithm.
     """
+    if not arr:
+        return arr
+
     negatives = [x for x in arr if x < 0]
     non_negatives = [x for x in arr if x >= 0]
 

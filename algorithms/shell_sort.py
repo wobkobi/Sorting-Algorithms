@@ -7,6 +7,9 @@ def shell_sort(arr: list) -> list:
 
     An optimization over insertion sort that allows elements to move farther in each pass by using gaps.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     gap = n // 2
     while gap > 0:

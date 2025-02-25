@@ -7,6 +7,9 @@ def msd_radix_sort_inplace(arr: list, digit=None) -> list:
 
     Recursively sorts the array by the most significant digit, then works in-place.
     """
+    if not arr:
+        return arr
+
     if len(arr) <= 1:
         return arr
     if digit is None:

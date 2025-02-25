@@ -7,6 +7,9 @@ def hyper_quick(arr: list) -> list:
 
     A variant of quick sort with advanced pivot selection and partitioning optimizations.
     """
+    if not arr:
+        return arr
+
     if len(arr) <= 1:
         return arr
     first, mid, last = arr[0], arr[len(arr) // 2], arr[-1]

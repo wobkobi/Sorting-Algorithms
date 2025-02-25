@@ -7,6 +7,9 @@ def spaghetti_sort(arr: list) -> list:
 
     A non-comparative sort that mimics aligning strands of spaghetti to determine order. Mostly used as a conceptual or humorous algorithm.
     """
+    if not arr:
+        return arr
+
     result = []
     # Remove the maximum repeatedly.
     while arr:

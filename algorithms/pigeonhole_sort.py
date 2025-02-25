@@ -9,6 +9,7 @@ def pigeonhole_sort(arr: list) -> list:
     """
     if not arr:
         return arr
+
     min_val = min(arr)
     max_val = max(arr)
     size = max_val - min_val + 1

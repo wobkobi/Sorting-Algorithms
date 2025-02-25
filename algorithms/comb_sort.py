@@ -7,6 +7,9 @@ def comb_sort(arr: list) -> list:
 
     Improves on bubble sort by using a gap sequence to eliminate small values at the end of the list.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     gap = n
     shrink = 1.3

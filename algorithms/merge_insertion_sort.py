@@ -7,6 +7,9 @@ def merge_insertion_sort(arr: list) -> list:
 
     Uses insertion sort for small subarrays and merge sort for larger ones.
     """
+    if not arr:
+        return arr
+
     if len(arr) <= 16:
         for i in range(1, len(arr)):
             key = arr[i]

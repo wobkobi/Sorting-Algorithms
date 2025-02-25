@@ -11,6 +11,9 @@ def block_sort(arr: list) -> list:
 
     Divides the array into blocks, sorts each block, and then merges them. Suitable for large datasets.
     """
+    if not arr:
+        return arr
+
     n = len(arr)
     if n <= 1:
         return arr

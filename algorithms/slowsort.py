@@ -7,6 +7,9 @@ def slowsort(arr: list, i=0, j=None) -> list:
 
     A deliberately inefficient recursive sorting algorithm.
     """
+    if not arr:
+        return arr
+
     if j is None:
         j = len(arr) - 1
     if i >= j:
