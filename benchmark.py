@@ -1,11 +1,10 @@
 """
-benchmark.py
-
 This module executes sorting algorithm benchmarks across various array sizes.
+
 It generates CSV files with performance results for each array size, runs multiple iterations
 of each sorting algorithm concurrently, and aggregates the results. Detailed markdown reports
-are then produced, including per-size ranking tables and individual algorithm reports, and the
-main README file is rebuilt to reflect overall performance and any skipped algorithms.
+are produced, including per-size ranking tables and individual algorithm reports, and the main
+README file is rebuilt to reflect overall performance and any skipped algorithms.
 """
 
 import gc
@@ -26,8 +25,8 @@ def generate_sizes():
     Generate a sorted list of unique array sizes for benchmarking.
 
     This function creates two progressions:
-      - A geometric progression for small array sizes.
-      - An exponential (doubling) progression for large array sizes (up to 1 trillion).
+    - A geometric progression for small array sizes.
+    - An exponential (doubling) progression for large array sizes (up to 1 trillion).
 
     Returns:
         list: Sorted list of unique array sizes.
@@ -45,8 +44,6 @@ def generate_sizes():
         size *= 2
     large_sizes.append(int(1e12))
     sizes = sorted(set(small_sizes + large_sizes))
-    # Clear temporary lists to free memory.
-    del small_sizes, large_sizes
     return sizes
 
 
@@ -55,8 +52,8 @@ def get_num_workers():
     Determine the number of worker processes based on the current time of day and environment.
 
     The number of workers is chosen as follows:
-      - Between 11:30 PM and 9:30 AM: 75% of available CPU cores.
-      - Otherwise: 50% of available CPU cores.
+    - Between 11:30 PM and 9:30 AM: 75% of available CPU cores.
+    - Otherwise: 50% of available CPU cores.
     If the SLOW_MODE environment variable is set to "true", the worker count is halved.
 
     Returns:
@@ -317,12 +314,12 @@ def process_size(
     Process benchmark tests for a specific array size.
 
     This function performs the following steps:
-      1. Retrieves or creates the CSV file for the given size.
-      2. Determines the current number of worker processes.
-      3. Runs missing iterations concurrently for each algorithm.
-      4. Sorts the CSV file alphabetically.
-      5. Re-reads the updated CSV to recalculate overall statistics.
-      6. Updates aggregated totals and per-algorithm records.
+    1. Retrieves or creates the CSV file for the given size.
+    2. Determines the current number of worker processes.
+    3. Runs missing iterations concurrently for each algorithm.
+    4. Sorts the CSV file alphabetically.
+    5. Re-reads the updated CSV to recalculate overall statistics.
+    6. Updates aggregated totals and per-algorithm records.
 
     Parameters:
         size (int): The array size to test.
@@ -375,7 +372,6 @@ def process_size(
         per_alg_results,
         iterations,
     )
-    del csv_path, updated_results
     return size_results, skip_list
 
 
@@ -384,14 +380,14 @@ def run_sorting_tests(iterations=250, threshold=300):
     Run sorting algorithm benchmarks across various array sizes and generate reports.
 
     This function orchestrates the complete benchmarking process:
-      1. Generates a list of array sizes to test.
-      2. Initializes overall totals and per-algorithm performance records.
-      3. For each array size:
-           a. Processes the benchmark tests.
-           b. Writes per-size markdown details.
-           c. Rebuilds the main README with updated rankings.
-      4. Generates individual markdown reports for each algorithm.
-      5. Prints a completion message.
+    1. Generates a list of array sizes to test.
+    2. Initializes overall totals and per-algorithm performance records.
+    3. For each array size:
+       a. Processes the benchmark tests.
+       b. Writes per-size markdown details.
+       c. Rebuilds the main README with updated rankings.
+    4. Generates individual markdown reports for each algorithm.
+    5. Prints a completion message.
 
     Parameters:
         iterations (int, optional): Number of iterations per algorithm per array size. Default is 250.
@@ -399,18 +395,24 @@ def run_sorting_tests(iterations=250, threshold=300):
     """
     sizes = generate_sizes()
     expected_algs = list(algorithms().keys())
+
     overall_totals = {alg: {"sum": 0, "count": 0} for alg in expected_algs}
     per_alg_results = {alg: [] for alg in expected_algs}
     skip_list = {}
+
     output_folder = "results"
     os.makedirs(output_folder, exist_ok=True)
+
     details_path = "details.md"
     with open(details_path, "w") as f:
         f.write("")
+
+    # Determine and print the initial worker count before processing any sizes.
     initial_workers = get_num_workers()
     print(f"Using {initial_workers} worker{'s' if initial_workers > 1 else ''}.")
     process_size.workers = initial_workers
-    # Process each array size sequentially.
+
+    # Process each array size.
     for size in sizes:
         print(f"\nTesting array size: {size}")
         size_results, skip_list = process_size(
@@ -422,23 +424,24 @@ def run_sorting_tests(iterations=250, threshold=300):
             per_alg_results,
             skip_list,
         )
-        del size_results
-        # Write markdown details for the current size and rebuild the main README.
-        _, current_results = get_csv_results_for_size(size, expected_algs)
+
+        # Determine newly skipped algorithms for this size.
         previous_skip = set(skip_list.keys())
-        for alg, data in current_results.items():
+        for alg, data in size_results.items():
             if data is not None and data[0] > threshold and alg not in skip_list:
                 skip_list[alg] = size
         new_skipped = {
             alg: skip_list[alg] for alg in skip_list if alg not in previous_skip
         }
+
+        # Append per-size markdown ranking table with notes for any newly skipped algorithms.
         with open(details_path, "a") as f:
-            write_markdown(f, size, current_results, removed=list(new_skipped.keys()))
+            write_markdown(f, size, size_results, removed=list(new_skipped.keys()))
+
+        # Rebuild the main README with updated overall totals and skip list.
         rebuild_readme(overall_totals, details_path, skip_list)
-        del current_results, previous_skip, new_skipped
-        gc.collect()  # Trigger garbage collection after processing each size.
-    del sizes, expected_algs
-    # Generate individual markdown reports for each algorithm.
+
+    # Generate individual markdown files for each algorithm.
     write_algorithm_markdown(per_alg_results)
     print(
         "\nBenchmark complete: CSV files saved, README.md updated, and per-algorithm files created in 'results/algorithms'."

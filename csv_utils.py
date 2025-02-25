@@ -1,11 +1,10 @@
 """
-csv_utils.py
-
 This module provides utility functions for handling CSV files in the benchmark system.
+
 It includes functions to:
-  - Read CSV results and compute statistics.
-  - Ensure that a CSV file ends with a newline.
-  - Sort the CSV rows alphabetically by the algorithm name.
+- Read CSV results and compute statistics.
+- Ensure that a CSV file ends with a newline.
+- Sort the CSV rows alphabetically by the algorithm name.
 """
 
 import csv
@@ -17,6 +16,14 @@ from utils import compute_median, compute_average
 def read_csv_results(csv_path, expected_algs):
     """
     Read benchmark results from a CSV file for a given array size and collect timing data.
+
+    Parameters:
+        csv_path (str): Path to the CSV file.
+        expected_algs (list): List of expected algorithm names.
+
+    Returns:
+        OrderedDict: Mapping from algorithm name to a tuple (avg, min, max, median, count, times)
+                     or None if no data exists for that algorithm.
     """
     algorithm_times = OrderedDict((alg, []) for alg in expected_algs)
     with open(csv_path, "r", newline="") as csvfile:
@@ -51,6 +58,9 @@ def read_csv_results(csv_path, expected_algs):
 def ensure_csv_ends_with_newline(csv_path):
     """
     Ensure that the CSV file at csv_path ends with a newline character.
+
+    Parameters:
+        csv_path (str): Path to the CSV file.
     """
     if not os.path.exists(csv_path):
         return
@@ -68,6 +78,9 @@ def ensure_csv_ends_with_newline(csv_path):
 def sort_csv_alphabetically(csv_path):
     """
     Sort the CSV file at csv_path alphabetically based on the first column (Algorithm).
+
+    Parameters:
+        csv_path (str): Path to the CSV file.
     """
     with open(csv_path, "r", newline="") as f:
         reader = csv.reader(f)
@@ -88,6 +101,16 @@ def sort_csv_alphabetically(csv_path):
 def get_csv_results_for_size(size, expected_algs, output_folder="results"):
     """
     Retrieve CSV results for a given array size.
+
+    If the CSV file exists, it reads its contents; otherwise, it creates a new CSV file with the proper header.
+
+    Parameters:
+        size (int): The current array size.
+        expected_algs (list): List of expected algorithm names.
+        output_folder (str): Directory where CSV files are stored.
+
+    Returns:
+        tuple: (csv_path, size_results)
     """
     csv_filename = f"results_{size}.csv"
     csv_path = os.path.join(output_folder, csv_filename)
