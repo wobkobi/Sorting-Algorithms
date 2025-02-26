@@ -1,32 +1,3 @@
-# Sorting Algorithms Benchmark Results
-
-## Overall Top 20 Algorithms (by average time across sizes)
-
-| Rank | Algorithms | Overall Average Time |
-| ---- | ---------- | -------------------- |
-| 1st | [Cubesort](results/algorithms/Cubesort.md) | 40us |
-| 2nd | [Replacement Selection Sort](results/algorithms/Replacement_Selection_Sort.md) | 43us |
-| 3rd | [Spreadsort](results/algorithms/Spreadsort.md), [Bucket Sort](results/algorithms/Bucket_Sort.md) | 56us |
-| 5th | [Burst Sort](results/algorithms/Burst_Sort.md) | 61us |
-| 6th | [Flash Sort](results/algorithms/Flash_Sort.md), [Polyphase Merge Sort](results/algorithms/Polyphase_Merge_Sort.md) | 64us |
-| 8th | [Shell Sort](results/algorithms/Shell_Sort.md) | 72us |
-| 9th | [Intro Sort](results/algorithms/Intro_Sort.md) | 81us |
-| 10th | [Merge Insertion Sort](results/algorithms/Merge_Insertion_Sort.md) | 85us |
-| 11th | [Tim Sort](results/algorithms/Tim_Sort.md), [Patience Sort](results/algorithms/Patience_Sort.md) | 90us |
-| 13th | [Tree Sort](results/algorithms/Tree_Sort.md) | 95us |
-| 14th | [Franceschini's Method](results/algorithms/Franceschini's_Method.md) | 99us |
-| 15th | [Merge Sort In-Place](results/algorithms/Merge_Sort_In-Place.md) | 108us |
-| 16th | [Comb Sort](results/algorithms/Comb_Sort.md) | 120us |
-| 17th | [Quick Sort](results/algorithms/Quick_Sort.md) | 122us |
-| 18th | [MSD Radix Sort](results/algorithms/MSD_Radix_Sort.md), [Hyper Quick](results/algorithms/Hyper_Quick.md) | 127us |
-| 20th | [Spaghetti Sort](results/algorithms/Spaghetti_Sort.md) | 129us |
-
-## Skipped Algorithms
-
-| Algorithm | Skipped At Size |
-| --------- | --------------- |
-| Bogo Sort | 12 |
-
 ## Array Size: 5
 
 | Rank | Algorithm(s) | Average Time | Median Time |
