@@ -31,9 +31,9 @@
 | Bogo Sort | 12 |
 | Slowsort | 333 |
 
-# Detailed Benchmark Results
+## Detailed Benchmark Results
 
-## Array Size: 5
+### Array Size: 5
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -43,7 +43,7 @@
 | 50th | Pigeonhole Sort | 1s 99ms | 1s 133ms |
 | 51st | Sleep Sort | 1s 327ms | 1s 347ms |
 
-## Array Size: 7
+### Array Size: 7
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -54,7 +54,7 @@
 | 50th | Pigeonhole Sort | 1s 248ms | 1s 275ms |
 | 51st | Sleep Sort | 1s 493ms | 1s 535ms |
 
-## Array Size: 9
+### Array Size: 9
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -65,7 +65,7 @@
 | 50th | Bogo Sort | 1s 333ms | 899ms |
 | 51st | Sleep Sort | 1s 616ms | 1s 656ms |
 
-## Array Size: 12
+### Array Size: 12
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -78,7 +78,7 @@
 
 **Note:** The following algorithm were removed for this array size due to performance issues: Bogo Sort.
 
-## Array Size: 17
+### Array Size: 17
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -88,7 +88,7 @@
 | 49th | Sleep Sort | 1s 790ms | 1s 808ms |
 | 50th | Bead Sort | 2s 514ms | 2s 528ms |
 
-## Array Size: 22
+### Array Size: 22
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -98,7 +98,7 @@
 | 49th | Sleep Sort | 1s 829ms | 1s 849ms |
 | 50th | Bead Sort | 3s 357ms | 3s 369ms |
 
-## Array Size: 30
+### Array Size: 30
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -109,7 +109,7 @@
 | 49th | Sleep Sort | 1s 878ms | 1s 898ms |
 | 50th | Bead Sort | 4s 788ms | 4s 693ms |
 
-## Array Size: 41
+### Array Size: 41
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -121,7 +121,7 @@
 | 49th | Sleep Sort | 1s 913ms | 1s 926ms |
 | 50th | Bead Sort | 6s 365ms | 6s 393ms |
 
-## Array Size: 55
+### Array Size: 55
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -133,7 +133,7 @@
 | 49th | Sleep Sort | 1s 934ms | 1s 942ms |
 | 50th | Bead Sort | 8s 549ms | 8s 609ms |
 
-## Array Size: 74
+### Array Size: 74
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -145,7 +145,7 @@
 | 49th | Sleep Sort | 1s 957ms | 1s 965ms |
 | 50th | Bead Sort | 11s 689ms | 11s 702ms |
 
-## Array Size: 100
+### Array Size: 100
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -157,7 +157,7 @@
 | 49th | Sleep Sort | 1s 975ms | 1s 978ms |
 | 50th | Bead Sort | 15s 598ms | 15s 745ms |
 
-## Array Size: 136
+### Array Size: 136
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -169,7 +169,7 @@
 | 49th | Slowsort | 3s 943ms | 3s 676ms |
 | 50th | Bead Sort | 21s 230ms | 21s 382ms |
 
-## Array Size: 183
+### Array Size: 183
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -181,7 +181,7 @@
 | 49th | Slowsort | 21s 404ms | 21s 458ms |
 | 50th | Bead Sort | 28s 765ms | 29s 21ms |
 
-## Array Size: 200
+### Array Size: 200
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -193,7 +193,7 @@
 | 49th | Bead Sort | 31s 767ms | 31s 778ms |
 | 50th | Slowsort | 40s 169ms | 39s 934ms |
 
-## Array Size: 247
+### Array Size: 247
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -205,7 +205,7 @@
 | 49th | Bead Sort | 38s 915ms | 39s 251ms |
 | 50th | Slowsort | 2min 49s 529ms | 2min 45s 846ms |
 
-## Array Size: 333
+### Array Size: 333
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -222,7 +222,7 @@
 
 **Note:** The following algorithm were removed for this array size due to performance issues: Slowsort.
 
-## Array Size: 400
+### Array Size: 400
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
