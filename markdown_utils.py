@@ -26,8 +26,12 @@ def write_markdown(md_file, size, size_results, removed=None):
         size_results (dict): Mapping {algorithm: (avg, min, max, median, count, times)}.
         removed (list, optional): List of algorithm names removed at this size.
     """
+
+    # Write the overall header only if the file is empty.
+    if md_file.tell() == 0:
+        md_file.write("# Detailed Benchmark Results\n\n")
+
     # Write the header for the current array size.
-    md_file.write(f"# Detailed Benchmark Results\n\n")
     md_file.write(f"## Array Size: {size}\n\n")
     ranking = [
         (alg, data[0], data[3])
