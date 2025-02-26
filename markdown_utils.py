@@ -27,6 +27,7 @@ def write_markdown(md_file, size, size_results, removed=None):
         removed (list, optional): List of algorithm names removed at this size.
     """
     # Write the header for the current array size.
+    md_file.write(f"# Detailed Benchmark Results\n\n")
     md_file.write(f"## Array Size: {size}\n\n")
     ranking = [
         (alg, data[0], data[3])
