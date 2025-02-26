@@ -7,7 +7,6 @@ are produced, including per-size ranking tables and individual algorithm reports
 README file is rebuilt to reflect overall performance and any skipped algorithms.
 """
 
-import gc
 import csv
 import os
 import datetime
