@@ -60,6 +60,10 @@ def main():
     3. Calls run_sorting_tests() with the chosen parameters.
     """
     # Check for the "slow" command-line argument.
+
+    ITERATIONS_DEFAULT = 500
+    THRESHOLD_DEFAULT = 300
+
     if len(sys.argv) > 1 and sys.argv[1].lower() == "slow":
         os.environ["SLOW_MODE"] = "true"
         print("Slow mode enabled: Using half the workers.")
@@ -68,10 +72,12 @@ def main():
 
     # Prompt the user for benchmark parameters.
     iterations = get_user_input(
-        "Enter number of iterations (default 250, or 'q' to quit): ", 250
+        f"Enter number of iterations (default {ITERATIONS_DEFAULT}, or 'q' to quit): ",
+        ITERATIONS_DEFAULT,
     )
     threshold = get_user_input(
-        "Enter threshold in seconds (default 300, or 'q' to quit): ", 300
+        f"Enter threshold in seconds (default {THRESHOLD_DEFAULT}, or 'q' to quit): ",
+        THRESHOLD_DEFAULT,
     )
 
     # Run the sorting benchmark using the specified parameters.

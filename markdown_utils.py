@@ -26,6 +26,8 @@ def write_markdown(md_file, size, size_results, removed=None):
         size_results (dict): Mapping {algorithm: (avg, min, max, median, count, times)}.
         removed (list, optional): List of algorithm names removed at this size.
     """
+    if md_file.tell() == 0 and os.path.basename(md_file.name) == "details.md":
+        md_file.write("# Detailed Benchmark Results\n\n")
     # Write the header for the current array size.
     md_file.write(f"## Array Size: {size}\n\n")
     ranking = [
@@ -35,7 +37,6 @@ def write_markdown(md_file, size, size_results, removed=None):
     ]
 
     if ranking:
-        # If every algorithm ran extremely fast, note that differences are negligible.
         if all(t < 1e-3 for _, t, _ in ranking):
             md_file.write(
                 "All algorithms ran in less than 1ms on this array size; differences are negligible.\n\n"
@@ -170,8 +171,16 @@ def rebuild_readme(overall_totals, details_path, skip_list):
     else:
         lines.append("No algorithms were skipped.\n\n")
         print("No algorithms were skipped.")
+
+    # Read the detailed markdown content.
     with open(details_path, "r") as f:
         details_content = f.read()
+    # Change the header in details_content from H1 to H2 for inclusion in README.md.
+    details_content = details_content.replace(
+        "# Detailed Benchmark Results", "## Detailed Benchmark Results", 1
+    )
+    details_content = details_content.replace("## Array Size:", "### Array Size:")
+
     with open("README.md", "w") as md_file:
         md_file.writelines(lines)
         md_file.write(details_content)

@@ -1,38 +1,6 @@
-# Sorting Algorithms Benchmark Results
+# Detailed Benchmark Results
 
-## Overall Top 20 Algorithms (by average time across sizes)
-
-| Rank | Algorithms | Overall Average Time |
-| ---- | ---------- | -------------------- |
-| 1st | [Cubesort](results/algorithms/Cubesort.md), [Replacement Selection Sort](results/algorithms/Replacement_Selection_Sort.md) | 74us |
-| 3rd | [Spreadsort](results/algorithms/Spreadsort.md) | 101us |
-| 4th | [Bucket Sort](results/algorithms/Bucket_Sort.md) | 112us |
-| 5th | [Burst Sort](results/algorithms/Burst_Sort.md) | 119us |
-| 6th | [Flash Sort](results/algorithms/Flash_Sort.md) | 126us |
-| 7th | [Polyphase Merge Sort](results/algorithms/Polyphase_Merge_Sort.md) | 131us |
-| 8th | [Intro Sort](results/algorithms/Intro_Sort.md) | 193us |
-| 9th | [Tree Sort](results/algorithms/Tree_Sort.md) | 204us |
-| 10th | [Merge Insertion Sort](results/algorithms/Merge_Insertion_Sort.md) | 208us |
-| 11th | [Patience Sort](results/algorithms/Patience_Sort.md) | 219us |
-| 12th | [Shell Sort](results/algorithms/Shell_Sort.md), [Tim Sort](results/algorithms/Tim_Sort.md) | 228us |
-| 14th | [Franceschini's Method](results/algorithms/Franceschini's_Method.md) | 246us |
-| 15th | [MSD Radix Sort](results/algorithms/MSD_Radix_Sort.md) | 263us |
-| 16th | [Hyper Quick](results/algorithms/Hyper_Quick.md) | 265us |
-| 17th | [MSD Radix Sort In-Place](results/algorithms/MSD_Radix_Sort_In-Place.md) | 285us |
-| 18th | [Quick Sort](results/algorithms/Quick_Sort.md) | 293us |
-| 19th | [Comb Sort](results/algorithms/Comb_Sort.md) | 327us |
-| 20th | [LSD Radix Sort](results/algorithms/LSD_Radix_Sort.md) | 336us |
-
-## Skipped Algorithms
-
-| Algorithm | Skipped At Size |
-| --------- | --------------- |
-| Bogo Sort | 12 |
-| Slowsort | 333 |
-
-## Detailed Benchmark Results
-
-### Array Size: 5
+## Array Size: 5
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -42,7 +10,7 @@
 | 50th | Pigeonhole Sort | 1s 99ms | 1s 133ms |
 | 51st | Sleep Sort | 1s 327ms | 1s 347ms |
 
-### Array Size: 7
+## Array Size: 7
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -53,7 +21,7 @@
 | 50th | Pigeonhole Sort | 1s 248ms | 1s 275ms |
 | 51st | Sleep Sort | 1s 493ms | 1s 535ms |
 
-### Array Size: 9
+## Array Size: 9
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -64,7 +32,7 @@
 | 50th | Bogo Sort | 1s 333ms | 899ms |
 | 51st | Sleep Sort | 1s 616ms | 1s 656ms |
 
-### Array Size: 12
+## Array Size: 12
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -77,7 +45,7 @@
 
 **Note:** The following algorithm were removed for this array size due to performance issues: Bogo Sort.
 
-### Array Size: 17
+## Array Size: 17
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -87,7 +55,7 @@
 | 49th | Sleep Sort | 1s 790ms | 1s 808ms |
 | 50th | Bead Sort | 2s 514ms | 2s 528ms |
 
-### Array Size: 22
+## Array Size: 22
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -97,7 +65,7 @@
 | 49th | Sleep Sort | 1s 829ms | 1s 849ms |
 | 50th | Bead Sort | 3s 357ms | 3s 369ms |
 
-### Array Size: 30
+## Array Size: 30
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -108,7 +76,7 @@
 | 49th | Sleep Sort | 1s 878ms | 1s 898ms |
 | 50th | Bead Sort | 4s 788ms | 4s 693ms |
 
-### Array Size: 41
+## Array Size: 41
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -120,7 +88,7 @@
 | 49th | Sleep Sort | 1s 913ms | 1s 926ms |
 | 50th | Bead Sort | 6s 365ms | 6s 393ms |
 
-### Array Size: 55
+## Array Size: 55
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -132,7 +100,7 @@
 | 49th | Sleep Sort | 1s 934ms | 1s 942ms |
 | 50th | Bead Sort | 8s 549ms | 8s 609ms |
 
-### Array Size: 74
+## Array Size: 74
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -144,7 +112,7 @@
 | 49th | Sleep Sort | 1s 957ms | 1s 965ms |
 | 50th | Bead Sort | 11s 689ms | 11s 702ms |
 
-### Array Size: 100
+## Array Size: 100
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -156,7 +124,7 @@
 | 49th | Sleep Sort | 1s 975ms | 1s 978ms |
 | 50th | Bead Sort | 15s 598ms | 15s 745ms |
 
-### Array Size: 136
+## Array Size: 136
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -168,7 +136,7 @@
 | 49th | Slowsort | 3s 943ms | 3s 676ms |
 | 50th | Bead Sort | 21s 230ms | 21s 382ms |
 
-### Array Size: 183
+## Array Size: 183
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -180,7 +148,7 @@
 | 49th | Slowsort | 21s 404ms | 21s 458ms |
 | 50th | Bead Sort | 28s 765ms | 29s 21ms |
 
-### Array Size: 200
+## Array Size: 200
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -192,7 +160,7 @@
 | 49th | Bead Sort | 31s 767ms | 31s 778ms |
 | 50th | Slowsort | 40s 169ms | 39s 934ms |
 
-### Array Size: 247
+## Array Size: 247
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -204,7 +172,7 @@
 | 49th | Bead Sort | 38s 915ms | 39s 251ms |
 | 50th | Slowsort | 2min 49s 529ms | 2min 45s 846ms |
 
-### Array Size: 333
+## Array Size: 333
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -221,7 +189,7 @@
 
 **Note:** The following algorithm were removed for this array size due to performance issues: Slowsort.
 
-### Array Size: 400
+## Array Size: 400
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |
@@ -239,7 +207,7 @@
 | 48th | Pigeonhole Sort | 2s 411ms | 2s 382ms |
 | 49th | Bead Sort | 1min 10s 896ms | 1min 6s 580ms |
 
-### Array Size: 800
+## Array Size: 800
 
 | Rank | Algorithm(s) | Average Time | Median Time |
 | ---- | ------------ | ------------ | ----------- |

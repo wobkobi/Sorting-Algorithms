@@ -374,7 +374,7 @@ def process_size(
     return size_results, skip_list
 
 
-def run_sorting_tests(iterations=250, threshold=300):
+def run_sorting_tests(iterations=500, threshold=300):
     """
     Run sorting algorithm benchmarks across various array sizes and generate reports.
 
