@@ -1,6 +1,7 @@
 import concurrent.futures
+import multiprocessing
 
-# Declare a global variable to hold the executor.
+# Global variable to hold the executor (only set in the main process)
 _executor = None
 
 
@@ -30,14 +31,16 @@ def bitonic_merge(arr: list, ascending: bool) -> list:
 def _bitonic_sort_recursive(arr: list, ascending: bool, threshold: int) -> list:
     """
     Recursive helper function for Bitonic Sort Parallel.
-    Uses a global executor instead of receiving it as an argument.
+    Uses the global executor if running in the main process.
+    Otherwise, recursion is executed sequentially.
     """
     n = len(arr)
     if n <= 1:
         return arr
 
     mid = n // 2
-    if n >= threshold:
+    # Only spawn parallel tasks in the main process.
+    if n >= threshold and multiprocessing.current_process().name == "MainProcess":
         left_future = _executor.submit(
             _bitonic_sort_recursive, arr[:mid], True, threshold
         )
@@ -62,7 +65,8 @@ def bitonic_sort_parallel(
     Time Complexity: O(n log² n) sequentially, O(log² n) with full parallelism
     Space Complexity: O(n)
 
-    Constructs bitonic sequences and merges them. Highly effective on parallel architectures.
+    Constructs bitonic sequences and merges them.
+    For arrays larger than the threshold, parallelism is used only in the main process.
     """
     n = len(arr)
     if n == 0:
@@ -72,8 +76,10 @@ def bitonic_sort_parallel(
     if next_power != n:
         pad_value = float("inf") if ascending else float("-inf")
         arr = arr + [pad_value] * (next_power - n)
+
     global _executor
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        _executor = executor  # Set the global executor.
+        _executor = executor  # Set the global executor in the main process.
         sorted_arr = _bitonic_sort_recursive(arr, ascending, threshold)
+    # Return only the first n elements (removing any padding).
     return sorted_arr[:n]

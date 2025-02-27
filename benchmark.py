@@ -255,23 +255,28 @@ def update_missing_iterations_concurrent(
             completed_counts[alg] += 1
             # Once all iterations for an algorithm are complete, recalculate its stats.
             if completed_counts[alg] == missing_algs[alg]:
-                times = size_results[alg][5]
-                avg = compute_average(times)
-                median = compute_median(times)
-                size_results[alg] = (
-                    avg,
-                    min(times),
-                    max(times),
-                    median,
-                    len(times),
-                    times,
-                )
-                print(f"Average for {alg} on size {size}: {format_time(avg, False)}")
-                if avg > threshold and alg not in skip_list:
-                    skip_list[alg] = size
-                    print(
-                        f"Skipping {alg} for future sizes (average > 5min, skipped at size {size})."
+                if size_results[alg] is None or size_results[alg][4] == 0:
+                    print(f"All iterations failed for {alg} on size {size}.")
+                else:
+                    times = size_results[alg][5]
+                    avg = compute_average(times)
+                    median = compute_median(times)
+                    size_results[alg] = (
+                        avg,
+                        min(times),
+                        max(times),
+                        median,
+                        len(times),
+                        times,
                     )
+                    print(
+                        f"Average for {alg} on size {size}: {format_time(avg, False)}"
+                    )
+                    if avg > threshold and alg not in skip_list:
+                        skip_list[alg] = size
+                        print(
+                            f"Skipping {alg} for future sizes (average > 5min, skipped at size {size})."
+                        )
     return size_results, skip_list
 
 
