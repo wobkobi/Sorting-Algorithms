@@ -1,4 +1,4 @@
-name: Run Sorting Benchmark with Timeout Feature
+name: Run Sorting Benchmark with Timeout and All CPUs
 
 on:
   push:
@@ -9,6 +9,8 @@ jobs:
   benchmark:
     runs-on: ubuntu-latest
     timeout-minutes: 60 # Adjust if needed
+    env:
+      USE_ALL_CPUS: "true" # Let your code know to use all available CPU cores
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -24,7 +26,7 @@ jobs:
 
       - name: Run Sorting Benchmark with Timeout
         run: |
-          # Provide blank input for iterations and threshold, 'y' to enable timeout, and '10' for per-run timeout.
+          # Pipe blank inputs for iterations and threshold, then 'y' to enable timeout and '10' as the per-run timeout.
           printf "\n\ny\n10\n" | python main.py
 
       - name: Create GitHub Release
@@ -35,7 +37,7 @@ jobs:
         with:
           tag_name: "benchmark-$(date +'%Y%m%d%H%M%S')"
           release_name: "Sorting Benchmark $(date +'%Y-%m-%d %H:%M:%S')"
-          body: "Automated benchmark run for sorting algorithms with timeout enabled. See attached README.md for results."
+          body: "Automated benchmark run for sorting algorithms with timeout enabled and all CPU cores used. See attached README.md for results."
           draft: false
           prerelease: false
 
