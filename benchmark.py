@@ -208,13 +208,14 @@ def update_missing_iterations_concurrent(
     # Dictionary mapping each future to its (algorithm, iteration index).
     tasks = {}
 
-    for alg, missing in missing_algs.items():
-        start_iter = (size_results[alg][4] + 1) if size_results[alg] is not None else 1
-        for i in range(missing):
-            future = ProcessPoolExecutor(max_workers=num_workers).submit(
-                run_iteration, algorithms()[alg], size
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        for alg, missing in missing_algs.items():
+            start_iter = (
+                (size_results[alg][4] + 1) if size_results[alg] is not None else 1
             )
-            tasks[future] = (alg, start_iter + i)
+            for i in range(missing):
+                future = executor.submit(run_iteration, algorithms()[alg], size)
+                tasks[future] = (alg, start_iter + i)
 
     # Process each task as soon as it completes.
     for future in as_completed(tasks):
