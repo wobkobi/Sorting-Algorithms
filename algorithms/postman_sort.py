@@ -1,4 +1,4 @@
-from radix_sort import radix_sort
+from .radix_sort import radix_sort
 
 
 def postman_sort(arr):

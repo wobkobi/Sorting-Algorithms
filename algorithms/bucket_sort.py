@@ -1,5 +1,5 @@
 # bucket_sort.py
-from insertion_sort import insertion_sort
+from .insertion_sort import insertion_sort
 
 
 def bucket_sort(arr):

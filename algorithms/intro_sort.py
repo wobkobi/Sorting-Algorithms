@@ -1,6 +1,5 @@
 # intro_sort.py
 import math
-from heap_sort import heap_sort
 
 
 def intro_sort(arr):
