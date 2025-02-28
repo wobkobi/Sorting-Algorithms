@@ -1,17 +1,15 @@
-def quick_sort(arr: list) -> list:
+# quick_sort.py
+def quick_sort(arr):
     """
-    Quick Sort implementation.
+    Quick Sort – classic recursive implementation with pivot selection.
 
-    Time Complexity: Average-case O(n log n), Worst-case O(n²)
-    Space Complexity: O(log n) average (due to recursion)
-
-    Selects a pivot to partition the array and recursively sorts the subarrays. Widely used for its average performance.
+    Time Complexity: Average O(n log n), worst-case O(n²)
+    Space Complexity: O(log n) on average (recursion)
     """
     if not arr:
-        return arr
-
+        return []
     if len(arr) <= 1:
-        return arr
+        return arr[:]
     pivot = arr[len(arr) // 2]
     left = [x for x in arr if x < pivot]
     middle = [x for x in arr if x == pivot]

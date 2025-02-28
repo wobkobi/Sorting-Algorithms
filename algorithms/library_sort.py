@@ -1,18 +1,15 @@
-def library_sort(arr: list) -> list:
+# library_sort.py
+def library_sort(arr):
     """
-    Library Sort.
+    Library Sort – a gapped insertion sort inspired by library shelving.
 
-    Time Complexity: O(n log n) expected
+    Time Complexity: Expected O(n log n)
     Space Complexity: O(n)
-
-    Implements a gapped insertion sort that simulates the way library shelves
-    leave gaps for future insertions.
     """
     if not arr:
-        return arr
-
+        return []
     n = len(arr)
-    gap_factor = 2  # Determines the spacing; tweak as needed.
+    gap_factor = 2
     lib = [None] * (gap_factor * n)
     mid = len(lib) // 2
     lib[mid] = arr[0]
@@ -39,6 +36,4 @@ def library_sort(arr: list) -> list:
             while idx < len(lib) and lib[idx] is not None:
                 idx += 1
         lib[idx] = item
-    sorted_arr = [x for x in lib if x is not None]
-    arr[:] = sorted_arr
-    return arr
+    return [x for x in lib if x is not None]

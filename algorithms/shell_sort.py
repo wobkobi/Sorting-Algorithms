@@ -1,24 +1,23 @@
-def shell_sort(arr: list) -> list:
+# shell_sort.py
+def shell_sort(arr):
     """
-    Shell Sort implementation.
+    Shell Sort – a generalization of insertion sort using gaps.
 
-    Time Complexity: Varies between O(n log² n) and O(n^(3/2)) depending on the gap sequence
+    Time Complexity: Typically between O(n log² n) and O(n^(3/2))
     Space Complexity: O(1)
-
-    An optimization over insertion sort that allows elements to move farther in each pass by using gaps.
     """
     if not arr:
-        return arr
-
-    n = len(arr)
+        return []
+    a = arr[:]
+    n = len(a)
     gap = n // 2
     while gap > 0:
         for i in range(gap, n):
-            temp = arr[i]
+            temp = a[i]
             j = i
-            while j >= gap and arr[j - gap] > temp:
-                arr[j] = arr[j - gap]
+            while j >= gap and a[j - gap] > temp:
+                a[j] = a[j - gap]
                 j -= gap
-            arr[j] = temp
+            a[j] = temp
         gap //= 2
-    return arr
+    return a

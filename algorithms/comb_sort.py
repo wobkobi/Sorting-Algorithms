@@ -1,16 +1,15 @@
-def comb_sort(arr: list) -> list:
+# comb_sort.py
+def comb_sort(arr):
     """
-    Comb Sort implementation.
+    Comb Sort – an improvement over bubble sort using a gap sequence.
 
-    Time Complexity: Average-case better than bubble sort, but worst-case O(n²)
+    Time Complexity: Average-case better than bubble sort; worst-case O(n²)
     Space Complexity: O(1)
-
-    Improves on bubble sort by using a gap sequence to eliminate small values at the end of the list.
     """
     if not arr:
-        return arr
-
-    n = len(arr)
+        return []
+    a = arr[:]
+    n = len(a)
     gap = n
     shrink = 1.3
     sorted_flag = False
@@ -19,10 +18,8 @@ def comb_sort(arr: list) -> list:
         if gap <= 1:
             gap = 1
             sorted_flag = True
-        i = 0
-        while i + gap < n:
-            if arr[i] > arr[i + gap]:
-                arr[i], arr[i + gap] = arr[i + gap], arr[i]
+        for i in range(n - gap):
+            if a[i] > a[i + gap]:
+                a[i], a[i + gap] = a[i + gap], a[i]
                 sorted_flag = False
-            i += 1
-    return arr
+    return a

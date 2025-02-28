@@ -1,27 +1,24 @@
-def odd_even_sort(arr: list) -> list:
+# odd_even_sort.py
+def odd_even_sort(arr):
     """
-    Odd-Even Sort implementation.
+    Odd-Even Sort (Brick Sort) – alternates comparing odd- and even-indexed pairs.
 
-    Time Complexity: O(n²) worst-case
+    Time Complexity: O(n²) worst-case.
     Space Complexity: O(1)
-
-    Alternates between comparing odd-indexed and even-indexed pairs. Simple but not efficient on large arrays.
     """
     if not arr:
-        return arr
-
-    n = len(arr)
+        return []
+    a = arr[:]
+    n = len(a)
     sorted_flag = False
     while not sorted_flag:
         sorted_flag = True
-        # Compare odd indexed pairs.
         for i in range(1, n - 1, 2):
-            if arr[i] > arr[i + 1]:
-                arr[i], arr[i + 1] = arr[i + 1], arr[i]
+            if a[i] > a[i + 1]:
+                a[i], a[i + 1] = a[i + 1], a[i]
                 sorted_flag = False
-        # Compare even indexed pairs.
         for i in range(0, n - 1, 2):
-            if arr[i] > arr[i + 1]:
-                arr[i], arr[i + 1] = arr[i + 1], arr[i]
+            if a[i] > a[i + 1]:
+                a[i], a[i + 1] = a[i + 1], a[i]
                 sorted_flag = False
-    return arr
+    return a

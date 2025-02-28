@@ -1,32 +1,29 @@
-import math
+# sample_sort.py
 from heapq import merge
+import math
 
 
-def sample_sort(arr: list) -> list:
+def sample_sort(arr):
     """
-    Sample Sort implementation.
+    Sample Sort – uses a preliminary sort to choose splitters,
+    partitions the array into buckets, sorts each, then merges.
 
     Time Complexity: Expected O(n log n)
     Space Complexity: O(n)
-
-    Divides the array using a set of sample elements to determine splitters, then sorts subarrays—well-suited for parallel sorting.
     """
     if not arr:
-        return arr
-
+        return []
     n = len(arr)
-    # Choose number of partitions (e.g. √n)
-    k = int(math.sqrt(n)) or 1
-    # Use a preliminary sort to choose pivots.
+    k = max(int(math.sqrt(n)), 1)
     arr_sorted = sorted(arr)
     step = n // k
     pivots = [arr_sorted[i * step] for i in range(1, k)]
     buckets = [[] for _ in range(k)]
     for x in arr:
         placed = False
-        for pivot in pivots:
+        for idx, pivot in enumerate(pivots):
             if x < pivot:
-                buckets[pivots.index(pivot)].append(x)
+                buckets[idx].append(x)
                 placed = True
                 break
         if not placed:

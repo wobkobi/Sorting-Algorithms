@@ -1,17 +1,15 @@
-def hyper_quick(arr: list) -> list:
+# hyper_quick.py
+def hyper_quick(arr):
     """
-    Hyper Quick implementation.
+    Hyper Quick – a quicksort variant using the median-of-three pivot.
 
-    Time Complexity: Expected O(n log n), Worst-case O(n²)
-    Space Complexity: O(log n) average due to recursion
-
-    A variant of quick sort with advanced pivot selection and partitioning optimizations.
+    Time Complexity: Expected O(n log n), worst-case O(n²)
+    Space Complexity: O(log n)
     """
     if not arr:
-        return arr
-
+        return []
     if len(arr) <= 1:
-        return arr
+        return arr[:]
     first, mid, last = arr[0], arr[len(arr) // 2], arr[-1]
     pivot = sorted([first, mid, last])[1]
     left = [x for x in arr if x < pivot]

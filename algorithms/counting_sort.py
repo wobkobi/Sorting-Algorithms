@@ -1,21 +1,18 @@
-def counting_sort(arr: list) -> list:
+# counting_sort.py
+def counting_sort(arr):
     """
-    Counting Sort implementation for non-negative integers.
+    Counting Sort – non-comparative sort for integers.
 
-    Time Complexity: O(n + k)
+    Time Complexity: O(n + k) where k is the range of input.
     Space Complexity: O(n + k)
-
-    This is a stub implementation.
     """
     if not arr:
-        return arr
-
+        return []
     min_val = min(arr)
     max_val = max(arr)
     range_of_elements = max_val - min_val + 1
     count = [0] * range_of_elements
     output = [0] * len(arr)
-
     for num in arr:
         count[num - min_val] += 1
     for i in range(1, len(count)):

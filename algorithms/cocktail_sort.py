@@ -1,15 +1,13 @@
-def cocktail_sort(arr: list) -> list:
+# cocktail_sort.py
+def cocktail_sort(arr):
     """
-    Cocktail Sort implementation.
+    Cocktail Sort – a bidirectional variation of bubble sort.
 
     Time Complexity: Best-case O(n), Worst-case O(n²)
     Space Complexity: O(1)
-
-    A bidirectional variation of bubble sort that traverses the list in both directions on each pass.
     """
     if not arr:
         return arr
-
     n = len(arr)
     start = 0
     end = n - 1

@@ -1,15 +1,16 @@
-def patience_sort(arr: list) -> list:
+# patience_sort.py
+import heapq
+
+
+def patience_sort(arr):
     """
-    Patience Sort implementation.
+    Patience Sort – builds piles (like in the card game) and merges them.
 
     Time Complexity: O(n log n)
     Space Complexity: O(n)
-
-    Inspired by the card game 'patience', it builds piles (or strands) and then merges them to form the sorted array.
     """
     if not arr:
-        return arr
-
+        return []
     piles = []
     for x in arr:
         placed = False
@@ -20,16 +21,11 @@ def patience_sort(arr: list) -> list:
                 break
         if not placed:
             piles.append([x])
-    # Reverse each pile so that the smallest element is first.
     for pile in piles:
         pile.reverse()
-    # Merge piles using a simple k‑way merge.
-    import heapq
-
     heap = []
     for i, pile in enumerate(piles):
-        heap.append((pile[0], i, 0))
-    heapq.heapify(heap)
+        heapq.heappush(heap, (pile[0], i, 0))
     result = []
     while heap:
         val, i, idx = heapq.heappop(heap)

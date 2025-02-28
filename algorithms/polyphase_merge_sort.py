@@ -1,19 +1,16 @@
+# polyphase_merge_sort.py
 import heapq
 
 
-def polyphase_merge_sort(arr: list) -> list:
+def polyphase_merge_sort(arr):
     """
-    Polyphase Merge Sort implementation.
+    Polyphase Merge Sort – minimizes merge passes using an uneven run distribution.
 
     Time Complexity: O(n log n)
     Space Complexity: O(n)
-
-    An external sorting algorithm that minimizes the number of merge passes using an uneven distribution of runs.
     """
     if not arr:
-        return arr
-
-    # Phase 1: Generate runs.
+        return []
     runs = []
     current_run = [arr[0]]
     for x in arr[1:]:
@@ -23,10 +20,7 @@ def polyphase_merge_sort(arr: list) -> list:
             runs.append(current_run)
             current_run = [x]
     runs.append(current_run)
-
-    # Phase 2: Merge the runs using a k‑way merge.
     heap = []
-    # Build an initial heap entry for each run.
     for run_idx, run in enumerate(runs):
         if run:
             heapq.heappush(heap, (run[0], run_idx, 0))

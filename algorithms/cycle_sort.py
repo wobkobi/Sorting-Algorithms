@@ -1,33 +1,32 @@
-def cycle_sort(arr: list) -> list:
+# cycle_sort.py
+def cycle_sort(arr):
     """
-    Cycle Sort implementation.
+    Cycle Sort – minimizes writes by rotating cycles.
 
     Time Complexity: O(n²)
     Space Complexity: O(1)
-
-    Minimizes the number of writes by determining cycles in the permutation and rotating elements accordingly.
     """
     if not arr:
-        return arr
-
-    n = len(arr)
-    for cycle_start in range(0, n - 1):
-        item = arr[cycle_start]
+        return []
+    a = arr[:]
+    n = len(a)
+    for cycle_start in range(n - 1):
+        item = a[cycle_start]
         pos = cycle_start
         for i in range(cycle_start + 1, n):
-            if arr[i] < item:
+            if a[i] < item:
                 pos += 1
         if pos == cycle_start:
             continue
-        while item == arr[pos]:
+        while item == a[pos]:
             pos += 1
-        arr[pos], item = item, arr[pos]
+        a[pos], item = item, a[pos]
         while pos != cycle_start:
             pos = cycle_start
             for i in range(cycle_start + 1, n):
-                if arr[i] < item:
+                if a[i] < item:
                     pos += 1
-            while item == arr[pos]:
+            while item == a[pos]:
                 pos += 1
-            arr[pos], item = item, arr[pos]
-    return arr
+            a[pos], item = item, a[pos]
+    return a

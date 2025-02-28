@@ -1,27 +1,5 @@
-def heap_sort(arr: list) -> list:
-    """
-    Heap Sort implementation.
-
-    Time Complexity: O(n log n) in all cases
-    Space Complexity: O(1) (in-place)
-
-    Converts the list into a heap data structure, then repeatedly extracts the maximum (or minimum) element.
-    """
-    if not arr:
-        return arr
-
-    n = len(arr)
-    # Build a max heap.
-    for i in range(n // 2 - 1, -1, -1):
-        heapify(arr, n, i)
-    # Extract elements one by one.
-    for i in range(n - 1, 0, -1):
-        arr[0], arr[i] = arr[i], arr[0]
-        heapify(arr, i, 0)
-    return arr
-
-
-def heapify(arr: list, n: int, i: int):
+# heap_sort.py
+def heapify(arr, n, i):
     largest = i
     left = 2 * i + 1
     right = 2 * i + 2
@@ -32,3 +10,22 @@ def heapify(arr: list, n: int, i: int):
     if largest != i:
         arr[i], arr[largest] = arr[largest], arr[i]
         heapify(arr, n, largest)
+
+
+def heap_sort(arr):
+    """
+    Heap Sort – builds a max-heap and extracts the maximum repeatedly.
+
+    Time Complexity: O(n log n)
+    Space Complexity: O(1)
+    """
+    if not arr:
+        return []
+    a = arr[:]
+    n = len(a)
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(a, n, i)
+    for i in range(n - 1, 0, -1):
+        a[0], a[i] = a[i], a[0]
+        heapify(a, i, 0)
+    return a

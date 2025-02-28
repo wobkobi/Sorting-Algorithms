@@ -1,29 +1,23 @@
+# replacement_selection_sort.py
 import heapq
 from heapq import merge
 
 
-def replacement_selection_sort(arr: list) -> list:
+def replacement_selection_sort(arr):
     """
-    Replacement Selection Sort implementation.
+    Replacement Selection Sort – builds initial runs with a heap, then merges them.
 
     Time Complexity: O(n log n)
     Space Complexity: O(n)
-
-    Commonly used in external sorting, it builds long initial runs by repeatedly replacing the root of a heap.
     """
     if not arr:
-        return arr
-
+        return []
     runs = []
-    remaining = arr[:]  # copy of the array
-
+    remaining = arr[:]
     while remaining:
-        heap = []
-        run = []
-        # Build initial heap from the remaining elements.
-        for x in remaining:
-            heap.append(x)
+        heap = remaining[:]
         heapq.heapify(heap)
+        run = []
         new_remaining = []
         last_output = -float("inf")
         while heap:
@@ -35,8 +29,6 @@ def replacement_selection_sort(arr: list) -> list:
                 new_remaining.append(x)
         runs.append(run)
         remaining = new_remaining
-
-    # Merge all runs using a k-way merge.
     result = []
     for run in runs:
         result = list(merge(result, run))

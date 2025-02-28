@@ -1,18 +1,17 @@
-def sorting_network(arr: list) -> list:
+# sorting_network.py
+import math
+
+
+def sorting_network(arr):
     """
-    Sorting Network (via Bitonic Sort).
+    Sorting Network (via Bitonic Sort) – pads the array to a power of two
+    and sorts using a bitonic merge network.
 
     Time Complexity: O(n log² n)
     Space Complexity: O(n)
-
-    Implements a sorting network using a bitonic merge approach. Note that this
-    implementation pads the array to the next power of two.
     """
-    import math
-
     if not arr:
-        return arr
-
+        return []
     n = len(arr)
     power = 2 ** int(math.ceil(math.log2(n)))
     padded = arr[:] + [float("inf")] * (power - n)
@@ -36,6 +35,4 @@ def sorting_network(arr: list) -> list:
             bitonic_merge(a, lo, n, direction)
 
     bitonic_sort_rec(padded, 0, power, 1)
-    sorted_arr = [x for x in padded if x != float("inf")]
-    arr[:] = sorted_arr
-    return arr
+    return [x for x in padded if x != float("inf")]

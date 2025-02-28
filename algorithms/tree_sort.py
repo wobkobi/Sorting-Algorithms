@@ -1,8 +1,9 @@
+# tree_sort.py
 class Node:
     def __init__(self, key):
+        self.key = key
         self.left = None
         self.right = None
-        self.key = key
 
 
 def insert(root, key):
@@ -15,28 +16,25 @@ def insert(root, key):
     return root
 
 
-def inorder(root, arr):
+def inorder(root, res):
     if root is not None:
-        inorder(root.left, arr)
-        arr.append(root.key)
-        inorder(root.right, arr)
+        inorder(root.left, res)
+        res.append(root.key)
+        inorder(root.right, res)
 
 
-def tree_sort(arr: list) -> list:
+def tree_sort(arr):
     """
-    Tree Sort implementation.
+    Tree Sort – inserts elements into a binary search tree and performs an in-order traversal.
 
-    Time Complexity: Average-case O(n log n), Worst-case O(n²) if the tree becomes unbalanced
+    Time Complexity: Average O(n log n), worst-case O(n²) if unbalanced.
     Space Complexity: O(n)
-
-    Inserts elements into a binary search tree and then performs an in-order traversal to yield a sorted list.
     """
     if not arr:
-        return arr
-
+        return []
     root = None
     for num in arr:
         root = insert(root, num)
-    sorted_arr = []
-    inorder(root, sorted_arr)
-    return sorted_arr
+    result = []
+    inorder(root, result)
+    return result
