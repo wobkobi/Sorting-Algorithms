@@ -1,14 +1,15 @@
-def strand_sort(arr: list) -> list:
+# strand_sort.py
+def strand_sort(arr):
     """
-    Strand Sort implementation.
+    Strand Sort – repeatedly extracts increasing subsequences (“strands”) and merges them.
 
-    Time Complexity: Worst-case O(n²); may perform better on partially sorted data
+    Time Complexity: Worst-case O(n²), but can perform better on partially sorted data.
     Space Complexity: O(n)
-
-    Repeatedly extracts increasing subsequences (strands) from the list and merges them to form the sorted output.
     """
+    if not arr:
+        return []
 
-    def merge_strands(a: list, b: list) -> list:
+    def merge_strands(a, b):
         result = []
         i = j = 0
         while i < len(a) and j < len(b):
@@ -22,19 +23,15 @@ def strand_sort(arr: list) -> list:
         result.extend(b[j:])
         return result
 
-    if not arr:
-        return arr
-
     output = []
-
-    while arr:
-        # Build a strand.
-        strand = [arr.pop(0)]
+    a = arr[:]
+    while a:
+        strand = [a.pop(0)]
         i = 0
-        while i < len(arr):
-            if arr[i] >= strand[-1]:
-                strand.append(arr.pop(i))
+        while i < len(a):
+            if a[i] >= strand[-1]:
+                strand.append(a.pop(i))
             else:
                 i += 1
-        output = merge_strands(output, strand)
+        output = merge_strands(output, strand) if output else strand
     return output

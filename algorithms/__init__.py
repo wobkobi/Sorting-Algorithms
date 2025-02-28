@@ -25,7 +25,7 @@ from .merge_insertion_sort import merge_insertion_sort
 from .merge_sort_inplace import merge_sort_inplace
 from .merge_sort import merge_sort
 from .msd_radix_sort import msd_radix_sort
-from .msd_radix_sort_inplace import msd_radix_sort_inplace
+from .msd_radix_sort import msd_radix_sort_inplace
 from .odd_even_sort import odd_even_sort
 from .pancake_sort import pancake_sort
 from .patience_sort import patience_sort

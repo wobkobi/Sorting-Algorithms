@@ -1,4 +1,8 @@
-def spreadsort(arr: list) -> list:
+# spreadsort.py
+from insertion_sort import insertion_sort
+
+
+def spreadsort(arr):
     """
     Spreadsort.
 
@@ -9,7 +13,7 @@ def spreadsort(arr: list) -> list:
     based on their normalized value, then sorts each bucket using insertion sort.
     """
     if not arr:
-        return arr
+        return []
 
     n = len(arr)
     # Determine the minimum and maximum values.
@@ -21,9 +25,9 @@ def spreadsort(arr: list) -> list:
         if x > maximum:
             maximum = x
 
-    # If all elements are equal, return immediately.
+    # If all elements are equal, return a copy.
     if minimum == maximum:
-        return arr
+        return arr[:]
 
     # Create buckets. We'll use n buckets.
     buckets = [[] for _ in range(n)]
@@ -35,21 +39,11 @@ def spreadsort(arr: list) -> list:
         index = int(((x - minimum) / range_val) * (n - 1))
         buckets[index].append(x)
 
-    # Insertion sort for each bucket.
-    def insertion_sort(bucket):
-        for i in range(1, len(bucket)):
-            key = bucket[i]
-            j = i - 1
-            while j >= 0 and bucket[j] > key:
-                bucket[j + 1] = bucket[j]
-                j -= 1
-            bucket[j + 1] = key
-
     sorted_arr = []
     for bucket in buckets:
         if bucket:
-            insertion_sort(bucket)
-            sorted_arr.extend(bucket)
+            sorted_bucket = insertion_sort(bucket)
+            sorted_arr.extend(sorted_bucket)
 
     # Copy the sorted result back into the original array.
     for i in range(n):

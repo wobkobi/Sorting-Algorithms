@@ -1,18 +1,17 @@
-def exchange_sort(arr: list) -> list:
+# exchange_sort.py
+def exchange_sort(arr):
     """
-    Exchange Sort implementation.
+    Exchange Sort – repeatedly swaps out-of-order elements.
 
-    Time Complexity: O(n^2)
+    Time Complexity: O(n²)
     Space Complexity: O(1)
-
-    This is a stub implementation.
     """
     if not arr:
-        return arr
-
-    n = len(arr)
+        return []
+    a = arr[:]
+    n = len(a)
     for i in range(n - 1):
         for j in range(i + 1, n):
-            if arr[i] > arr[j]:
-                arr[i], arr[j] = arr[j], arr[i]
-    return arr
+            if a[i] > a[j]:
+                a[i], a[j] = a[j], a[i]
+    return a

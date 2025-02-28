@@ -1,24 +1,24 @@
-def merge_insertion_sort(arr: list) -> list:
+# merge_insertion_sort.py
+def merge_insertion_sort(arr):
     """
-    Merge Insertion Sort.
+    Merge Insertion Sort – uses insertion sort on subarrays of size ≤ 16,
+    then merge sort for larger arrays.
 
-    Time Complexity: O(n²) for small arrays (insertion sort), O(n log n) overall
+    Time Complexity: O(n²) for small arrays, O(n log n) overall.
     Space Complexity: O(n)
-
-    Uses insertion sort for small subarrays and merge sort for larger ones.
     """
     if not arr:
-        return arr
-
+        return []
     if len(arr) <= 16:
-        for i in range(1, len(arr)):
-            key = arr[i]
+        a = arr[:]
+        for i in range(1, len(a)):
+            key = a[i]
             j = i - 1
-            while j >= 0 and arr[j] > key:
-                arr[j + 1] = arr[j]
+            while j >= 0 and a[j] > key:
+                a[j + 1] = a[j]
                 j -= 1
-            arr[j + 1] = key
-        return arr
+            a[j + 1] = key
+        return a
     else:
         mid = len(arr) // 2
         left = merge_insertion_sort(arr[:mid])
@@ -34,5 +34,4 @@ def merge_insertion_sort(arr: list) -> list:
                 j += 1
         merged.extend(left[i:])
         merged.extend(right[j:])
-        arr[:] = merged
-        return arr
+        return merged

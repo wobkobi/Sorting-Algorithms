@@ -1,20 +1,19 @@
-def selection_sort(arr: list) -> list:
+# selection_sort.py
+def selection_sort(arr):
     """
-    Selection Sort implementation.
+    Selection Sort – repeatedly selects the minimum element and swaps.
 
-    Time Complexity: O(n²) in all cases
+    Time Complexity: O(n²)
     Space Complexity: O(1)
-
-    Repeatedly finds the minimum element from the unsorted portion and swaps it with the first unsorted element.
     """
     if not arr:
-        return arr
-
-    n = len(arr)
+        return []
+    a = arr[:]
+    n = len(a)
     for i in range(n):
-        min_index = i
+        min_idx = i
         for j in range(i + 1, n):
-            if arr[j] < arr[min_index]:
-                min_index = j
-        arr[i], arr[min_index] = arr[min_index], arr[i]
-    return arr
+            if a[j] < a[min_idx]:
+                min_idx = j
+        a[i], a[min_idx] = a[min_idx], a[i]
+    return a

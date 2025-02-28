@@ -1,19 +1,19 @@
+# intro_sort.py
 import math
+from heap_sort import heap_sort
 
 
-def intro_sort(arr: list) -> list:
+def intro_sort(arr):
     """
-    Intro Sort implementation.
+    Intro Sort – starts with quicksort and switches to heapsort if recursion gets too deep.
 
     Time Complexity: O(n log n) worst-case
     Space Complexity: O(log n)
-
-    Begins with quick sort and switches to heap sort when the recursion depth exceeds a threshold, ensuring robust performance.
     """
     if not arr:
-        return arr
-
-    maxdepth = math.floor(math.log2(len(arr))) * 2 if arr else 0
+        return []
+    a = arr[:]
+    max_depth = math.floor(math.log2(len(a))) * 2
 
     def _introsort(a, start, end, depth):
         if end - start <= 1:
@@ -36,7 +36,9 @@ def intro_sort(arr: list) -> list:
         return i
 
     def heap_sort_slice(a, start, end):
-        def heapify(a, count, i, offset):
+        count = end - start
+
+        def heapify_slice(i, count, offset):
             largest = i
             left = 2 * i + 1
             right = 2 * i + 2
@@ -46,14 +48,13 @@ def intro_sort(arr: list) -> list:
                 largest = right
             if largest != i:
                 a[offset + i], a[offset + largest] = a[offset + largest], a[offset + i]
-                heapify(a, count, largest, offset)
+                heapify_slice(largest, count, offset)
 
-        count = end - start
         for i in range(count // 2 - 1, -1, -1):
-            heapify(a, count, i, start)
+            heapify_slice(i, count, start)
         for i in range(count - 1, 0, -1):
             a[start], a[start + i] = a[start + i], a[start]
-            heapify(a, i, 0, start)
+            heapify_slice(0, i, start)
 
-    _introsort(arr, 0, len(arr), maxdepth)
-    return arr
+    _introsort(a, 0, len(a), max_depth)
+    return a

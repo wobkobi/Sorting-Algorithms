@@ -1,18 +1,17 @@
-def bubble_sort(arr: list) -> list:
+# bubble_sort.py
+def bubble_sort(arr):
     """
-    Bubble Sort implementation.
+    Bubble Sort – repeatedly compares and swaps adjacent elements.
 
-    Time Complexity: Best-case O(n) (optimized), Worst-case O(n²)
+    Time Complexity: Best-case O(n) (with early termination), worst-case O(n²)
     Space Complexity: O(1)
-
-    Repeatedly compares and swaps adjacent elements. Simple but inefficient on large lists.
     """
     if not arr:
-        return arr
-
-    n = len(arr)
+        return []
+    a = arr[:]
+    n = len(a)
     for i in range(n):
         for j in range(0, n - i - 1):
-            if arr[j] > arr[j + 1]:
-                arr[j], arr[j + 1] = arr[j + 1], arr[j]
-    return arr
+            if a[j] > a[j + 1]:
+                a[j], a[j + 1] = a[j + 1], a[j]
+    return a

@@ -1,21 +1,20 @@
-def gnome_sort(arr: list) -> list:
+# gnome_sort.py
+def gnome_sort(arr):
     """
-    Gnome Sort implementation.
+    Gnome Sort – moves elements back one step at a time until order is restored.
 
     Time Complexity: O(n²) worst-case
     Space Complexity: O(1)
-
-    Similar to insertion sort but uses a simpler mechanism of swapping elements back until order is restored.
     """
     if not arr:
-        return arr
-
-    index = 0
-    n = len(arr)
-    while index < n:
-        if index == 0 or arr[index] >= arr[index - 1]:
-            index += 1
+        return []
+    a = arr[:]
+    i = 0
+    n = len(a)
+    while i < n:
+        if i == 0 or a[i] >= a[i - 1]:
+            i += 1
         else:
-            arr[index], arr[index - 1] = arr[index - 1], arr[index]
-            index -= 1
-    return arr
+            a[i], a[i - 1] = a[i - 1], a[i]
+            i -= 1
+    return a

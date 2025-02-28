@@ -1,15 +1,13 @@
-def pigeonhole_sort(arr: list) -> list:
+# pigeonhole_sort.py
+def pigeonhole_sort(arr):
     """
-    Pigeonhole Sort implementation.
+    Pigeonhole Sort – assigns each element to a “pigeonhole” based on its value.
 
-    Time Complexity: O(n + Range), where Range is the difference between the maximum and minimum values
+    Time Complexity: O(n + Range)
     Space Complexity: O(n + Range)
-
-    Maps each element to a 'pigeonhole' based on its value, then collects the elements in order.
     """
     if not arr:
-        return arr
-
+        return []
     min_val = min(arr)
     max_val = max(arr)
     size = max_val - min_val + 1

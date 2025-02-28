@@ -1,37 +1,34 @@
+# sleep_sort.py
 import threading
 import time
 
 
-def sleep_sort(arr: list) -> list:
+def sleep_sort(arr):
     """
-    Sleep Sort implementation.
+    Sleep Sort – uses thread sleep delays based on element values.
 
-    Time Complexity: Conceptually O(n) (when using concurrent sleep calls), but not practical
+    (A novelty algorithm; not for production use.)
+
+    Time Complexity: Conceptually O(n), but overhead makes it impractical.
     Space Complexity: O(n)
-
-    A novelty sorting algorithm that uses delays (sleep durations) based on element values. Primarily a humorous demonstration.
     """
     if not arr:
-        return arr
-
-    # Shift numbers if there are negatives.
+        return []
     min_val = min(arr)
     offset = -min_val if min_val < 0 else 0
-
     result = []
     threads = []
+    lock = threading.Lock()
 
     def worker(x):
-        # Sleep time based on shifted value.
         time.sleep((x + offset) / 1000000.0)
-        result.append(x)
+        with lock:
+            result.append(x)
 
     for x in arr:
-        thread = threading.Thread(target=worker, args=(x,))
-        thread.start()
-        threads.append(thread)
-
-    for thread in threads:
-        thread.join()
-
+        t = threading.Thread(target=worker, args=(x,))
+        t.start()
+        threads.append(t)
+    for t in threads:
+        t.join()
     return result
