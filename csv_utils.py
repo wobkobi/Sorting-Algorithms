@@ -36,19 +36,30 @@ def read_csv_results(csv_path, expected_algs):
               - total_iteration_count is the total number of iterations recorded,
               - times_list is the list of recorded times (with None representing DNF iterations).
     """
-    algorithm_times = OrderedDict((alg, []) for alg in expected_algs)
+    algorithm_times = {alg: [] for alg in expected_algs}
+    algorithm_iters = {alg: [] for alg in expected_algs}
+
     with open(csv_path, "r", newline="") as csvfile:
         reader = csv.reader(csvfile)
         try:
             header = next(reader)
         except StopIteration:
-            return algorithm_times
+            # Return empty results if file is empty.
+            return OrderedDict((alg, None) for alg in expected_algs), {
+                alg: 0 for alg in expected_algs
+            }
+
         for row in reader:
             if not row or len(row) < 4:
                 continue
             alg = row[0]
+            # Try to parse the iteration number.
+            try:
+                iteration = int(row[2])
+            except Exception:
+                iteration = None
             time_str = row[3].strip()
-            # Record None for "DNF" (Did Not Finish), otherwise try converting to float.
+            # Convert "DNF" to None; otherwise, try converting to float.
             if time_str == "DNF":
                 t = None
             else:
@@ -58,10 +69,17 @@ def read_csv_results(csv_path, expected_algs):
                     continue
             if alg in algorithm_times:
                 algorithm_times[alg].append(t)
+                if iteration is not None:
+                    algorithm_iters[alg].append(iteration)
+
     results = OrderedDict()
+    max_iters = {}
     for alg in expected_algs:
         times = algorithm_times[alg]
-        # Filter out DNFs for computing statistics.
+        # Use the maximum iteration number, or 0 if none found.
+        max_iter = max(algorithm_iters[alg]) if algorithm_iters[alg] else 0
+        max_iters[alg] = max_iter
+        # Filter out DNFs for statistics.
         successful_times = [x for x in times if x is not None]
         if successful_times:
             avg = compute_average(successful_times)
@@ -75,9 +93,9 @@ def read_csv_results(csv_path, expected_algs):
                 times,
             )
         else:
-            # If no successful runs, set avg to infinity and other statistics to None.
             results[alg] = (float("inf"), None, None, None, len(times), times)
-    return results
+
+    return results, max_iters
 
 
 def ensure_csv_ends_with_newline(csv_path):
@@ -147,7 +165,7 @@ def get_csv_results_for_size(size, expected_algs, output_folder="results"):
     csv_filename = f"results_{size}.csv"
     csv_path = os.path.join(output_folder, csv_filename)
     if os.path.exists(csv_path):
-        size_results = read_csv_results(csv_path, expected_algs)
+        size_results, max_iters = read_csv_results(csv_path, expected_algs)
     else:
         with open(csv_path, "w", newline="") as csv_file:
             writer = csv.writer(csv_file)
@@ -155,5 +173,6 @@ def get_csv_results_for_size(size, expected_algs, output_folder="results"):
                 ["Algorithm", "Array Size", "Iteration", "Elapsed Time (seconds)"]
             )
         size_results = OrderedDict((alg, None) for alg in expected_algs)
+        max_iters = {alg: 0 for alg in expected_algs}
     ensure_csv_ends_with_newline(csv_path)
-    return csv_path, size_results
+    return csv_path, size_results, max_iters

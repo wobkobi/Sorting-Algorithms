@@ -186,6 +186,7 @@ def update_missing_iterations_concurrent(
     threshold,
     num_workers,
     per_run_timeout=None,
+    max_iters=None,
 ):
     """
     Run missing iterations concurrently for each algorithm and update CSV results.
@@ -210,7 +211,6 @@ def update_missing_iterations_concurrent(
     """
     missing_algs = {}
     found_msgs = []
-    # Calculate how many iterations are missing for each algorithm.
     for alg in expected_algs:
         if alg in skip_list:
             continue
@@ -245,7 +245,7 @@ def update_missing_iterations_concurrent(
     completed_counts = {}
     tasks = {}
 
-    # If a timeout is active, reduce concurrency to limit resource usage.
+    # If timeout is specified, reduce concurrency to limit resource usage.
     if per_run_timeout is not None:
         executor_workers = min(num_workers, 2)
         ExecutorClass = ThreadPoolExecutor
@@ -255,8 +255,13 @@ def update_missing_iterations_concurrent(
 
     with ExecutorClass(max_workers=executor_workers) as executor:
         for alg, missing in missing_algs.items():
+            # Use the maximum iteration number from max_iters to assign new iteration numbers.
             start_iter = (
-                (size_results[alg][4] + 1) if size_results[alg] is not None else 1
+                (max_iters.get(alg, 0) + 1)
+                if max_iters
+                else (
+                    (size_results[alg][4] + 1) if size_results[alg] is not None else 1
+                )
             )
             for i in range(missing):
                 if per_run_timeout is not None:
@@ -368,7 +373,7 @@ def process_size(
     Returns:
         Updated (size_results, skip_list).
     """
-    csv_path, size_results = get_csv_results_for_size(size, expected_algs)
+    csv_path, size_results, max_iters = get_csv_results_for_size(size, expected_algs)
     current_workers = get_num_workers()
     process_size.workers = getattr(process_size, "workers", None)
     if process_size.workers is None or current_workers != process_size.workers:
@@ -392,9 +397,10 @@ def process_size(
         threshold,
         current_workers,
         per_run_timeout,
+        max_iters,
     )
     sort_csv_alphabetically(csv_path)
-    _, updated_results = get_csv_results_for_size(size, expected_algs)
+    _, updated_results, _ = get_csv_results_for_size(size, expected_algs)
     update_overall_results(
         size,
         updated_results,
