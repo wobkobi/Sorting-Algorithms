@@ -1,0 +1,1541 @@
+Algorithm,Array Size,Iteration,Elapsed Time (seconds)
+Bead Sort,12,3,1.41679730
+Bead Sort,12,8,1.53722930
+Bead Sort,12,5,1.58979700
+Bead Sort,12,1,1.69406210
+Bead Sort,12,7,1.79768980
+Bead Sort,12,2,1.87872780
+Bead Sort,12,4,2.04124940
+Bead Sort,12,6,2.14084030
+Bead Sort,12,14,0.97088040
+Bead Sort,12,10,1.22307420
+Bead Sort,12,12,1.34085280
+Bead Sort,12,15,1.50202230
+Bead Sort,12,11,1.61473470
+Bead Sort,12,9,1.67949020
+Bead Sort,12,13,1.73553440
+Bead Sort,12,16,2.06511280
+Bead Sort,12,20,1.33157860
+Bead Sort,12,21,1.24629400
+Bead Sort,12,17,1.89718750
+Bead Sort,12,22,1.21189730
+Bead Sort,12,19,1.57119110
+Bead Sort,12,18,1.74623480
+Bead Sort,12,23,1.45718580
+Bead Sort,12,24,1.49349810
+Bead Sort,12,28,1.15386330
+Bead Sort,12,27,1.27909190
+Bead Sort,12,30,1.31334930
+Bead Sort,12,29,1.41450970
+Bead Sort,12,26,1.50030290
+Bead Sort,12,31,1.28633020
+Bead Sort,12,25,1.88480210
+Bead Sort,12,36,1.07133050
+Bead Sort,12,32,1.95257810
+Bead Sort,12,35,1.43750060
+Bead Sort,12,37,1.41242780
+Bead Sort,12,33,1.79824790
+Bead Sort,12,39,1.15170410
+Bead Sort,12,34,1.75324390
+Bead Sort,12,38,1.77127030
+Bead Sort,12,40,1.17692880
+Bead Sort,12,45,1.22832830
+Bead Sort,12,46,1.30877170
+Bead Sort,12,41,1.86624580
+Bead Sort,12,43,1.62407590
+Bead Sort,12,48,1.07894720
+Bead Sort,12,44,1.90216490
+Bead Sort,12,42,2.04304410
+Bead Sort,12,47,1.77202740
+Bead Sort,12,49,1.16870090
+Bead Sort,12,52,1.43022920
+Bead Sort,12,54,1.20155750
+Bead Sort,12,50,1.77285800
+Bead Sort,12,55,1.23918850
+Bead Sort,12,51,1.74786760
+Bead Sort,12,53,1.62244090
+Bead Sort,12,56,1.43560920
+Bead Sort,12,57,1.63297470
+Bead Sort,12,59,1.40300610
+Bead Sort,12,58,1.70428120
+Bead Sort,12,62,1.52117690
+Bead Sort,12,60,1.73295120
+Bead Sort,12,61,1.75554030
+Bead Sort,12,63,1.59504550
+Bead Sort,12,65,1.23710770
+Bead Sort,12,64,1.88794150
+Bead Sort,12,66,1.34929530
+Bead Sort,12,68,1.43251710
+Bead Sort,12,70,1.51107930
+Bead Sort,12,69,1.64791830
+Bead Sort,12,67,1.83355930
+Bead Sort,12,71,1.53476070
+Bead Sort,12,72,1.50320330
+Bead Sort,12,73,1.90890540
+Bead Sort,12,78,0.95096730
+Bead Sort,12,79,1.00257900
+Bead Sort,12,74,1.72400650
+Bead Sort,12,75,1.54034240
+Bead Sort,12,76,1.35728500
+Bead Sort,12,77,1.36585650
+Bead Sort,12,80,1.60607410
+Bead Sort,12,81,1.61041330
+Bead Sort,12,82,1.58044820
+Bead Sort,12,83,1.49711750
+Bead Sort,12,87,1.20464980
+Bead Sort,12,86,1.47030620
+Bead Sort,12,84,1.72897810
+Bead Sort,12,85,1.63935920
+Bead Sort,12,91,0.93854150
+Bead Sort,12,88,1.61026700
+Bead Sort,12,94,1.16500730
+Bead Sort,12,92,1.47440890
+Bead Sort,12,93,1.42788210
+Bead Sort,12,89,1.89003110
+Bead Sort,12,90,2.01359680
+Bead Sort,12,95,1.96018830
+Bead Sort,12,96,1.39245890
+Bead Sort,12,97,1.41732270
+Bead Sort,12,101,0.98634570
+Bead Sort,12,100,1.49624210
+Bead Sort,12,98,1.71643110
+Bead Sort,12,99,1.63077190
+Bead Sort,12,102,1.57054920
+Bead Sort,12,103,1.27936670
+Bead Sort,12,104,1.36764340
+Bead Sort,12,105,1.38587360
+Bead Sort,12,106,1.49338390
+Bead Sort,12,108,1.35319590
+Bead Sort,12,109,1.37291130
+Bead Sort,12,107,1.46990910
+Bead Sort,12,111,1.13053550
+Bead Sort,12,110,1.34009960
+Bead Sort,12,112,1.29408870
+Bead Sort,12,113,1.42860560
+Bead Sort,12,115,1.52213570
+Bead Sort,12,114,1.67833080
+Bead Sort,12,116,1.53445760
+Bead Sort,12,117,1.47696960
+Bead Sort,12,119,1.29797420
+Bead Sort,12,118,1.73852050
+Bead Sort,12,121,1.28158580
+Bead Sort,12,120,1.59938570
+Bead Sort,12,123,1.31200670
+Bead Sort,12,122,1.46870700
+Bead Sort,12,125,1.59288890
+Bead Sort,12,128,1.37089880
+Bead Sort,12,126,1.68231560
+Bead Sort,12,124,1.85878440
+Bead Sort,12,127,1.45687780
+Bead Sort,12,129,1.45172550
+Bead Sort,12,132,1.20777580
+Bead Sort,12,131,1.62238440
+Bead Sort,12,130,1.83280750
+Bead Sort,12,135,1.28083220
+Bead Sort,12,134,1.35884510
+Bead Sort,12,136,1.35456280
+Bead Sort,12,133,1.61377080
+Bead Sort,12,137,1.60043340
+Bead Sort,12,138,1.32446470
+Bead Sort,12,139,1.54226570
+Bead Sort,12,141,1.59694300
+Bead Sort,12,140,1.63526840
+Bead Sort,12,144,1.36450280
+Bead Sort,12,143,1.91040550
+Bead Sort,12,142,2.00061780
+Bead Sort,12,145,1.64896470
+Bead Sort,12,146,1.51970180
+Bead Sort,12,147,1.43742270
+Bead Sort,12,148,1.47282650
+Bead Sort,12,149,1.50541060
+Bead Sort,12,150,1.59862030
+Bead Sort,12,152,1.37119860
+Bead Sort,12,151,1.49467160
+Bead Sort,12,155,0.91534580
+Bead Sort,12,153,1.79856230
+Bead Sort,12,154,1.42809090
+Bead Sort,12,156,1.22462630
+Bead Sort,12,158,1.09327920
+Bead Sort,12,160,0.95087380
+Bead Sort,12,157,1.58268170
+Bead Sort,12,159,1.90464900
+Bead Sort,12,161,1.64893100
+Bead Sort,12,163,1.61763240
+Bead Sort,12,162,1.83207190
+Bead Sort,12,166,1.35124340
+Bead Sort,12,164,1.55272790
+Bead Sort,12,165,2.03765170
+Bead Sort,12,167,1.82105850
+Bead Sort,12,169,1.11451120
+Bead Sort,12,168,1.37421910
+Bead Sort,12,171,0.99098060
+Bead Sort,12,170,1.56189160
+Bead Sort,12,173,1.52076010
+Bead Sort,12,174,1.23703690
+Bead Sort,12,172,1.82522170
+Bead Sort,12,175,1.39790870
+Bead Sort,12,176,1.39405910
+Bead Sort,12,177,1.51888230
+Bead Sort,12,178,1.62315690
+Bead Sort,12,180,1.21460990
+Bead Sort,12,179,1.59229640
+Bead Sort,12,182,1.25761740
+Bead Sort,12,181,1.68906340
+Bead Sort,12,183,1.46649430
+Bead Sort,12,184,1.42199120
+Bead Sort,12,186,1.23598430
+Bead Sort,12,185,1.44637580
+Bead Sort,12,187,1.78861230
+Bead Sort,12,189,1.63965790
+Bead Sort,12,188,1.81700700
+Bead Sort,12,193,1.24484140
+Bead Sort,12,192,1.50828780
+Bead Sort,12,191,1.52194410
+Bead Sort,12,190,1.67564700
+Bead Sort,12,194,1.41365570
+Bead Sort,12,196,1.31494420
+Bead Sort,12,195,1.48474170
+Bead Sort,12,197,1.42179940
+Bead Sort,12,200,1.30444900
+Bead Sort,12,202,1.37075730
+Bead Sort,12,198,1.81141540
+Bead Sort,12,201,1.77122050
+Bead Sort,12,199,1.84683710
+Bead Sort,12,205,1.25693220
+Bead Sort,12,204,1.41382780
+Bead Sort,12,203,1.83811930
+Bead Sort,12,206,1.57815460
+Bead Sort,12,207,1.49440350
+Bead Sort,12,208,1.33313170
+Bead Sort,12,209,1.29020470
+Bead Sort,12,211,1.15980930
+Bead Sort,12,212,1.28834700
+Bead Sort,12,210,1.85084080
+Bead Sort,12,213,1.44836370
+Bead Sort,12,215,1.16440870
+Bead Sort,12,216,1.36791520
+Bead Sort,12,214,1.66080110
+Bead Sort,12,217,1.56124200
+Bead Sort,12,218,1.60807040
+Bead Sort,12,219,1.51180660
+Bead Sort,12,220,1.54388020
+Bead Sort,12,222,1.31629920
+Bead Sort,12,223,1.35261810
+Bead Sort,12,221,1.74471680
+Bead Sort,12,224,1.76213080
+Bead Sort,12,225,1.69273210
+Bead Sort,12,227,1.54727110
+Bead Sort,12,228,1.70596030
+Bead Sort,12,226,1.88863490
+Bead Sort,12,230,1.24857360
+Bead Sort,12,229,1.54152950
+Bead Sort,12,231,1.70249720
+Bead Sort,12,232,1.49246030
+Bead Sort,12,234,1.46218870
+Bead Sort,12,233,1.80293650
+Bead Sort,12,237,1.26095100
+Bead Sort,12,238,1.44023080
+Bead Sort,12,236,1.85211460
+Bead Sort,12,239,1.23013690
+Bead Sort,12,235,2.00513550
+Bead Sort,12,240,1.51927190
+Bead Sort,12,242,1.20842450
+Bead Sort,12,241,1.61735640
+Bead Sort,12,244,1.28102630
+Bead Sort,12,243,1.55250210
+Bead Sort,12,245,1.38716940
+Bead Sort,12,246,1.37773440
+Bead Sort,12,247,1.54915800
+Bead Sort,12,250,0.77268170
+Bead Sort,12,249,1.22140200
+Bead Sort,12,248,1.67352230
+Bead Sort,12,251,1.48792830
+Bead Sort,12,252,1.74771500
+Bead Sort,12,254,1.41158040
+Bead Sort,12,253,1.47566620
+Bead Sort,12,257,1.19141590
+Bead Sort,12,255,1.32584960
+Bead Sort,12,256,1.32788460
+Bead Sort,12,261,0.95515500
+Bead Sort,12,258,1.71597110
+Bead Sort,12,259,1.54593010
+Bead Sort,12,265,1.05599380
+Bead Sort,12,260,1.34553680
+Bead Sort,12,262,1.40730840
+Bead Sort,12,264,1.77061540
+Bead Sort,12,263,1.91513230
+Bead Sort,12,267,1.38709520
+Bead Sort,12,268,1.44025880
+Bead Sort,12,270,1.34409670
+Bead Sort,12,266,1.71043600
+Bead Sort,12,269,1.58649450
+Bead Sort,12,271,1.46511770
+Bead Sort,12,272,1.53473220
+Bead Sort,12,273,1.58396800
+Bead Sort,12,274,1.57589440
+Bead Sort,12,275,1.45753020
+Bead Sort,12,277,1.48894030
+Bead Sort,12,276,1.60735890
+Bead Sort,12,279,1.38268500
+Bead Sort,12,278,1.50976360
+Bead Sort,12,280,1.36346560
+Bead Sort,12,281,1.49432260
+Bead Sort,12,284,1.06335180
+Bead Sort,12,283,1.24025660
+Bead Sort,12,285,1.30766950
+Bead Sort,12,282,1.59381820
+Bead Sort,12,287,1.26257730
+Bead Sort,12,286,1.54963230
+Bead Sort,12,290,1.14551190
+Bead Sort,12,288,1.65746720
+Bead Sort,12,289,1.52519430
+Bead Sort,12,291,1.39695150
+Bead Sort,12,294,1.32701310
+Bead Sort,12,292,1.78859260
+Bead Sort,12,293,1.84352050
+Bead Sort,12,295,1.84787220
+Bead Sort,12,297,1.48681730
+Bead Sort,12,299,1.41810210
+Bead Sort,12,296,1.79522450
+Bead Sort,12,298,1.55214380
+Bead Sort,12,300,1.49600860
+Bead Sort,12,302,1.18193060
+Bead Sort,12,301,1.48229280
+Bead Sort,12,305,0.93730200
+Bead Sort,12,303,1.44577090
+Bead Sort,12,307,1.28800950
+Bead Sort,12,306,1.40334300
+Bead Sort,12,304,1.82404450
+Bead Sort,12,308,1.49871530
+Bead Sort,12,309,1.55128380
+Bead Sort,12,312,1.26678300
+Bead Sort,12,310,1.60849700
+Bead Sort,12,311,1.56148750
+Bead Sort,12,314,1.44411760
+Bead Sort,12,313,1.56536180
+Bead Sort,12,315,1.54941620
+Bead Sort,12,316,1.56293140
+Bead Sort,12,317,1.47102320
+Bead Sort,12,319,1.33029530
+Bead Sort,12,318,1.59504730
+Bead Sort,12,323,0.81448620
+Bead Sort,12,320,1.55026980
+Bead Sort,12,322,1.66411830
+Bead Sort,12,321,1.74245760
+Bead Sort,12,324,1.27659600
+Bead Sort,12,326,1.48906670
+Bead Sort,12,325,1.63234660
+Bead Sort,12,327,1.40696970
+Bead Sort,12,329,1.45646050
+Bead Sort,12,328,1.50000290
+Bead Sort,12,332,1.06118010
+Bead Sort,12,330,1.55071880
+Bead Sort,12,331,1.88948140
+Bead Sort,12,333,1.45567910
+Bead Sort,12,334,1.55890340
+Bead Sort,12,338,1.16098930
+Bead Sort,12,337,1.39874060
+Bead Sort,12,335,1.81092420
+Bead Sort,12,336,1.72535700
+Bead Sort,12,339,1.64339810
+Bead Sort,12,341,1.47106330
+Bead Sort,12,340,1.66935040
+Bead Sort,12,342,1.50659710
+Bead Sort,12,344,1.36844560
+Bead Sort,12,345,1.29622530
+Bead Sort,12,346,1.33038720
+Bead Sort,12,343,1.69587160
+Bead Sort,12,347,1.19219660
+Bead Sort,12,349,1.29521620
+Bead Sort,12,350,1.45103230
+Bead Sort,12,351,1.53696560
+Bead Sort,12,354,1.28747350
+Bead Sort,12,348,1.87033240
+Bead Sort,12,352,1.80341460
+Bead Sort,12,353,1.70304620
+Bead Sort,12,356,1.10274480
+Bead Sort,12,355,1.72455480
+Bead Sort,12,361,0.90418140
+Bead Sort,12,360,1.18701640
+Bead Sort,12,358,1.51113920
+Bead Sort,12,359,1.46989980
+Bead Sort,12,357,1.72201250
+Bead Sort,12,362,1.57657000
+Bead Sort,12,363,1.28822290
+Bead Sort,12,364,1.45569800
+Bead Sort,12,365,1.14891130
+Bead Sort,12,366,1.28551470
+Bead Sort,12,367,1.20162010
+Bead Sort,12,369,1.37149390
+Bead Sort,12,368,1.84538770
+Bead Sort,12,371,1.53562280
+Bead Sort,12,373,1.39829030
+Bead Sort,12,370,1.84938060
+Bead Sort,12,374,1.41084040
+Bead Sort,12,372,1.79749060
+Bead Sort,12,375,1.48302520
+Bead Sort,12,376,1.32064640
+Bead Sort,12,377,1.28930940
+Bead Sort,12,378,1.30902420
+Bead Sort,12,380,1.51395650
+Bead Sort,12,379,1.71268130
+Bead Sort,12,381,1.73227420
+Bead Sort,12,382,1.58374200
+Bead Sort,12,384,1.56944700
+Bead Sort,12,383,1.76044140
+Bead Sort,12,385,1.58192830
+Bead Sort,12,387,1.42248790
+Bead Sort,12,386,2.00285800
+Bead Sort,12,388,1.58224730
+Bead Sort,12,391,1.41534840
+Bead Sort,12,389,1.67250580
+Bead Sort,12,390,1.68667150
+Bead Sort,12,392,1.63022340
+Bead Sort,12,393,1.63380510
+Bead Sort,12,394,1.30297550
+Bead Sort,12,396,1.29579540
+Bead Sort,12,395,1.60309840
+Bead Sort,12,400,1.19148900
+Bead Sort,12,397,1.71095420
+Bead Sort,12,399,1.56734060
+Bead Sort,12,398,1.68294890
+Bead Sort,12,402,1.00034900
+Bead Sort,12,401,1.68903120
+Bead Sort,12,403,1.37563110
+Bead Sort,12,404,1.38483170
+Bead Sort,12,405,1.43461140
+Bead Sort,12,407,1.36648290
+Bead Sort,12,406,1.46220450
+Bead Sort,12,408,1.36226510
+Bead Sort,12,409,1.75954040
+Bead Sort,12,410,1.54935810
+Bead Sort,12,412,1.46997900
+Bead Sort,12,411,1.70332740
+Bead Sort,12,413,1.36410910
+Bead Sort,12,414,1.53906050
+Bead Sort,12,416,1.45347370
+Bead Sort,12,415,1.63278490
+Bead Sort,12,418,1.20006340
+Bead Sort,12,417,1.49270090
+Bead Sort,12,419,1.23156420
+Bead Sort,12,420,1.45787520
+Bead Sort,12,423,1.07505260
+Bead Sort,12,422,1.45080310
+Bead Sort,12,425,1.03093420
+Bead Sort,12,424,1.50785680
+Bead Sort,12,421,2.03972090
+Bead Sort,12,426,1.78941150
+Bead Sort,12,428,1.28199430
+Bead Sort,12,429,1.25612970
+Bead Sort,12,427,1.66660340
+Bead Sort,12,430,1.05691190
+Bead Sort,12,431,1.18819880
+Bead Sort,12,432,1.53989140
+Bead Sort,12,437,0.86681780
+Bead Sort,12,433,1.61839970
+Bead Sort,12,434,1.20596390
+Bead Sort,12,436,2.06670000
+Bead Sort,12,438,1.96418660
+Bead Sort,12,439,1.97095650
+Bead Sort,12,435,2.33342570
+Bead Sort,12,442,1.68917820
+Bead Sort,12,443,1.60539240
+Bead Sort,12,441,1.95961320
+Bead Sort,12,440,2.18793450
+Bead Sort,12,444,1.28418910
+Bead Sort,12,446,1.21428630
+Bead Sort,12,445,1.73048550
+Bead Sort,12,449,1.15979880
+Bead Sort,12,447,1.59161210
+Bead Sort,12,448,1.34376040
+Bead Sort,12,450,1.44596710
+Bead Sort,12,451,1.40188420
+Bead Sort,12,452,1.40543600
+Bead Sort,12,453,1.68809870
+Bead Sort,12,455,1.33272650
+Bead Sort,12,456,1.46680570
+Bead Sort,12,454,1.67768900
+Bead Sort,12,457,1.48331920
+Bead Sort,12,458,1.44203730
+Bead Sort,12,459,1.60051850
+Bead Sort,12,460,1.32888620
+Bead Sort,12,462,1.06200610
+Bead Sort,12,464,0.94027170
+Bead Sort,12,461,1.33455200
+Bead Sort,12,463,1.34987950
+Bead Sort,12,466,1.21382120
+Bead Sort,12,465,1.49556970
+Bead Sort,12,468,1.31610600
+Bead Sort,12,469,1.10548930
+Bead Sort,12,471,0.93051170
+Bead Sort,12,467,1.56268320
+Bead Sort,12,470,1.35842800
+Bead Sort,12,472,1.42219780
+Bead Sort,12,473,1.44859520
+Bead Sort,12,476,1.06038670
+Bead Sort,12,474,1.75231490
+Bead Sort,12,477,1.38669760
+Bead Sort,12,475,1.48808010
+Bead Sort,12,478,1.26539450
+Bead Sort,12,479,1.38212460
+Bead Sort,12,480,1.11539270
+Bead Sort,12,481,1.21719000
+Bead Sort,12,483,1.13398620
+Bead Sort,12,482,1.47164860
+Bead Sort,12,486,1.09684880
+Bead Sort,12,484,1.15406830
+Bead Sort,12,485,1.29324370
+Bead Sort,12,487,1.27258900
+Bead Sort,12,488,1.50689560
+Bead Sort,12,489,1.21106340
+Bead Sort,12,494,1.04261460
+Bead Sort,12,491,1.34271010
+Bead Sort,12,493,1.37296770
+Bead Sort,12,490,1.68357430
+Bitonic Sort Parallel,12,1,0.00053450
+Bitonic Sort Parallel,12,2,0.00031370
+Bitonic Sort Parallel,12,3,0.00030090
+Bitonic Sort Parallel,12,4,0.00029300
+Bitonic Sort Parallel,12,5,0.00031540
+Bitonic Sort Parallel,12,6,0.00031940
+Bitonic Sort Parallel,12,7,0.00034830
+Bitonic Sort Parallel,12,8,0.00032720
+Bitonic Sort Parallel,12,9,0.00033050
+Bitonic Sort Parallel,12,10,0.00031510
+Bitonic Sort Parallel,12,11,0.00034510
+Bitonic Sort Parallel,12,12,0.00034170
+Bitonic Sort Parallel,12,13,0.00032930
+Bitonic Sort Parallel,12,14,0.00030750
+Bitonic Sort Parallel,12,15,0.00027860
+Bitonic Sort Parallel,12,16,0.00027890
+Bitonic Sort Parallel,12,17,0.00033480
+Bitonic Sort Parallel,12,18,0.00029660
+Bitonic Sort Parallel,12,19,0.00025690
+Bitonic Sort Parallel,12,20,0.00027830
+Bitonic Sort Parallel,12,21,0.00030980
+Bitonic Sort Parallel,12,22,0.00029210
+Bitonic Sort Parallel,12,23,0.00024170
+Bitonic Sort Parallel,12,24,0.00024310
+Bitonic Sort Parallel,12,25,0.00023620
+Bitonic Sort Parallel,12,26,0.00030070
+Bitonic Sort Parallel,12,27,0.00031310
+Bitonic Sort Parallel,12,28,0.00033140
+Bitonic Sort Parallel,12,29,0.00035220
+Bitonic Sort Parallel,12,30,0.00033820
+Bitonic Sort Parallel,12,31,0.00035090
+Bitonic Sort Parallel,12,32,0.00034540
+Bitonic Sort Parallel,12,33,0.00031830
+Bitonic Sort Parallel,12,34,0.00035070
+Bitonic Sort Parallel,12,35,0.00029640
+Bitonic Sort Parallel,12,36,0.00029510
+Bitonic Sort Parallel,12,37,0.00035000
+Bitonic Sort Parallel,12,38,0.00033880
+Bitonic Sort Parallel,12,39,0.00033880
+Bitonic Sort Parallel,12,40,0.00034060
+Bitonic Sort Parallel,12,41,0.00033100
+Bitonic Sort Parallel,12,42,0.00031710
+Bitonic Sort Parallel,12,43,0.00024870
+Bitonic Sort Parallel,12,44,0.00029600
+Bitonic Sort Parallel,12,45,0.00024940
+Bitonic Sort Parallel,12,46,0.00029190
+Bitonic Sort Parallel,12,47,0.00031150
+Bitonic Sort Parallel,12,48,0.00024910
+Bitonic Sort Parallel,12,49,0.00031270
+Bitonic Sort Parallel,12,50,0.00031290
+Bitonic Sort Parallel,12,51,0.00024310
+Bitonic Sort Parallel,12,52,0.00034700
+Bitonic Sort Parallel,12,53,0.00030300
+Bitonic Sort Parallel,12,54,0.00030400
+Bitonic Sort Parallel,12,55,0.00031290
+Bitonic Sort Parallel,12,56,0.00027890
+Bitonic Sort Parallel,12,57,0.00030060
+Bitonic Sort Parallel,12,58,0.00028950
+Bitonic Sort Parallel,12,59,0.00032560
+Bitonic Sort Parallel,12,60,0.00030580
+Bitonic Sort Parallel,12,61,0.00024510
+Bitonic Sort Parallel,12,62,0.00031840
+Bitonic Sort Parallel,12,63,0.00036640
+Bitonic Sort Parallel,12,64,0.00035530
+Bitonic Sort Parallel,12,65,0.00032460
+Bitonic Sort Parallel,12,66,0.00033020
+Bitonic Sort Parallel,12,67,0.00031370
+Bitonic Sort Parallel,12,68,0.00032190
+Bitonic Sort Parallel,12,69,0.00031690
+Bead Sort,12,492,1.64187620
+Bitonic Sort Parallel,12,70,0.00031450
+Bitonic Sort Parallel,12,72,0.00032150
+Bitonic Sort Parallel,12,71,0.00054520
+Bitonic Sort Parallel,12,73,0.00031030
+Bitonic Sort Parallel,12,74,0.00028840
+Bitonic Sort Parallel,12,75,0.00031640
+Bitonic Sort Parallel,12,76,0.00026880
+Bitonic Sort Parallel,12,77,0.00031150
+Bitonic Sort Parallel,12,78,0.00026630
+Bitonic Sort Parallel,12,79,0.00030790
+Bitonic Sort Parallel,12,80,0.00033700
+Bitonic Sort Parallel,12,81,0.00032530
+Bitonic Sort Parallel,12,82,0.00034120
+Bitonic Sort Parallel,12,83,0.00031120
+Bitonic Sort Parallel,12,84,0.00031520
+Bitonic Sort Parallel,12,85,0.00031830
+Bitonic Sort Parallel,12,86,0.00027750
+Bitonic Sort Parallel,12,87,0.00031600
+Bitonic Sort Parallel,12,88,0.00025040
+Bitonic Sort Parallel,12,89,0.00031460
+Bitonic Sort Parallel,12,90,0.00032150
+Bitonic Sort Parallel,12,92,0.00028650
+Bitonic Sort Parallel,12,91,0.00032950
+Bitonic Sort Parallel,12,93,0.00028510
+Bitonic Sort Parallel,12,94,0.00031380
+Bitonic Sort Parallel,12,95,0.00027300
+Bitonic Sort Parallel,12,96,0.00031580
+Bitonic Sort Parallel,12,97,0.00026340
+Bitonic Sort Parallel,12,98,0.00032030
+Bitonic Sort Parallel,12,99,0.00027900
+Bitonic Sort Parallel,12,100,0.00031280
+Bitonic Sort Parallel,12,101,0.00024420
+Bitonic Sort Parallel,12,102,0.00031940
+Bitonic Sort Parallel,12,103,0.00028920
+Bitonic Sort Parallel,12,105,0.00024800
+Bitonic Sort Parallel,12,104,0.00031430
+Bitonic Sort Parallel,12,106,0.00028270
+Bitonic Sort Parallel,12,107,0.00030930
+Bitonic Sort Parallel,12,108,0.00025260
+Bitonic Sort Parallel,12,109,0.00032330
+Bitonic Sort Parallel,12,110,0.00025440
+Bitonic Sort Parallel,12,111,0.00031560
+Bitonic Sort Parallel,12,112,0.00024140
+Bitonic Sort Parallel,12,114,0.00024640
+Bitonic Sort Parallel,12,113,0.00031200
+Bitonic Sort Parallel,12,116,0.00027660
+Bitonic Sort Parallel,12,115,0.00032250
+Bitonic Sort Parallel,12,117,0.00028580
+Bitonic Sort Parallel,12,118,0.00031740
+Bitonic Sort Parallel,12,119,0.00027120
+Bitonic Sort Parallel,12,120,0.00032170
+Bitonic Sort Parallel,12,121,0.00031600
+Bitonic Sort Parallel,12,122,0.00031740
+Bitonic Sort Parallel,12,123,0.00025010
+Bitonic Sort Parallel,12,124,0.00031050
+Bitonic Sort Parallel,12,125,0.00025700
+Bitonic Sort Parallel,12,126,0.00031920
+Bitonic Sort Parallel,12,127,0.00025880
+Bitonic Sort Parallel,12,128,0.00031090
+Bitonic Sort Parallel,12,129,0.00025040
+Bitonic Sort Parallel,12,131,0.00027800
+Bitonic Sort Parallel,12,130,0.00032170
+Bitonic Sort Parallel,12,132,0.00025900
+Bitonic Sort Parallel,12,133,0.00031290
+Bitonic Sort Parallel,12,134,0.00025170
+Bitonic Sort Parallel,12,135,0.00031250
+Bitonic Sort Parallel,12,136,0.00026050
+Bitonic Sort Parallel,12,137,0.00033420
+Bitonic Sort Parallel,12,138,0.00043900
+Bitonic Sort Parallel,12,139,0.00038370
+Bitonic Sort Parallel,12,140,0.00028330
+Bitonic Sort Parallel,12,141,0.00031670
+Bitonic Sort Parallel,12,142,0.00032960
+Bitonic Sort Parallel,12,143,0.00030620
+Bitonic Sort Parallel,12,144,0.00025350
+Bitonic Sort Parallel,12,145,0.00030920
+Bitonic Sort Parallel,12,146,0.00028250
+Bitonic Sort Parallel,12,147,0.00028360
+Bitonic Sort Parallel,12,148,0.00025140
+Bitonic Sort Parallel,12,150,0.00024660
+Bitonic Sort Parallel,12,149,0.00030540
+Bitonic Sort Parallel,12,151,0.00033040
+Bitonic Sort Parallel,12,152,0.00036610
+Bitonic Sort Parallel,12,153,0.00028550
+Bitonic Sort Parallel,12,154,0.00034050
+Bitonic Sort Parallel,12,155,0.00034540
+Bitonic Sort Parallel,12,156,0.00033540
+Bitonic Sort Parallel,12,157,0.00033830
+Bitonic Sort Parallel,12,158,0.00034600
+Bitonic Sort Parallel,12,159,0.00029430
+Bitonic Sort Parallel,12,160,0.00031660
+Bitonic Sort Parallel,12,161,0.00025720
+Bitonic Sort Parallel,12,162,0.00031330
+Bitonic Sort Parallel,12,163,0.00033650
+Bitonic Sort Parallel,12,164,0.00031780
+Bitonic Sort Parallel,12,165,0.00028730
+Bitonic Sort Parallel,12,166,0.00031740
+Bitonic Sort Parallel,12,167,0.00033350
+Bitonic Sort Parallel,12,168,0.00032770
+Bitonic Sort Parallel,12,169,0.00027620
+Bitonic Sort Parallel,12,170,0.00031530
+Bitonic Sort Parallel,12,171,0.00030540
+Bitonic Sort Parallel,12,172,0.00031620
+Bitonic Sort Parallel,12,173,0.00028120
+Bitonic Sort Parallel,12,174,0.00032680
+Bitonic Sort Parallel,12,175,0.00027950
+Bitonic Sort Parallel,12,176,0.00031690
+Bitonic Sort Parallel,12,177,0.00035600
+Bitonic Sort Parallel,12,178,0.00032480
+Bitonic Sort Parallel,12,179,0.00030420
+Bitonic Sort Parallel,12,180,0.00031930
+Bitonic Sort Parallel,12,181,0.00032080
+Bitonic Sort Parallel,12,182,0.00031930
+Bitonic Sort Parallel,12,183,0.00027730
+Bitonic Sort Parallel,12,185,0.00028140
+Bitonic Sort Parallel,12,184,0.00033820
+Bitonic Sort Parallel,12,186,0.00025060
+Bitonic Sort Parallel,12,187,0.00031460
+Bitonic Sort Parallel,12,188,0.00037630
+Bitonic Sort Parallel,12,189,0.00032140
+Bitonic Sort Parallel,12,190,0.00035270
+Bitonic Sort Parallel,12,191,0.00031670
+Bitonic Sort Parallel,12,192,0.00027190
+Bitonic Sort Parallel,12,193,0.00029580
+Bitonic Sort Parallel,12,194,0.00025620
+Bitonic Sort Parallel,12,195,0.00027230
+Bitonic Sort Parallel,12,196,0.00030350
+Bitonic Sort Parallel,12,197,0.00026440
+Bitonic Sort Parallel,12,198,0.00025070
+Bitonic Sort Parallel,12,199,0.00024600
+Bitonic Sort Parallel,12,200,0.00031630
+Bitonic Sort Parallel,12,201,0.00029890
+Bitonic Sort Parallel,12,203,0.00029610
+Bitonic Sort Parallel,12,202,0.00033020
+Bitonic Sort Parallel,12,204,0.00028830
+Bitonic Sort Parallel,12,205,0.00034660
+Bitonic Sort Parallel,12,206,0.00028110
+Bitonic Sort Parallel,12,207,0.00030120
+Bitonic Sort Parallel,12,208,0.00027300
+Bitonic Sort Parallel,12,209,0.00036240
+Bitonic Sort Parallel,12,210,0.00026770
+Bitonic Sort Parallel,12,211,0.00033630
+Bitonic Sort Parallel,12,212,0.00028860
+Bitonic Sort Parallel,12,214,0.00027160
+Bitonic Sort Parallel,12,213,0.00036160
+Bitonic Sort Parallel,12,215,0.00029980
+Bitonic Sort Parallel,12,216,0.00034120
+Bitonic Sort Parallel,12,217,0.00028670
+Bitonic Sort Parallel,12,218,0.00034500
+Bitonic Sort Parallel,12,219,0.00025700
+Bitonic Sort Parallel,12,220,0.00029960
+Bitonic Sort Parallel,12,221,0.00026180
+Bitonic Sort Parallel,12,222,0.00039980
+Bitonic Sort Parallel,12,223,0.00039270
+Bitonic Sort Parallel,12,225,0.00026050
+Bitonic Sort Parallel,12,224,0.00035510
+Bitonic Sort Parallel,12,226,0.00030340
+Bitonic Sort Parallel,12,227,0.00033270
+Bitonic Sort Parallel,12,228,0.00034920
+Bitonic Sort Parallel,12,229,0.00034840
+Bitonic Sort Parallel,12,230,0.00026680
+Bitonic Sort Parallel,12,231,0.00027740
+Bitonic Sort Parallel,12,232,0.00037900
+Bitonic Sort Parallel,12,233,0.00035500
+Bitonic Sort Parallel,12,235,0.00026910
+Bitonic Sort Parallel,12,234,0.00035060
+Bitonic Sort Parallel,12,236,0.00030120
+Bitonic Sort Parallel,12,237,0.00031620
+Bitonic Sort Parallel,12,239,0.00031010
+Bitonic Sort Parallel,12,238,0.00036980
+Bitonic Sort Parallel,12,240,0.00025210
+Bitonic Sort Parallel,12,241,0.00037450
+Bitonic Sort Parallel,12,242,0.00025080
+Bitonic Sort Parallel,12,243,0.00027160
+Bitonic Sort Parallel,12,244,0.00029350
+Bitonic Sort Parallel,12,245,0.00035040
+Bitonic Sort Parallel,12,246,0.00026700
+Bitonic Sort Parallel,12,248,0.00026890
+Bitonic Sort Parallel,12,247,0.00035090
+Bitonic Sort Parallel,12,249,0.00040700
+Bitonic Sort Parallel,12,250,0.00038950
+Bitonic Sort Parallel,12,252,0.00036450
+Bitonic Sort Parallel,12,251,0.00041290
+Bitonic Sort Parallel,12,253,0.00034840
+Bitonic Sort Parallel,12,254,0.00047990
+Bitonic Sort Parallel,12,255,0.00034260
+Bitonic Sort Parallel,12,256,0.00030190
+Bitonic Sort Parallel,12,257,0.00032960
+Bitonic Sort Parallel,12,258,0.00029530
+Bitonic Sort Parallel,12,259,0.00031530
+Bitonic Sort Parallel,12,260,0.00033270
+Bitonic Sort Parallel,12,261,0.00031720
+Bitonic Sort Parallel,12,262,0.00028600
+Bitonic Sort Parallel,12,263,0.00031300
+Bitonic Sort Parallel,12,264,0.00038650
+Bitonic Sort Parallel,12,265,0.00031990
+Bitonic Sort Parallel,12,266,0.00046880
+Bitonic Sort Parallel,12,267,0.00033360
+Bitonic Sort Parallel,12,268,0.00034540
+Bitonic Sort Parallel,12,269,0.00044210
+Bitonic Sort Parallel,12,270,0.00034030
+Bitonic Sort Parallel,12,271,0.00046880
+Bitonic Sort Parallel,12,272,0.00035850
+Bitonic Sort Parallel,12,274,0.00036210
+Bitonic Sort Parallel,12,273,0.00045400
+Bitonic Sort Parallel,12,275,0.00040170
+Bitonic Sort Parallel,12,276,0.00038600
+Bitonic Sort Parallel,12,277,0.00039530
+Bitonic Sort Parallel,12,278,0.00037170
+Bitonic Sort Parallel,12,280,0.00035440
+Bitonic Sort Parallel,12,279,0.00040870
+Bitonic Sort Parallel,12,281,0.00043210
+Bitonic Sort Parallel,12,282,0.00039570
+Bitonic Sort Parallel,12,283,0.00043510
+Bitonic Sort Parallel,12,284,0.00045190
+Bitonic Sort Parallel,12,286,0.00033430
+Bitonic Sort Parallel,12,285,0.00046370
+Bitonic Sort Parallel,12,287,0.00045380
+Bitonic Sort Parallel,12,288,0.00040050
+Bitonic Sort Parallel,12,289,0.00039910
+Bitonic Sort Parallel,12,290,0.00039410
+Bitonic Sort Parallel,12,291,0.00040490
+Bitonic Sort Parallel,12,292,0.00043000
+Bitonic Sort Parallel,12,293,0.00042020
+Bitonic Sort Parallel,12,294,0.00046600
+Bitonic Sort Parallel,12,295,0.00041740
+Bitonic Sort Parallel,12,296,0.00042880
+Bitonic Sort Parallel,12,297,0.00034610
+Bitonic Sort Parallel,12,298,0.00034980
+Bitonic Sort Parallel,12,299,0.00037300
+Bitonic Sort Parallel,12,300,0.00036390
+Bitonic Sort Parallel,12,301,0.00040930
+Bitonic Sort Parallel,12,302,0.00043670
+Bitonic Sort Parallel,12,303,0.00041320
+Bitonic Sort Parallel,12,304,0.00029900
+Bitonic Sort Parallel,12,305,0.00039580
+Bitonic Sort Parallel,12,306,0.00036600
+Bitonic Sort Parallel,12,307,0.00039670
+Bitonic Sort Parallel,12,308,0.00036870
+Bitonic Sort Parallel,12,310,0.00034510
+Bitonic Sort Parallel,12,309,0.00038640
+Bitonic Sort Parallel,12,311,0.00032430
+Bitonic Sort Parallel,12,312,0.00040990
+Bitonic Sort Parallel,12,313,0.00032310
+Bitonic Sort Parallel,12,314,0.00038180
+Bitonic Sort Parallel,12,315,0.00031530
+Bitonic Sort Parallel,12,316,0.00038920
+Bitonic Sort Parallel,12,317,0.00031560
+Bitonic Sort Parallel,12,318,0.00035100
+Bitonic Sort Parallel,12,319,0.00030930
+Bitonic Sort Parallel,12,321,0.00031000
+Bitonic Sort Parallel,12,320,0.00041390
+Bitonic Sort Parallel,12,322,0.00031470
+Bitonic Sort Parallel,12,323,0.00029020
+Bitonic Sort Parallel,12,324,0.00031480
+Bitonic Sort Parallel,12,325,0.00041220
+Bitonic Sort Parallel,12,326,0.00031150
+Bitonic Sort Parallel,12,327,0.00043240
+Bitonic Sort Parallel,12,328,0.00031550
+Bitonic Sort Parallel,12,330,0.00031250
+Bitonic Sort Parallel,12,329,0.00041010
+Bitonic Sort Parallel,12,331,0.00034190
+Bitonic Sort Parallel,12,332,0.00049670
+Bitonic Sort Parallel,12,333,0.00048390
+Bitonic Sort Parallel,12,334,0.00033870
+Bitonic Sort Parallel,12,336,0.00040510
+Bitonic Sort Parallel,12,335,0.00043310
+Bitonic Sort Parallel,12,337,0.00034040
+Bitonic Sort Parallel,12,338,0.00036360
+Bitonic Sort Parallel,12,339,0.00032540
+Bitonic Sort Parallel,12,340,0.00034830
+Bitonic Sort Parallel,12,341,0.00031580
+Bitonic Sort Parallel,12,342,0.00032720
+Bitonic Sort Parallel,12,343,0.00031630
+Bitonic Sort Parallel,12,344,0.00032100
+Bitonic Sort Parallel,12,345,0.00032180
+Bitonic Sort Parallel,12,346,0.00045800
+Bitonic Sort Parallel,12,347,0.00031220
+Bitonic Sort Parallel,12,349,0.00036870
+Bitonic Sort Parallel,12,348,0.00049870
+Bitonic Sort Parallel,12,350,0.00036050
+Bitonic Sort Parallel,12,351,0.00043070
+Bitonic Sort Parallel,12,352,0.00032520
+Bitonic Sort Parallel,12,353,0.00041880
+Bitonic Sort Parallel,12,354,0.00032720
+Bitonic Sort Parallel,12,355,0.00040610
+Bitonic Sort Parallel,12,356,0.00039300
+Bitonic Sort Parallel,12,358,0.00034290
+Bitonic Sort Parallel,12,357,0.00050620
+Bitonic Sort Parallel,12,359,0.00031950
+Bitonic Sort Parallel,12,360,0.00044540
+Bitonic Sort Parallel,12,361,0.00031280
+Bitonic Sort Parallel,12,362,0.00046520
+Bitonic Sort Parallel,12,363,0.00039980
+Bitonic Sort Parallel,12,364,0.00042020
+Bitonic Sort Parallel,12,365,0.00033700
+Bitonic Sort Parallel,12,367,0.00033670
+Bitonic Sort Parallel,12,366,0.00045970
+Bitonic Sort Parallel,12,368,0.00031780
+Bitonic Sort Parallel,12,369,0.00040660
+Bitonic Sort Parallel,12,370,0.00031730
+Bitonic Sort Parallel,12,372,0.00032220
+Bitonic Sort Parallel,12,371,0.00047850
+Bitonic Sort Parallel,12,373,0.00032460
+Bitonic Sort Parallel,12,374,0.00028710
+Bitonic Sort Parallel,12,375,0.00032340
+Bitonic Sort Parallel,12,376,0.00036740
+Bitonic Sort Parallel,12,377,0.00031440
+Bitonic Sort Parallel,12,378,0.00032660
+Bitonic Sort Parallel,12,379,0.00031380
+Bitonic Sort Parallel,12,380,0.00032120
+Bitonic Sort Parallel,12,381,0.00032440
+Bitonic Sort Parallel,12,382,0.00031520
+Bitonic Sort Parallel,12,383,0.00031710
+Bitonic Sort Parallel,12,384,0.00031650
+Bitonic Sort Parallel,12,385,0.00031970
+Bitonic Sort Parallel,12,386,0.00032290
+Bitonic Sort Parallel,12,387,0.00031770
+Bitonic Sort Parallel,12,388,0.00031310
+Bitonic Sort Parallel,12,389,0.00031250
+Bitonic Sort Parallel,12,390,0.00031410
+Bitonic Sort Parallel,12,391,0.00038120
+Bitonic Sort Parallel,12,392,0.00032040
+Bitonic Sort Parallel,12,393,0.00034120
+Bitonic Sort Parallel,12,394,0.00031300
+Bitonic Sort Parallel,12,395,0.00034010
+Bitonic Sort Parallel,12,396,0.00031280
+Bitonic Sort Parallel,12,397,0.00032380
+Bitonic Sort Parallel,12,398,0.00034030
+Bitonic Sort Parallel,12,399,0.00032260
+Bitonic Sort Parallel,12,400,0.00033960
+Bitonic Sort Parallel,12,401,0.00033740
+Bitonic Sort Parallel,12,402,0.00034310
+Bitonic Sort Parallel,12,403,0.00031810
+Bitonic Sort Parallel,12,404,0.00026030
+Bitonic Sort Parallel,12,405,0.00034030
+Bitonic Sort Parallel,12,406,0.00034490
+Bitonic Sort Parallel,12,407,0.00026710
+Bitonic Sort Parallel,12,408,0.00033140
+Bitonic Sort Parallel,12,409,0.00025410
+Bitonic Sort Parallel,12,410,0.00026510
+Bitonic Sort Parallel,12,411,0.00025140
+Bitonic Sort Parallel,12,412,0.00029880
+Bitonic Sort Parallel,12,413,0.00024840
+Bitonic Sort Parallel,12,414,0.00027610
+Bitonic Sort Parallel,12,415,0.00024280
+Bitonic Sort Parallel,12,416,0.00037070
+Bitonic Sort Parallel,12,417,0.00036630
+Bitonic Sort Parallel,12,418,0.00034540
+Bitonic Sort Parallel,12,419,0.00035780
+Bitonic Sort Parallel,12,420,0.00033020
+Bitonic Sort Parallel,12,421,0.00033630
+Bitonic Sort Parallel,12,422,0.00034990
+Bitonic Sort Parallel,12,423,0.00027680
+Bitonic Sort Parallel,12,424,0.00032950
+Bitonic Sort Parallel,12,425,0.00025970
+Bitonic Sort Parallel,12,426,0.00033090
+Bitonic Sort Parallel,12,427,0.00027080
+Bitonic Sort Parallel,12,428,0.00034580
+Bitonic Sort Parallel,12,429,0.00034260
+Bitonic Sort Parallel,12,430,0.00038230
+Bitonic Sort Parallel,12,431,0.00032710
+Bitonic Sort Parallel,12,432,0.00031350
+Bitonic Sort Parallel,12,433,0.00037060
+Bitonic Sort Parallel,12,434,0.00035570
+Bitonic Sort Parallel,12,435,0.00051300
+Bitonic Sort Parallel,12,436,0.00029810
+Bitonic Sort Parallel,12,438,0.00034180
+Bitonic Sort Parallel,12,437,0.00047220
+Bitonic Sort Parallel,12,439,0.00033580
+Bitonic Sort Parallel,12,440,0.00046800
+Bitonic Sort Parallel,12,441,0.00035490
+Bitonic Sort Parallel,12,442,0.00045510
+Bitonic Sort Parallel,12,443,0.00032570
+Bitonic Sort Parallel,12,444,0.00042710
+Bitonic Sort Parallel,12,445,0.00040560
+Bitonic Sort Parallel,12,446,0.00036220
+Bitonic Sort Parallel,12,447,0.00046070
+Bitonic Sort Parallel,12,448,0.00032900
+Bitonic Sort Parallel,12,449,0.00045120
+Bitonic Sort Parallel,12,450,0.00033890
+Bitonic Sort Parallel,12,452,0.00025710
+Bitonic Sort Parallel,12,451,0.00046740
+Bitonic Sort Parallel,12,453,0.00030310
+Bitonic Sort Parallel,12,455,0.00027100
+Bitonic Sort Parallel,12,454,0.00047580
+Bitonic Sort Parallel,12,456,0.00040480
+Bitonic Sort Parallel,12,457,0.00047730
+Bitonic Sort Parallel,12,458,0.00035510
+Bitonic Sort Parallel,12,459,0.00046030
+Bitonic Sort Parallel,12,460,0.00032420
+Bitonic Sort Parallel,12,462,0.00032480
+Bitonic Sort Parallel,12,461,0.00043640
+Bitonic Sort Parallel,12,463,0.00039480
+Bitonic Sort Parallel,12,464,0.00041300
+Bitonic Sort Parallel,12,465,0.00040510
+Bitonic Sort Parallel,12,466,0.00036540
+Bitonic Sort Parallel,12,468,0.00035490
+Bitonic Sort Parallel,12,467,0.00038170
+Bitonic Sort Parallel,12,470,0.00037280
+Bitonic Sort Parallel,12,469,0.00050120
+Bitonic Sort Parallel,12,471,0.00026390
+Bitonic Sort Parallel,12,472,0.00045430
+Bitonic Sort Parallel,12,473,0.00029870
+Bitonic Sort Parallel,12,475,0.00036560
+Bitonic Sort Parallel,12,474,0.00039640
+Bitonic Sort Parallel,12,477,0.00039400
+Bitonic Sort Parallel,12,476,0.00042080
+Bitonic Sort Parallel,12,479,0.00037080
+Bitonic Sort Parallel,12,478,0.00045250
+Bitonic Sort Parallel,12,480,0.00032930
+Bitonic Sort Parallel,12,481,0.00045040
+Bitonic Sort Parallel,12,482,0.00032240
+Bitonic Sort Parallel,12,483,0.00047650
+Bitonic Sort Parallel,12,484,0.00031930
+Bitonic Sort Parallel,12,486,0.00041640
+Bitonic Sort Parallel,12,485,0.00045100
+Bitonic Sort Parallel,12,488,0.00035610
+Bitonic Sort Parallel,12,487,0.00039500
+Bitonic Sort Parallel,12,490,0.00038550
+Bitonic Sort Parallel,12,489,0.00040490
+Bitonic Sort Parallel,12,491,0.00038630
+Bitonic Sort Parallel,12,492,0.00036030
+Bitonic Sort Parallel,12,494,0.00034890
+Bitonic Sort Parallel,12,493,0.00037530
+Bitonic Sort Parallel,12,496,0.00039920
+Bitonic Sort Parallel,12,495,0.00042460
+Bitonic Sort Parallel,12,498,0.00036530
+Bitonic Sort Parallel,12,497,0.00039140
+Bitonic Sort Parallel,12,499,0.00040090
+Bitonic Sort Parallel,12,500,0.00039480
+Block Sort,12,1,0.00004860
+Block Sort,12,2,0.00003500
+Block Sort,12,3,0.00004150
+Block Sort,12,4,0.00002600
+Block Sort,12,6,0.00002410
+Block Sort,12,5,0.00003740
+Block Sort,12,7,0.00001880
+Block Sort,12,8,0.00003190
+Block Sort,12,9,0.00002340
+Block Sort,12,10,0.00002220
+Block Sort,12,11,0.00002250
+Block Sort,12,12,0.00003130
+Block Sort,12,13,0.00002480
+Block Sort,12,14,0.00003050
+Block Sort,12,15,0.00002360
+Block Sort,12,16,0.00002980
+Block Sort,12,17,0.00003070
+Block Sort,12,18,0.00002970
+Block Sort,12,19,0.00003000
+Block Sort,12,20,0.00002960
+Block Sort,12,21,0.00003030
+Block Sort,12,22,0.00003000
+Block Sort,12,23,0.00002940
+Block Sort,12,24,0.00003270
+Block Sort,12,25,0.00002820
+Block Sort,12,26,0.00002950
+Block Sort,12,27,0.00002840
+Block Sort,12,28,0.00002990
+Block Sort,12,29,0.00002370
+Block Sort,12,30,0.00002890
+Block Sort,12,31,0.00002990
+Block Sort,12,32,0.00002980
+Block Sort,12,33,0.00002920
+Block Sort,12,34,0.00002950
+Block Sort,12,35,0.00002310
+Block Sort,12,36,0.00003040
+Block Sort,12,37,0.00002240
+Block Sort,12,38,0.00002940
+Block Sort,12,39,0.00002970
+Block Sort,12,40,0.00003020
+Block Sort,12,41,0.00002860
+Block Sort,12,42,0.00002960
+Block Sort,12,43,0.00002970
+Block Sort,12,44,0.00003050
+Block Sort,12,45,0.00002900
+Block Sort,12,46,0.00002960
+Block Sort,12,47,0.00002580
+Block Sort,12,48,0.00002940
+Block Sort,12,49,0.00002480
+Block Sort,12,50,0.00002950
+Block Sort,12,51,0.00002310
+Block Sort,12,52,0.00003010
+Block Sort,12,53,0.00003030
+Block Sort,12,54,0.00002960
+Block Sort,12,55,0.00002960
+Block Sort,12,56,0.00002940
+Block Sort,12,57,0.00002970
+Block Sort,12,58,0.00002950
+Block Sort,12,59,0.00002860
+Block Sort,12,60,0.00002940
+Block Sort,12,61,0.00003040
+Block Sort,12,62,0.00003010
+Block Sort,12,63,0.00002930
+Block Sort,12,64,0.00002360
+Block Sort,12,65,0.00002900
+Block Sort,12,66,0.00002970
+Block Sort,12,67,0.00002950
+Block Sort,12,68,0.00002900
+Block Sort,12,69,0.00002990
+Block Sort,12,70,0.00002810
+Block Sort,12,71,0.00003020
+Block Sort,12,72,0.00003000
+Block Sort,12,73,0.00002740
+Block Sort,12,74,0.00002980
+Block Sort,12,75,0.00002890
+Block Sort,12,76,0.00002960
+Block Sort,12,77,0.00002870
+Block Sort,12,78,0.00002930
+Block Sort,12,79,0.00003500
+Block Sort,12,80,0.00003010
+Block Sort,12,81,0.00003020
+Block Sort,12,82,0.00002960
+Block Sort,12,83,0.00003730
+Block Sort,12,84,0.00002470
+Block Sort,12,85,0.00002370
+Block Sort,12,86,0.00003010
+Block Sort,12,87,0.00002310
+Block Sort,12,88,0.00002300
+Block Sort,12,89,0.00002910
+Block Sort,12,90,0.00002280
+Block Sort,12,91,0.00002840
+Block Sort,12,92,0.00002960
+Block Sort,12,93,0.00002910
+Block Sort,12,94,0.00002910
+Block Sort,12,95,0.00003420
+Block Sort,12,96,0.00002210
+Block Sort,12,97,0.00002240
+Block Sort,12,98,0.00003100
+Block Sort,12,99,0.00002210
+Block Sort,12,100,0.00002920
+Block Sort,12,101,0.00002350
+Block Sort,12,102,0.00002460
+Block Sort,12,103,0.00002240
+Block Sort,12,104,0.00002260
+Block Sort,12,105,0.00002690
+Block Sort,12,106,0.00002900
+Block Sort,12,107,0.00002220
+Block Sort,12,108,0.00002270
+Block Sort,12,109,0.00002220
+Block Sort,12,110,0.00002210
+Block Sort,12,111,0.00002230
+Block Sort,12,112,0.00002970
+Block Sort,12,113,0.00002380
+Block Sort,12,114,0.00002320
+Block Sort,12,115,0.00002310
+Block Sort,12,116,0.00002980
+Block Sort,12,117,0.00003040
+Block Sort,12,118,0.00002280
+Block Sort,12,119,0.00002800
+Block Sort,12,120,0.00002200
+Block Sort,12,121,0.00002960
+Block Sort,12,122,0.00002210
+Block Sort,12,123,0.00002920
+Block Sort,12,124,0.00002250
+Block Sort,12,125,0.00002970
+Block Sort,12,126,0.00002260
+Block Sort,12,127,0.00002970
+Block Sort,12,128,0.00002180
+Block Sort,12,129,0.00002210
+Block Sort,12,130,0.00002320
+Block Sort,12,131,0.00003330
+Block Sort,12,132,0.00003080
+Block Sort,12,133,0.00002210
+Block Sort,12,134,0.00002190
+Block Sort,12,135,0.00003590
+Block Sort,12,136,0.00002220
+Block Sort,12,137,0.00002900
+Block Sort,12,138,0.00002190
+Block Sort,12,139,0.00003070
+Block Sort,12,140,0.00003120
+Block Sort,12,141,0.00003290
+Block Sort,12,142,0.00003240
+Block Sort,12,143,0.00002250
+Block Sort,12,144,0.00002960
+Block Sort,12,145,0.00002390
+Block Sort,12,146,0.00002330
+Block Sort,12,147,0.00002410
+Block Sort,12,148,0.00002300
+Block Sort,12,149,0.00002330
+Block Sort,12,150,0.00002290
+Block Sort,12,151,0.00002230
+Block Sort,12,152,0.00002250
+Block Sort,12,153,0.00002320
+Block Sort,12,154,0.00002280
+Block Sort,12,155,0.00002300
+Block Sort,12,156,0.00002210
+Block Sort,12,157,0.00002220
+Block Sort,12,158,0.00002240
+Block Sort,12,159,0.00002260
+Block Sort,12,160,0.00002250
+Block Sort,12,161,0.00002200
+Block Sort,12,162,0.00002290
+Block Sort,12,163,0.00002160
+Block Sort,12,164,0.00002290
+Block Sort,12,165,0.00002210
+Block Sort,12,166,0.00002290
+Block Sort,12,167,0.00002310
+Block Sort,12,168,0.00002260
+Block Sort,12,169,0.00002260
+Block Sort,12,170,0.00002300
+Block Sort,12,171,0.00002250
+Block Sort,12,172,0.00002170
+Block Sort,12,173,0.00002200
+Block Sort,12,174,0.00003060
+Block Sort,12,175,0.00003090
+Block Sort,12,176,0.00003010
+Block Sort,12,177,0.00002250
+Block Sort,12,178,0.00002900
+Block Sort,12,179,0.00002240
+Block Sort,12,180,0.00002250
+Block Sort,12,181,0.00002350
+Block Sort,12,182,0.00002220
+Block Sort,12,183,0.00002190
+Block Sort,12,184,0.00002900
+Block Sort,12,185,0.00002240
+Block Sort,12,186,0.00002250
+Block Sort,12,187,0.00003000
+Block Sort,12,188,0.00003920
+Block Sort,12,189,0.00002970
+Block Sort,12,190,0.00002280
+Block Sort,12,191,0.00002260
+Block Sort,12,192,0.00002230
+Block Sort,12,193,0.00002310
+Block Sort,12,194,0.00002210
+Block Sort,12,195,0.00002950
+Block Sort,12,196,0.00002250
+Block Sort,12,197,0.00002790
+Block Sort,12,198,0.00002160
+Block Sort,12,199,0.00002900
+Block Sort,12,200,0.00002210
+Block Sort,12,201,0.00002300
+Block Sort,12,202,0.00002190
+Block Sort,12,203,0.00002910
+Block Sort,12,204,0.00002300
+Block Sort,12,205,0.00002200
+Block Sort,12,206,0.00002960
+Block Sort,12,207,0.00002870
+Block Sort,12,208,0.00002260
+Block Sort,12,209,0.00003410
+Block Sort,12,210,0.00003150
+Block Sort,12,211,0.00003150
+Block Sort,12,212,0.00002210
+Block Sort,12,213,0.00003080
+Block Sort,12,214,0.00002940
+Block Sort,12,215,0.00002860
+Block Sort,12,216,0.00002840
+Block Sort,12,217,0.00002870
+Block Sort,12,218,0.00002840
+Block Sort,12,219,0.00003020
+Block Sort,12,220,0.00002910
+Block Sort,12,221,0.00002810
+Block Sort,12,222,0.00002920
+Block Sort,12,223,0.00002910
+Block Sort,12,224,0.00002830
+Block Sort,12,225,0.00002900
+Block Sort,12,226,0.00002840
+Block Sort,12,227,0.00002800
+Block Sort,12,228,0.00002790
+Block Sort,12,229,0.00002790
+Block Sort,12,230,0.00003370
+Block Sort,12,231,0.00002850
+Block Sort,12,232,0.00002770
+Block Sort,12,233,0.00003220
+Block Sort,12,234,0.00002910
+Block Sort,12,235,0.00002810
+Block Sort,12,236,0.00002820
+Block Sort,12,237,0.00002300
+Block Sort,12,238,0.00002870
+Block Sort,12,239,0.00002840
+Block Sort,12,240,0.00002900
+Block Sort,12,241,0.00002880
+Block Sort,12,242,0.00002910
+Block Sort,12,243,0.00002900
+Block Sort,12,244,0.00002750
+Block Sort,12,245,0.00002890
+Block Sort,12,246,0.00003280
+Block Sort,12,247,0.00002840
+Block Sort,12,248,0.00002860
+Block Sort,12,249,0.00002770
+Block Sort,12,250,0.00003280
+Block Sort,12,251,0.00002890
+Block Sort,12,252,0.00002940
+Block Sort,12,253,0.00003000
+Block Sort,12,254,0.00002920
+Block Sort,12,255,0.00002890
+Block Sort,12,256,0.00002870
+Block Sort,12,257,0.00002860
+Block Sort,12,258,0.00002790
+Block Sort,12,259,0.00002840
+Block Sort,12,260,0.00002860
+Block Sort,12,261,0.00002820
+Block Sort,12,262,0.00002790
+Block Sort,12,263,0.00002960
+Block Sort,12,264,0.00002890
+Block Sort,12,265,0.00002810
+Block Sort,12,266,0.00002870
+Block Sort,12,267,0.00003010
+Block Sort,12,268,0.00002920
+Block Sort,12,269,0.00002850
+Block Sort,12,270,0.00003000
+Block Sort,12,271,0.00003370
+Block Sort,12,272,0.00002950
+Block Sort,12,273,0.00004220
+Block Sort,12,274,0.00002800
+Block Sort,12,275,0.00002680
+Bead Sort,12,495,1.29300960
+Block Sort,12,276,0.00003280
+Block Sort,12,277,0.00002190
+Block Sort,12,278,0.00004000
+Block Sort,12,279,0.00003210
+Block Sort,12,280,0.00002340
+Block Sort,12,281,0.00002630
+Block Sort,12,282,0.00002260
+Block Sort,12,283,0.00002360
+Block Sort,12,284,0.00002340
+Block Sort,12,285,0.00002310
+Block Sort,12,286,0.00002240
+Block Sort,12,287,0.00002340
+Block Sort,12,288,0.00002300
+Block Sort,12,289,0.00003390
+Block Sort,12,290,0.00002240
+Block Sort,12,291,0.00002230
+Block Sort,12,292,0.00002250
+Block Sort,12,293,0.00003330
+Block Sort,12,294,0.00002280
+Block Sort,12,295,0.00002290
+Block Sort,12,296,0.00003300
+Block Sort,12,297,0.00002280
+Block Sort,12,298,0.00002170
+Block Sort,12,299,0.00002280
+Block Sort,12,300,0.00002290
+Block Sort,12,301,0.00002230
+Block Sort,12,302,0.00002650
+Block Sort,12,303,0.00002200
+Block Sort,12,304,0.00002340
+Block Sort,12,305,0.00002250
+Block Sort,12,306,0.00002280
+Block Sort,12,307,0.00002950
+Block Sort,12,308,0.00003680
+Block Sort,12,309,0.00002410
+Block Sort,12,310,0.00002200
+Block Sort,12,311,0.00002360
+Block Sort,12,312,0.00002290
+Block Sort,12,313,0.00002320
+Block Sort,12,314,0.00002250
+Block Sort,12,315,0.00002270
+Block Sort,12,316,0.00002250
+Block Sort,12,317,0.00003370
+Block Sort,12,318,0.00002230
+Block Sort,12,319,0.00002250
+Block Sort,12,320,0.00002500
+Block Sort,12,321,0.00002310
+Block Sort,12,322,0.00003200
+Block Sort,12,323,0.00002280
+Block Sort,12,324,0.00002240
+Block Sort,12,325,0.00002210
+Block Sort,12,326,0.00002190
+Block Sort,12,327,0.00002220
+Block Sort,12,328,0.00002220
+Block Sort,12,329,0.00002240
+Block Sort,12,330,0.00002250
+Block Sort,12,331,0.00002390
+Block Sort,12,332,0.00002240
+Block Sort,12,333,0.00002300
+Block Sort,12,334,0.00002230
+Block Sort,12,335,0.00003160
+Block Sort,12,336,0.00002240
+Block Sort,12,337,0.00002280
+Block Sort,12,338,0.00002250
+Block Sort,12,339,0.00003610
+Block Sort,12,340,0.00002210
+Block Sort,12,341,0.00002210
+Block Sort,12,342,0.00002280
+Block Sort,12,343,0.00002220
+Block Sort,12,344,0.00003180
+Block Sort,12,345,0.00002340
+Block Sort,12,346,0.00003040
+Block Sort,12,347,0.00002370
+Block Sort,12,348,0.00002320
+Block Sort,12,349,0.00002330
+Block Sort,12,350,0.00003060
+Block Sort,12,351,0.00002350
+Block Sort,12,352,0.00003360
+Block Sort,12,353,0.00002270
+Block Sort,12,354,0.00003470
+Block Sort,12,355,0.00002300
+Block Sort,12,356,0.00002260
+Block Sort,12,357,0.00002350
+Block Sort,12,358,0.00003230
+Block Sort,12,359,0.00002330
+Block Sort,12,360,0.00002330
+Block Sort,12,361,0.00002190
+Block Sort,12,362,0.00002230
+Block Sort,12,363,0.00002280
+Block Sort,12,364,0.00002900
+Block Sort,12,365,0.00002270
+Block Sort,12,366,0.00003410
+Block Sort,12,367,0.00002200
+Block Sort,12,368,0.00002320
+Block Sort,12,369,0.00002180
+Block Sort,12,370,0.00002300
+Block Sort,12,371,0.00002230
+Block Sort,12,372,0.00002770
+Block Sort,12,373,0.00003380
+Block Sort,12,374,0.00002250
+Block Sort,12,375,0.00002220
+Block Sort,12,376,0.00003330
+Block Sort,12,377,0.00002230
+Block Sort,12,378,0.00002270
+Block Sort,12,379,0.00002370
+Block Sort,12,380,0.00002880
+Block Sort,12,381,0.00002360
+Block Sort,12,382,0.00002230
+Block Sort,12,383,0.00003310
+Block Sort,12,384,0.00002260
+Block Sort,12,385,0.00002920
+Block Sort,12,386,0.00002760
+Block Sort,12,387,0.00003440
+Block Sort,12,388,0.00002330
+Block Sort,12,389,0.00002250
+Block Sort,12,390,0.00002190
+Block Sort,12,391,0.00002240
+Block Sort,12,392,0.00003340
+Block Sort,12,393,0.00002240
+Block Sort,12,394,0.00002190
+Block Sort,12,395,0.00002160
+Block Sort,12,396,0.00002550
+Block Sort,12,397,0.00002220
+Block Sort,12,398,0.00003390
+Block Sort,12,399,0.00002200
+Block Sort,12,400,0.00002320
+Block Sort,12,401,0.00002240
+Block Sort,12,402,0.00002350
+Block Sort,12,403,0.00002310
+Block Sort,12,404,0.00002310
+Block Sort,12,405,0.00002240
+Block Sort,12,406,0.00002260
+Block Sort,12,407,0.00002550
+Block Sort,12,408,0.00003340
+Block Sort,12,409,0.00002200
+Block Sort,12,410,0.00002280
+Block Sort,12,411,0.00002260
+Block Sort,12,412,0.00003390
+Block Sort,12,413,0.00005240
+Block Sort,12,414,0.00002380
+Block Sort,12,415,0.00002380
+Block Sort,12,416,0.00002950
+Block Sort,12,417,0.00003070
+Block Sort,12,418,0.00002910
+Block Sort,12,419,0.00003090
+Block Sort,12,420,0.00002330
+Block Sort,12,421,0.00002860
+Block Sort,12,422,0.00003080
+Block Sort,12,423,0.00002960
+Block Sort,12,424,0.00002860
+Block Sort,12,425,0.00002910
+Block Sort,12,426,0.00002860
+Block Sort,12,427,0.00002930
+Block Sort,12,428,0.00002890
+Block Sort,12,429,0.00002970
+Block Sort,12,430,0.00002300
+Block Sort,12,431,0.00002910
+Block Sort,12,432,0.00002960
+Block Sort,12,433,0.00002830
+Block Sort,12,434,0.00003000
+Block Sort,12,435,0.00002970
+Block Sort,12,436,0.00002990
+Block Sort,12,437,0.00002930
+Block Sort,12,438,0.00002950
+Block Sort,12,439,0.00002940
+Block Sort,12,440,0.00002930
+Block Sort,12,441,0.00004000
+Block Sort,12,442,0.00002940
+Block Sort,12,443,0.00002910
+Block Sort,12,444,0.00002980
+Block Sort,12,445,0.00002880
+Block Sort,12,446,0.00003020
+Block Sort,12,447,0.00002900
+Block Sort,12,448,0.00002970
+Block Sort,12,449,0.00002980
+Block Sort,12,450,0.00004380
+Block Sort,12,451,0.00002420
+Block Sort,12,452,0.00002990
+Block Sort,12,453,0.00002420
+Block Sort,12,454,0.00003020
+Block Sort,12,455,0.00002350
+Block Sort,12,456,0.00002960
+Block Sort,12,457,0.00002800
+Block Sort,12,458,0.00002990
+Block Sort,12,459,0.00002960
+Block Sort,12,460,0.00002960
+Block Sort,12,461,0.00003420
+Block Sort,12,462,0.00002910
+Block Sort,12,463,0.00004000
+Block Sort,12,464,0.00003010
+Block Sort,12,465,0.00002910
+Block Sort,12,466,0.00002960
+Block Sort,12,467,0.00003050
+Block Sort,12,468,0.00002930
+Block Sort,12,469,0.00002890
+Block Sort,12,470,0.00002960
+Block Sort,12,471,0.00002910
+Block Sort,12,472,0.00004070
+Block Sort,12,473,0.00003000
+Block Sort,12,474,0.00002900
+Block Sort,12,475,0.00002920
+Block Sort,12,476,0.00002870
+Block Sort,12,477,0.00003000
+Block Sort,12,478,0.00002910
+Block Sort,12,479,0.00003260
+Block Sort,12,480,0.00002360
+Block Sort,12,481,0.00002280
+Block Sort,12,482,0.00003440
+Block Sort,12,483,0.00002330
+Block Sort,12,484,0.00002280
+Block Sort,12,485,0.00003130
+Block Sort,12,486,0.00003710
+Block Sort,12,487,0.00003460
+Block Sort,12,488,0.00003000
+Block Sort,12,489,0.00002780
+Block Sort,12,490,0.00003240
+Block Sort,12,491,0.00002450
+Block Sort,12,492,0.00003390
+Block Sort,12,493,0.00002360
+Block Sort,12,494,0.00002420
+Block Sort,12,495,0.00003310
+Block Sort,12,496,0.00002270
+Block Sort,12,497,0.00003030
+Block Sort,12,498,0.00003450
+Block Sort,12,499,0.00004290
+Block Sort,12,500,0.00002920
+Bead Sort,12,496,1.46873100
+Bead Sort,12,497,1.45055410
+Bead Sort,12,500,1.43389260
+Bead Sort,12,499,1.56513560
+Bead Sort,12,498,1.82848840
+Bogo Sort,12,7,377.76906310
+Bogo Sort,12,3,900.94270520
+Bogo Sort,12,1,1561.91553180
+Bogo Sort,12,11,4.61429990
+Bogo Sort,12,6,1651.95038380
+Bogo Sort,12,12,100.61605440
+Bogo Sort,12,2,1860.82709870
+Bogo Sort,12,13,726.59856720
+Bogo Sort,12,4,2488.69960240
+Bogo Sort,12,10,1924.31450610
+Bogo Sort,12,15,998.55603220
+Bogo Sort,12,16,538.69520780
+Bogo Sort,12,8,3164.42177470
+Bogo Sort,12,21,223.28413160
+Bogo Sort,12,17,1132.33419820
+Bogo Sort,12,22,254.23169900
+Bogo Sort,12,19,1710.97787540
+Bogo Sort,12,9,4839.59061210
+Bogo Sort,12,5,5290.22875340
+Bogo Sort,12,23,1688.43806910
+Bogo Sort,12,18,2998.50338680
+Bogo Sort,12,29,291.04491080
+Bogo Sort,12,30,170.36895700
+Bogo Sort,12,31,277.16394550
+Bogo Sort,12,25,2014.41402220
+Bogo Sort,12,28,1904.01924260
+Bogo Sort,12,34,167.45686100
+Bogo Sort,12,14,5956.03544690
+Bogo Sort,12,20,4981.11197840
+Bogo Sort,12,35,853.24985090
+Bogo Sort,12,27,3158.15361250
+Bogo Sort,12,37,1391.33920440
+Bogo Sort,12,32,2744.47985360
+Bogo Sort,12,39,955.70459210
+Bogo Sort,12,42,21.43136820
+Bogo Sort,12,45,222.33077350
+Bogo Sort,12,46,262.97309410
+Bogo Sort,12,50,477.36313620
+Bogo Sort,12,44,683.65180370
+Bogo Sort,12,54,291.23000780
