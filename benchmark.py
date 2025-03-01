@@ -3,14 +3,15 @@ This module executes sorting algorithm benchmarks across various array sizes.
 
 It generates CSV files with performance results for each array size, runs multiple iterations
 of each sorting algorithm concurrently, and aggregates the results. Detailed markdown reports
-are produced, including per-size ranking tables and individual algorithm reports, and the main
+are produced—including per-size ranking tables and individual algorithm reports—and the main
 README file is rebuilt to reflect overall performance and any skipped algorithms.
 """
 
 import csv
 import os
 import datetime
-from concurrent.futures import ProcessPoolExecutor, as_completed, TimeoutError
+from multiprocessing import Pipe, Process
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 
 # Import sorting algorithms and helper functions.
 from algorithms import *
@@ -19,44 +20,88 @@ from csv_utils import get_csv_results_for_size, sort_csv_alphabetically
 from markdown_utils import rebuild_readme, write_markdown, write_algorithm_markdown
 
 
+def safe_run_target(conn, sort_func, size):
+    """
+    Execute a single sorting iteration and send the result through a connection.
+
+    This function is run in a separate process to allow enforcing a timeout.
+
+    Parameters:
+        conn: Connection object for sending the result.
+        sort_func: The sorting function to execute.
+        size: The size of the array to sort.
+    """
+    try:
+        result = run_iteration(sort_func, size)
+        conn.send(result)
+    except Exception as e:
+        conn.send(e)
+    finally:
+        conn.close()
+
+
+def safe_run_iteration(sort_func, size, timeout):
+    """
+    Execute a sorting iteration with a timeout.
+
+    A separate process is spawned to run the sort iteration via safe_run_target.
+    If the process does not complete within 'timeout' seconds, it is terminated and
+    the iteration is marked as DNF (by returning None).
+
+    Parameters:
+        sort_func: The sorting function to run.
+        size: The size of the array to sort.
+        timeout: Maximum allowed time in seconds for the iteration.
+
+    Returns:
+        The elapsed time (float) if the iteration completes in time, or None if it times out.
+    """
+    parent_conn, child_conn = Pipe()
+    p = Process(target=safe_run_target, args=(child_conn, sort_func, size))
+    p.start()
+    p.join(timeout)
+    if p.is_alive():
+        p.terminate()
+        p.join()
+        return None  # Mark iteration as DNF (Did Not Finish)
+    if parent_conn.poll():
+        res = parent_conn.recv()
+        return None if isinstance(res, Exception) else res
+    return None
+
+
 def generate_sizes():
     """
     Generate a sorted list of unique array sizes for benchmarking.
 
-    This function creates two progressions:
-    - A geometric progression for small array sizes.
-    - An exponential (doubling) progression for large array sizes (up to 1 trillion).
+    Combines a geometric progression for small sizes with an exponential (doubling)
+    progression for larger sizes, up to 1 trillion.
 
     Returns:
-        list: Sorted list of unique array sizes.
+        List of unique array sizes.
     """
     n_small = 15
-    # Calculate small sizes using a geometric progression.
     small_sizes = [
         int(round(5 * ((200 / 3) ** (i / (n_small - 1))))) for i in range(n_small)
     ]
     large_sizes = []
     size = 100
-    # Generate large sizes by doubling until reaching 1 trillion.
     while size < 1e12:
         large_sizes.append(int(size))
         size *= 2
     large_sizes.append(int(1e12))
-    sizes = sorted(set(small_sizes + large_sizes))
-    return sizes
+    return sorted(set(small_sizes + large_sizes))
 
 
 def get_num_workers():
     """
-    Determine the number of worker processes based on the current time of day and environment.
+    Determine the number of worker processes based on time of day and environment.
 
-    The number of workers is chosen as follows:
-    - Between 11:30 PM and 9:30 AM: 75% of available CPU cores.
-    - Otherwise: 50% of available CPU cores.
+    Uses a higher fraction of cores at night (75%) and a lower fraction during the day (50%).
     If the SLOW_MODE environment variable is set to "true", the worker count is halved.
 
     Returns:
-        int: The number of worker processes to use (at least 1).
+        Number of workers (at least 1).
     """
     total = os.cpu_count() or 1
     now = datetime.datetime.now().time()
@@ -71,10 +116,10 @@ def get_num_workers():
 
 def algorithms():
     """
-    Provide a dictionary mapping algorithm names to their corresponding sorting functions.
+    Return a dictionary mapping algorithm names to their corresponding sorting functions.
 
     Returns:
-        dict: Mapping from algorithm name (str) to its sorting function.
+        Dictionary where keys are algorithm names and values are sorting functions.
     """
     return {
         "Bead Sort": bead_sort,
@@ -143,33 +188,29 @@ def update_missing_iterations_concurrent(
     per_run_timeout=None,
 ):
     """
-    Identify missing iterations for each algorithm and run them concurrently.
+    Run missing iterations concurrently for each algorithm and update CSV results.
 
-    This function creates a single ProcessPoolExecutor for all missing iterations across
-    all algorithms. It submits all missing iteration tasks concurrently and processes each
-    as soon as it completes. As each iteration's result is returned, it is immediately written
-    to the CSV and used to update the in-memory results. When all iterations for an algorithm
-    are complete, its performance statistics are recalculated and printed.
-
-    Additionally, if there are already some results in memory, the function prints a notification
-    detailing which algorithms already have some iterations completed.
+    For each algorithm that has fewer than 'iterations' completed, this function runs the
+    additional iterations concurrently. If a per-run timeout is specified, the iteration is
+    canceled if it exceeds the timeout and marked as DNF. Results are written immediately to the CSV.
 
     Parameters:
-        csv_path (str): Path to the CSV file for the current array size.
-        size (int): The current array size being benchmarked.
-        expected_algs (list): List of expected algorithm names.
-        size_results (dict): Existing results for each algorithm (mapping algorithm to tuple).
-        iterations (int): Desired number of iterations per algorithm.
-        skip_list (dict): Mapping of algorithm names to the size at which they were skipped.
-        threshold (float): Runtime threshold in seconds; algorithms exceeding this average are skipped.
-        num_workers (int): Number of worker processes to use for concurrent execution.
+        csv_path: Path to the CSV file for the current size.
+        size: Current array size.
+        expected_algs: List of expected algorithm names.
+        size_results: Current in-memory results for the given size.
+        iterations: Desired number of iterations per algorithm.
+        skip_list: Dict mapping algorithms to the size at which they were skipped.
+        threshold: Time threshold in seconds to skip an algorithm.
+        num_workers: Number of worker processes available.
+        per_run_timeout: Optional timeout (in seconds) for each iteration.
 
     Returns:
-        tuple: Updated size_results and skip_list.
+        Updated (size_results, skip_list)
     """
     missing_algs = {}
     found_msgs = []
-    # Determine how many additional iterations each algorithm needs.
+    # Calculate how many iterations are missing for each algorithm.
     for alg in expected_algs:
         if alg in skip_list:
             continue
@@ -180,7 +221,7 @@ def update_missing_iterations_concurrent(
             count = data[4]
             if count < iterations:
                 missing_algs[alg] = iterations - count
-                found_msgs.append(f"{alg} ({count})")
+                found_msgs.append(f"{alg} ({count})" if count > 0 else f"{alg}")
 
     if missing_algs and any(data is not None for data in size_results.values()):
         if found_msgs:
@@ -198,76 +239,78 @@ def update_missing_iterations_concurrent(
             if len(missing_keys) > max_items:
                 display_msg += f", and {len(missing_keys) - max_items} more..."
             print(f"Missing iterations for: {display_msg}")
-
     if not missing_algs:
         return size_results, skip_list
 
-    # Dictionary to track the number of completed iterations per algorithm.
     completed_counts = {}
-
-    # Dictionary mapping each future to its (algorithm, iteration index).
     tasks = {}
 
-    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+    # If a timeout is active, reduce concurrency to limit resource usage.
+    if per_run_timeout is not None:
+        executor_workers = min(num_workers, 2)
+        ExecutorClass = ThreadPoolExecutor
+    else:
+        executor_workers = num_workers
+        ExecutorClass = ProcessPoolExecutor
+
+    with ExecutorClass(max_workers=executor_workers) as executor:
         for alg, missing in missing_algs.items():
             start_iter = (
                 (size_results[alg][4] + 1) if size_results[alg] is not None else 1
             )
             for i in range(missing):
-                future = executor.submit(run_iteration, algorithms()[alg], size)
+                if per_run_timeout is not None:
+                    future = executor.submit(
+                        safe_run_iteration, algorithms()[alg], size, per_run_timeout
+                    )
+                else:
+                    future = executor.submit(run_iteration, algorithms()[alg], size)
                 tasks[future] = (alg, start_iter + i)
 
-    # Process each task as soon as it completes.
-    for future in as_completed(tasks):
-        alg, iter_index = tasks[future]
-        if alg not in completed_counts:
-            completed_counts[alg] = 0
-        try:
-            if per_run_timeout is not None:
-                t = future.result(timeout=per_run_timeout)
-            else:
+        for future in as_completed(tasks):
+            alg, iter_index = tasks[future]
+            completed_counts[alg] = completed_counts.get(alg, 0) + 1
+            try:
                 t = future.result()
-        except TimeoutError:
-            print(f"{alg} timeout on size {size} iteration {iter_index}")
-            t = None  # Mark as DNF
-        except Exception as e:
-            print(f"{alg} error on size {size} iteration {iter_index}: {e}")
-            t = None
-        with open(csv_path, "a", newline="") as csv_file:
-            writer = csv.writer(csv_file)
-            writer.writerow([alg, size, iter_index, "DNF" if t is None else f"{t:.8f}"])
-        if size_results[alg] is None:
-            size_results[alg] = (None, None, None, None, 0, [])
-        old_count = size_results[alg][4]
-        old_times = size_results[alg][5]
-        size_results[alg] = (None, None, None, None, old_count + 1, old_times + [t])
-        completed_counts[alg] += 1
-        if completed_counts[alg] == missing_algs[alg]:
-            times = size_results[alg][5]
-            successful_times = [x for x in times if x is not None]
-            dnf_count = len(times) - len(successful_times)
-            if successful_times:
-                avg = compute_average(successful_times)
-                median = compute_median(successful_times)
-                min_time = min(successful_times)
-                max_time = max(successful_times)
-            else:
-                avg = float("inf")
-                median = None
-                min_time = None
-                max_time = None
-            size_results[alg] = (avg, min_time, max_time, median, len(times), times)
-            print(
-                f"Average for {alg} on size {size}: {format_time(avg, False)} (DNF: {dnf_count}/{len(times)})"
-            )
-            # Skip if average exceeds threshold or if ≥50% runs are DNF
-            if (
-                avg > threshold or (len(times) > 0 and dnf_count / len(times) >= 0.5)
-            ) and alg not in skip_list:
-                skip_list[alg] = size
-                print(
-                    f"Skipping {alg} for future sizes (avg > threshold or high DNF ratio, skipped at size {size})."
+            except Exception as e:
+                print(f"{alg} error on size {size} iteration {iter_index}: {e}")
+                t = None
+            with open(csv_path, "a", newline="") as csv_file:
+                writer = csv.writer(csv_file)
+                writer.writerow(
+                    [alg, size, iter_index, "DNF" if t is None else f"{t:.8f}"]
                 )
+            if size_results[alg] is None:
+                size_results[alg] = (None, None, None, None, 0, [])
+            old_count = size_results[alg][4]
+            old_times = size_results[alg][5]
+            size_results[alg] = (None, None, None, None, old_count + 1, old_times + [t])
+            if completed_counts[alg] == missing_algs[alg]:
+                times = size_results[alg][5]
+                successful_times = [x for x in times if x is not None]
+                dnf_count = len(times) - len(successful_times)
+                if successful_times:
+                    avg = compute_average(successful_times)
+                    median = compute_median(successful_times)
+                    min_time = min(successful_times)
+                    max_time = max(successful_times)
+                else:
+                    avg = float("inf")
+                    median = None
+                    min_time = None
+                    max_time = None
+                size_results[alg] = (avg, min_time, max_time, median, len(times), times)
+                print(
+                    f"Average for {alg} on size {size}: {format_time(avg, False)} (DNF: {dnf_count}/{len(times)})"
+                )
+                if (
+                    avg > threshold
+                    or (len(times) > 0 and dnf_count / len(times) >= 0.5)
+                ) and alg not in skip_list:
+                    skip_list[alg] = size
+                    print(
+                        f"Skipping {alg} for future sizes (avg > threshold or high DNF ratio, skipped at size {size})."
+                    )
     return size_results, skip_list
 
 
@@ -275,18 +318,18 @@ def update_overall_results(
     size, size_results, expected_algs, overall_totals, per_alg_results, iterations
 ):
     """
-    Update the aggregated overall totals and per-algorithm results for a given array size.
+    Update aggregated totals and per-algorithm records for the given array size.
 
-    For each algorithm that produced results, this function updates the cumulative total time,
-    iteration count, and appends a record (array size, average, min, max, median) to the per-algorithm results.
+    For each algorithm, the overall sum and count are updated based on the average
+    result at the current size, and a record is appended.
 
     Parameters:
-        size (int): The current array size.
-        size_results (dict): Mapping {algorithm: (avg, min, max, median, count, times)} for the current size.
-        expected_algs (list): List of expected algorithm names.
-        overall_totals (dict): Aggregated totals for each algorithm (with keys "sum" and "count").
-        per_alg_results (dict): Per-algorithm performance records.
-        iterations (int): Number of iterations per algorithm for the current size.
+        size: Current array size.
+        size_results: Results for the current size.
+        expected_algs: List of algorithm names.
+        overall_totals: Dict mapping algorithm names to aggregated totals.
+        per_alg_results: Dict mapping algorithm names to their performance records.
+        iterations: Number of iterations per algorithm for this size.
     """
     for alg in expected_algs:
         data = size_results[alg]
@@ -307,31 +350,26 @@ def process_size(
     per_run_timeout=None,
 ):
     """
-    Process benchmark tests for a specific array size.
+    Process benchmark tests for a single array size.
 
-    This function performs the following steps:
-    1. Retrieves or creates the CSV file for the given size.
-    2. Determines the current number of worker processes.
-    3. Runs missing iterations concurrently for each algorithm.
-    4. Sorts the CSV file alphabetically.
-    5. Re-reads the updated CSV to recalculate overall statistics.
-    6. Updates aggregated totals and per-algorithm records.
+    Retrieves or creates the CSV file for the current size, runs missing iterations concurrently,
+    sorts the CSV file, and updates aggregated results.
 
     Parameters:
-        size (int): The array size to test.
-        iterations (int): Desired iterations per algorithm.
-        threshold (float): Runtime threshold for skipping an algorithm.
-        expected_algs (list): List of expected algorithm names.
-        overall_totals (dict): Aggregated performance totals for each algorithm.
-        per_alg_results (dict): Per-algorithm performance records.
-        skip_list (dict): Mapping of algorithm names to the size at which they were skipped.
+        size: Array size to test.
+        iterations: Desired iterations per algorithm.
+        threshold: Runtime threshold for skipping an algorithm.
+        expected_algs: List of expected algorithm names.
+        overall_totals: Aggregated totals dictionary.
+        per_alg_results: Per-algorithm performance records.
+        skip_list: Dict mapping algorithms to the size at which they were skipped.
+        per_run_timeout: Optional timeout (in seconds) for each iteration.
 
     Returns:
-        tuple: Updated size_results and skip_list.
+        Updated (size_results, skip_list).
     """
     csv_path, size_results = get_csv_results_for_size(size, expected_algs)
     current_workers = get_num_workers()
-    # Update worker count if it has changed.
     process_size.workers = getattr(process_size, "workers", None)
     if process_size.workers is None or current_workers != process_size.workers:
         if process_size.workers is None:
@@ -340,11 +378,10 @@ def process_size(
             )
         else:
             print(
-                f"Changing workers from {process_size.workers} worker{'s' if process_size.workers > 1 else ''} to {current_workers} worker{'s' if current_workers > 1 else ''}."
+                f"Changing workers from {process_size.workers} to {current_workers} worker{'s' if current_workers > 1 else ''}."
             )
         process_size.workers = current_workers
 
-    # Update missing iterations concurrently.
     size_results, skip_list = update_missing_iterations_concurrent(
         csv_path,
         size,
@@ -356,10 +393,7 @@ def process_size(
         current_workers,
         per_run_timeout,
     )
-    # Sort the CSV file alphabetically.
     sort_csv_alphabetically(csv_path)
-
-    # Re-read the CSV file to get updated results.
     _, updated_results = get_csv_results_for_size(size, expected_algs)
     update_overall_results(
         size,
@@ -374,42 +408,36 @@ def process_size(
 
 def run_sorting_tests(iterations=500, threshold=300, per_run_timeout=None):
     """
-    Run sorting algorithm benchmarks across various array sizes and generate reports.
+    Run benchmarks across multiple array sizes and generate reports.
 
-    This function orchestrates the complete benchmarking process:
-    1. Generates a list of array sizes to test.
-    2. Initializes overall totals and per-algorithm performance records.
-    3. For each array size:
-       a. Processes the benchmark tests.
-       b. Writes per-size markdown details.
-       c. Rebuilds the main README with updated rankings.
-    4. Generates individual markdown reports for each algorithm.
-    5. Prints a completion message.
+    The process includes:
+      1. Generating a list of array sizes.
+      2. Initializing overall totals and per-algorithm records.
+      3. For each array size:
+         a. Running missing iterations concurrently.
+         b. Writing a per-size markdown report.
+         c. Rebuilding the main README.
+      4. Generating individual algorithm reports.
 
     Parameters:
-        iterations (int, optional): Number of iterations per algorithm per array size. Default is 250.
-        threshold (float, optional): Runtime threshold (in seconds) for skipping an algorithm. Default is 300 seconds.
+        iterations: Iterations per algorithm per size.
+        threshold: Runtime threshold (seconds) for skipping an algorithm.
+        per_run_timeout: Optional per-iteration timeout in seconds.
     """
     sizes = generate_sizes()
     expected_algs = list(algorithms().keys())
-
     overall_totals = {alg: {"sum": 0, "count": 0} for alg in expected_algs}
     per_alg_results = {alg: [] for alg in expected_algs}
     skip_list = {}
-
     output_folder = "results"
     os.makedirs(output_folder, exist_ok=True)
-
     details_path = "details.md"
     with open(details_path, "w") as f:
         f.write("")
-
-    # Determine and print the initial worker count before processing any sizes.
     initial_workers = get_num_workers()
     print(f"Using {initial_workers} worker{'s' if initial_workers > 1 else ''}.")
     process_size.workers = initial_workers
 
-    # Process each array size.
     for size in sizes:
         print(f"\nTesting array size: {size}")
         size_results, skip_list = process_size(
@@ -420,10 +448,8 @@ def run_sorting_tests(iterations=500, threshold=300, per_run_timeout=None):
             overall_totals,
             per_alg_results,
             skip_list,
-            per_run_timeout=per_run_timeout,  # pass the timeout parameter here
+            per_run_timeout=per_run_timeout,
         )
-
-        # Determine newly skipped algorithms for this size.
         previous_skip = set(skip_list.keys())
         for alg, data in size_results.items():
             if data is not None and data[0] > threshold and alg not in skip_list:
@@ -431,15 +457,10 @@ def run_sorting_tests(iterations=500, threshold=300, per_run_timeout=None):
         new_skipped = {
             alg: skip_list[alg] for alg in skip_list if alg not in previous_skip
         }
-
-        # Append per-size markdown ranking table with notes for any newly skipped algorithms.
         with open(details_path, "a") as f:
             write_markdown(f, size, size_results, removed=list(new_skipped.keys()))
-
-        # Rebuild the main README with updated overall totals and skip list.
         rebuild_readme(overall_totals, details_path, skip_list)
 
-    # Generate individual markdown files for each algorithm.
     write_algorithm_markdown(per_alg_results)
     print(
         "\nBenchmark complete: CSV files saved, README.md updated, and per-algorithm files created in 'results/algorithms'."
