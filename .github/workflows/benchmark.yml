@@ -2,13 +2,13 @@ name: Run Sorting Benchmark with Timeout and All CPUs
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   benchmark:
     runs-on: ubuntu-latest
-    timeout-minutes: 60 # Adjust if needed
+    timeout-minutes: 240 # Adjust if needed
     env:
       USE_ALL_CPUS: "true" # Use all available cores in the GitHub environment
     steps:
