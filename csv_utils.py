@@ -29,37 +29,35 @@ def read_csv_results(csv_path, expected_algs):
 
     Returns:
         OrderedDict: A mapping from algorithm name to a tuple:
-            (avg, min, max, median, total_iteration_count, times_list)
+            (avg, min, max, median, total_iteration_count, times_dict, iter_set)
             where:
-              - avg is the average time of successful runs (or infinity if none succeeded),
-              - min, max, and median are computed from successful runs (or None if no successes),
-              - total_iteration_count is the total number of iterations recorded,
-              - times_list is the list of recorded times (with None representing DNF iterations).
+              - avg (float): Average time of successful runs (or infinity if none succeeded).
+              - min (float or None): Minimum successful time (or None if no successes).
+              - max (float or None): Maximum successful time (or None if no successes).
+              - median (float or None): Median of successful times (or None if no successes).
+              - total_iteration_count (int): Total iterations recorded.
+              - times_dict (dict): Mapping of iteration numbers to recorded times (None for DNFs).
+              - iter_set (set): Set of iteration numbers present.
     """
-    algorithm_times = {alg: [] for alg in expected_algs}
-    algorithm_iters = {alg: [] for alg in expected_algs}
+    algorithm_data = {alg: {} for alg in expected_algs}
 
     with open(csv_path, "r", newline="") as csvfile:
         reader = csv.reader(csvfile)
         try:
             header = next(reader)
         except StopIteration:
-            # Return empty results if file is empty.
-            return OrderedDict((alg, None) for alg in expected_algs), {
-                alg: 0 for alg in expected_algs
-            }
+            # Return an empty result if file is empty.
+            return OrderedDict((alg, None) for alg in expected_algs)
 
         for row in reader:
             if not row or len(row) < 4:
                 continue
             alg = row[0]
-            # Try to parse the iteration number.
             try:
                 iteration = int(row[2])
             except Exception:
-                iteration = None
+                continue
             time_str = row[3].strip()
-            # Convert "DNF" to None; otherwise, try converting to float.
             if time_str == "DNF":
                 t = None
             else:
@@ -67,20 +65,15 @@ def read_csv_results(csv_path, expected_algs):
                     t = float(time_str)
                 except Exception:
                     continue
-            if alg in algorithm_times:
-                algorithm_times[alg].append(t)
-                if iteration is not None:
-                    algorithm_iters[alg].append(iteration)
+            if alg in algorithm_data:
+                algorithm_data[alg][iteration] = t
 
     results = OrderedDict()
-    max_iters = {}
     for alg in expected_algs:
-        times = algorithm_times[alg]
-        # Use the maximum iteration number, or 0 if none found.
-        max_iter = max(algorithm_iters[alg]) if algorithm_iters[alg] else 0
-        max_iters[alg] = max_iter
-        # Filter out DNFs for statistics.
-        successful_times = [x for x in times if x is not None]
+        data = algorithm_data.get(alg, {})
+        iter_set = set(data.keys())
+        count = len(iter_set)
+        successful_times = [x for x in data.values() if x is not None]
         if successful_times:
             avg = compute_average(successful_times)
             median = compute_median(successful_times)
@@ -89,13 +82,13 @@ def read_csv_results(csv_path, expected_algs):
                 min(successful_times),
                 max(successful_times),
                 median,
-                len(times),
-                times,
+                count,
+                data,
+                iter_set,
             )
         else:
-            results[alg] = (float("inf"), None, None, None, len(times), times)
-
-    return results, max_iters
+            results[alg] = (float("inf"), None, None, None, count, data, iter_set)
+    return results
 
 
 def ensure_csv_ends_with_newline(csv_path):
@@ -123,10 +116,10 @@ def ensure_csv_ends_with_newline(csv_path):
 
 def sort_csv_alphabetically(csv_path):
     """
-    Sort the CSV file at 'csv_path' alphabetically based on the first column (Algorithm name).
+    Sort the CSV file at 'csv_path' alphabetically by the algorithm name and iteration number.
 
-    Reads the CSV file into memory, sorts the data rows (ignoring the header) by the algorithm name
-    (and iteration number as a secondary key), and writes the sorted data back to the file.
+    Reads the CSV file into memory, sorts the data rows (ignoring the header) first by the
+    algorithm name and then by the iteration number, and writes the sorted rows back to the file.
 
     Parameters:
         csv_path (str): Path to the CSV file.
@@ -147,25 +140,25 @@ def sort_csv_alphabetically(csv_path):
 
 def get_csv_results_for_size(size, expected_algs, output_folder="results"):
     """
-    Retrieve or create a CSV file for the specified array size.
+    Retrieve (or create) a CSV file for the specified array size and parse its contents.
 
     If a CSV file for the given size exists in the output folder, its contents are read
     and parsed using read_csv_results(). Otherwise, a new CSV file is created with the proper header.
 
     Parameters:
-        size (int): The current array size.
+        size (int): The array size being benchmarked.
         expected_algs (list): List of expected algorithm names.
         output_folder (str): Directory where CSV files are stored.
 
     Returns:
         tuple: (csv_path, size_results)
-            - csv_path: Path to the CSV file.
-            - size_results: Parsed results (an OrderedDict) obtained by calling read_csv_results().
+            - csv_path (str): The full path to the CSV file.
+            - size_results (OrderedDict): Parsed results from the CSV.
     """
     csv_filename = f"results_{size}.csv"
     csv_path = os.path.join(output_folder, csv_filename)
     if os.path.exists(csv_path):
-        size_results, max_iters = read_csv_results(csv_path, expected_algs)
+        size_results = read_csv_results(csv_path, expected_algs)
     else:
         with open(csv_path, "w", newline="") as csv_file:
             writer = csv.writer(csv_file)
@@ -173,6 +166,5 @@ def get_csv_results_for_size(size, expected_algs, output_folder="results"):
                 ["Algorithm", "Array Size", "Iteration", "Elapsed Time (seconds)"]
             )
         size_results = OrderedDict((alg, None) for alg in expected_algs)
-        max_iters = {alg: 0 for alg in expected_algs}
     ensure_csv_ends_with_newline(csv_path)
-    return csv_path, size_results, max_iters
+    return csv_path, size_results

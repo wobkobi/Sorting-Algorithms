@@ -9,6 +9,7 @@ It includes functions for:
 - Converting integers to their ordinal string representation.
 """
 
+import math
 import time
 import random
 
@@ -34,6 +35,8 @@ def format_time(seconds, detailed=False):
     Returns:
         str: A formatted string representing the duration.
     """
+    if seconds is None or (isinstance(seconds, float) and math.isnan(seconds)):
+        return "NaN"
     if seconds < 1e-3:
         if detailed:
             us = int(round(seconds * 1e6))

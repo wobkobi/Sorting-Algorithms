@@ -65,15 +65,14 @@ def main():
     Prompts the user for:
       - Number of iterations (default: 500)
       - Time threshold in seconds (default: 300)
-      - Whether to enable a per-run timeout (yes/no)
-      - If timeout is enabled, the per-run timeout in seconds (default: 60)
+      - Whether to enable per-run timeouts (if enabled, each iteration will be canceled
+        if it takes longer than the threshold)
 
     Also checks for the "slow" argument to enable SLOW_MODE.
     Then runs the benchmark with the specified parameters.
     """
     ITERATIONS_DEFAULT = 500
     THRESHOLD_DEFAULT = 300
-    TIMEOUT_DEFAULT = 60
 
     # Check for "slow" argument to enable slow mode.
     if len(sys.argv) > 1 and sys.argv[1].lower() == "slow":
@@ -87,22 +86,18 @@ def main():
         ITERATIONS_DEFAULT,
     )
     threshold = get_user_input(
-        f"Enter threshold in seconds (default {THRESHOLD_DEFAULT}, or 'q' to quit): ",
+        f"Enter time threshold in seconds (default {THRESHOLD_DEFAULT}, or 'q' to quit): ",
         THRESHOLD_DEFAULT,
     )
 
-    # Prompt for per-run timeout.
-    enable_timeout = get_yes_no_input("Enable per-run timeout? (y/n, default n): ", "n")
-    if enable_timeout:
-        per_run_timeout = get_user_input(
-            f"Enter per-run timeout in seconds (default {TIMEOUT_DEFAULT}, or 'q' to quit): ",
-            TIMEOUT_DEFAULT,
-        )
-    else:
-        per_run_timeout = None
+    # Ask if each iteration should have a timeout (using the threshold value).
+    enable_timeout = get_yes_no_input(
+        "Enable per-run timeouts (each iteration will be canceled if it exceeds the threshold)? (y/n, default n): ",
+        "n",
+    )
 
     run_sorting_tests(
-        iterations=iterations, threshold=threshold, per_run_timeout=per_run_timeout
+        iterations=iterations, threshold=threshold, per_run_timeout=enable_timeout
     )
 
 
