@@ -1,7 +1,12 @@
-# algorithms_map.py
-from algorithms import *  # Import your individual sorting functions
+from algorithms import *
 
 def get_algorithms():
+    """
+    Return a mapping of algorithm names to their sorting functions.
+
+    Returns:
+        dict: Keys are algorithm names (str) and values are callable sorting functions.
+    """
     return {
         "Bead Sort": bead_sort,
         "Bitonic Sort Parallel": bitonic_sort_parallel,
@@ -54,4 +59,8 @@ def get_algorithms():
         "Tim Sort": tim_sort,
         "Tournament Sort": tournament_sort,
         "Tree Sort": tree_sort,
+<<<<<<< HEAD
     }
+=======
+    }
+>>>>>>> origin/dev
