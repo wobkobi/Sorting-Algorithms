@@ -1,7 +1,16 @@
 """
-This module provides functions for generating markdown reports based on benchmark results.
+markdown_utils.py
 
-It creates per-array-size ranking tables, individual algorithm reports, and rebuilds the main README file.
+This module generates markdown reports based on benchmark results.
+It provides functions to:
+  - Write per-array-size benchmark result tables.
+  - Create individual algorithm report files.
+  - Rebuild the main README.md file using aggregated benchmark data.
+  
+Functions:
+    write_markdown(md_file, size, size_results, skip_list)
+    write_algorithm_markdown(per_alg_results)
+    rebuild_readme(overall_totals, details_path, skip_list)
 """
 
 import os
@@ -10,34 +19,24 @@ from utils import format_time, group_rankings, ordinal
 
 def write_markdown(md_file, size, size_results, skip_list):
     """
-    Write a markdown table summarizing benchmark results for a given array size.
+    Write a markdown section summarizing benchmark results for a specific array size.
 
-    This function creates a table that ranks algorithms (by average runtime)
-    and displays:
-      - The rank (using ordinal numbering),
-      - The algorithm names (grouped if their performance is nearly identical),
-      - The average time,
-      - The median time.
-
-    Algorithms that are present in the skip_list (i.e. those that were skipped)
-    are excluded from the ranking table.
+    Creates a table that ranks algorithms by average runtime (excluding skipped ones).
+    If all times are extremely small, a note is added to indicate negligible differences.
 
     Parameters:
-        md_file (file object): Open file handle for writing the markdown report.
-        size (int): The array size that was benchmarked.
-        size_results (dict): Mapping from algorithm name to a tuple:
-                             (avg, min, max, median, count, times)
-                             where 'count' is the total number of iterations,
-                             and 'times' is the list of iteration times.
-        skip_list (dict): Mapping of algorithm names that were skipped (key) with the array size at which they were skipped.
+        md_file (file object): Open file for writing markdown content.
+        size (int): The array size benchmarked.
+        size_results (dict): Mapping from algorithm to performance tuple:
+                             (avg, min, max, median, count, times).
+        skip_list (dict): Mapping of algorithms that were skipped (with corresponding size).
     """
-    # If this is the first write to "details.md", add the main header.
+    # Add main header if the file is empty and named "details.md".
     if md_file.tell() == 0 and os.path.basename(md_file.name) == "details.md":
         md_file.write("# Detailed Benchmark Results\n\n")
-    # Write header for current array size.
     md_file.write(f"## Array Size: {size}\n\n")
 
-    # Build a ranking list excluding any skipped algorithms.
+    # Create ranking data excluding skipped algorithms.
     ranking = [
         (alg, data[0], data[3])
         for alg, data in size_results.items()
@@ -45,14 +44,13 @@ def write_markdown(md_file, size, size_results, skip_list):
     ]
 
     if ranking:
-        # If all average times are extremely small, note that differences are negligible.
+        # Note negligible differences if all average times are very small.
         if all(t < 1e-3 for _, t, _ in ranking):
             md_file.write(
                 "All algorithms ran in less than 1ms on this array size; differences are negligible.\n\n"
             )
         else:
             ranking.sort(key=lambda x: x[1])
-            # Group algorithms whose performance is nearly identical.
             groups = group_rankings(ranking, margin=1e-3)
             current_rank = 1
             md_file.write("| Rank | Algorithm(s) | Average Time | Median Time |\n")
@@ -70,10 +68,14 @@ def write_markdown(md_file, size, size_results, skip_list):
     else:
         md_file.write("No algorithms produced a result for this array size.\n\n")
 
-    # If there are any skipped algorithms, append a note with their names and the size they were skipped.
+    # Append note for any skipped algorithms.
     if skip_list:
         md_file.write(
-            f"**Note:** The following algorithm{'s' if len(skip_list) != 1 else ''} were removed for this array size due to performance issues: {', '.join(sorted(f'{alg} (at size {skip_list[alg]})' for alg in skip_list))}.\n\n"
+            f"**Note:** The following algorithm{'s' if len(skip_list) != 1 else ''} were removed for this array size due to performance issues: "
+            + ", ".join(
+                sorted(f"{alg} (at size {skip_list[alg]})" for alg in skip_list)
+            )
+            + "\n\n"
         )
     md_file.flush()
 
@@ -82,16 +84,12 @@ def write_algorithm_markdown(per_alg_results):
     """
     Generate individual markdown files for each algorithm summarizing their benchmark results.
 
-    For each algorithm, this function creates a markdown file (if one does not already exist)
-    in the "results/algorithms" directory. Each file contains a table with:
-      - Array Size,
-      - Average Time,
-      - Median Time,
-      - Minimum Time,
-      - Maximum Time.
+    For each algorithm, a file is created (if it doesn't already exist) in the "results/algorithms" folder.
+    Each file includes a table with:
+      - Array Size, Average Time, Median Time, Min Time, and Max Time.
 
     Parameters:
-        per_alg_results (dict): Mapping from algorithm name to a list of tuples:
+        per_alg_results (dict): Mapping from algorithm name to a list of result tuples:
                                   [(array size, avg, min, max, median), ...].
     """
     alg_folder = os.path.join("results", "algorithms")
@@ -120,19 +118,18 @@ def write_algorithm_markdown(per_alg_results):
 
 def rebuild_readme(overall_totals, details_path, skip_list):
     """
-    Rebuild the main README.md file using aggregated benchmark results and per-size details.
+    Rebuild the main README.md file using overall benchmark results and detailed per-size data.
 
     The README includes:
-      - A title and an introduction.
-      - An overall top-20 ranking of algorithms (by average time across sizes), with
-        algorithms tied in performance grouped together.
-      - A table listing skipped algorithms and the array sizes at which they were skipped.
-      - Detailed per-size benchmark information (read from the details file).
+      - A title and introduction.
+      - An overall top-20 ranking table (with groups for tied performance).
+      - A section listing skipped algorithms with the array sizes at which they were skipped.
+      - Detailed per-size benchmark information read from the details file.
 
     Parameters:
-        overall_totals (dict): Mapping from algorithm name to a dictionary with keys "sum" and "count".
-        details_path (str): Path to the markdown file that contains detailed per-size reports.
-        skip_list (dict): Mapping of algorithm names that were skipped (with corresponding array size).
+        overall_totals (dict): Mapping from algorithm name to dict with keys "sum" and "count".
+        details_path (str): Path to the markdown file containing per-size details.
+        skip_list (dict): Mapping of skipped algorithms (with their respective skipped size).
     """
     overall = {}
     for alg, totals in overall_totals.items():
@@ -153,7 +150,7 @@ def rebuild_readme(overall_totals, details_path, skip_list):
     for group in groups:
         if printed_count < 20:
             rank_str = ordinal(current_rank)
-            # Exclude skipped algorithms from the overall ranking.
+            # Exclude algorithms that were skipped from the overall ranking.
             algs = ", ".join(
                 f"[{alg}](results/algorithms/{alg.replace(' ', '_')}.md)"
                 for alg, _ in group
@@ -190,10 +187,10 @@ def rebuild_readme(overall_totals, details_path, skip_list):
         lines.append("No algorithms were skipped.\n\n")
         print("No algorithms were skipped.")
 
-    # Read detailed per-size markdown content.
+    # Include detailed per-size markdown content.
     with open(details_path, "r") as f:
         details_content = f.read()
-    # Adjust header levels for inclusion in README.md.
+    # Adjust header levels for proper nesting.
     details_content = details_content.replace(
         "# Detailed Benchmark Results", "## Detailed Benchmark Results", 1
     )

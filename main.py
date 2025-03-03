@@ -1,22 +1,34 @@
+"""
+main.py
+
+Entry point for the Sorting Algorithms Benchmark application.
+It interacts with the user to obtain:
+  - Number of iterations.
+  - Time threshold for each iteration.
+  - Whether to enable per-run timeouts.
+
+It also checks for an optional "slow" command-line argument to adjust worker settings.
+Finally, it initiates the benchmark run.
+"""
+
 import sys
 import os
-
-from benchmark.processor import run_sorting_tests
+from benchmark import run_sorting_tests
 
 
 def get_user_input(prompt, default):
     """
-    Prompt the user for an integer input.
+    Prompt the user for integer input with a default option.
 
-    If the user enters nothing, the default value is returned.
-    If the user types 'q' or 'quit', the program exits.
+    If the user enters 'q' or 'quit', the program exits.
+    If no input is provided, returns the default.
 
     Parameters:
-        prompt (str): The message displayed to the user.
-        default (int): The default value if no input is provided.
+        prompt (str): Message shown to the user.
+        default (int): Default value if input is empty.
 
     Returns:
-        int: The user-supplied integer or the default value.
+        int: The user's input as an integer, or the default value.
     """
     try:
         user_input = input(prompt)
@@ -39,15 +51,15 @@ def get_yes_no_input(prompt, default="n"):
     """
     Prompt the user for a yes/no answer.
 
-    Returns True if the response is affirmative ('y' or 'yes') and False otherwise.
-    If no input is provided, the default answer is used.
+    Returns True for affirmative responses ('y' or 'yes'), False otherwise.
+    If no input is provided, uses the provided default.
 
     Parameters:
-        prompt (str): The message displayed to the user.
-        default (str): The default answer ("y" for yes, "n" for no).
+        prompt (str): Question to ask the user.
+        default (str): Default answer ("y" for yes, "n" for no).
 
     Returns:
-        bool: True if the answer is yes, False otherwise.
+        bool: True if affirmative, False otherwise.
     """
     try:
         user_input = input(prompt)
@@ -61,21 +73,15 @@ def get_yes_no_input(prompt, default="n"):
 
 def main():
     """
-    Entry point for the sorting benchmark.
+    Main function to start the benchmark.
 
-    Prompts the user for:
-      - Number of iterations (default: 500)
-      - Time threshold in seconds (default: 300)
-      - Whether to enable per-run timeouts (if enabled, each iteration will be canceled
-        if it takes longer than the threshold)
-
-    Also checks for the "slow" argument to enable SLOW_MODE.
-    Then runs the benchmark with the specified parameters.
+    Prompts the user for configuration parameters, checks for the "slow" mode,
+    and then starts the benchmark using run_sorting_tests().
     """
     ITERATIONS_DEFAULT = 500
     THRESHOLD_DEFAULT = 300
 
-    # Check for "slow" argument to enable slow mode.
+    # Check for "slow" command-line argument to enable slow mode.
     if len(sys.argv) > 1 and sys.argv[1].lower() == "slow":
         os.environ["SLOW_MODE"] = "true"
         print("Slow mode enabled: Using half the workers.")
@@ -91,7 +97,7 @@ def main():
         THRESHOLD_DEFAULT,
     )
 
-    # Ask if each iteration should have a timeout (using the threshold value).
+    # Ask if per-run timeouts should be enabled (each iteration canceled if exceeding threshold).
     enable_timeout = get_yes_no_input(
         "Enable per-run timeouts (each iteration will be canceled if it exceeds the threshold)? (y/n, default n): ",
         "n",

@@ -1,9 +1,19 @@
+"""
+algorithms_map.py
+
+This module maps algorithm names to their corresponding sorting function implementations.
+It imports all sorting functions from the 'algorithms' module and returns a dictionary mapping.
+    
+Function:
+    get_algorithms()
+"""
+
 from algorithms import *
 
 
 def get_algorithms():
     """
-    Return a mapping of algorithm names to their sorting functions.
+    Return a dictionary mapping algorithm names to their sorting functions.
 
     Returns:
         dict: Keys are algorithm names (str) and values are callable sorting functions.

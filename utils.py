@@ -1,12 +1,21 @@
 """
-This module provides helper functions for common operations used in the benchmark.
+utils.py
 
+This module provides helper functions used throughout the benchmark application.
 It includes functions for:
-- Converting time durations into human-readable strings.
-- Grouping ranking results based on performance similarity.
-- Running a single benchmark iteration.
-- Calculating average and median values from a list of times.
-- Converting integers to their ordinal string representation.
+  - Formatting time durations into human-readable strings.
+  - Grouping algorithms into performance clusters.
+  - Running a single benchmark iteration.
+  - Computing average and median values.
+  - Converting integers to ordinal string representations.
+  
+Functions:
+    format_time(seconds, detailed=False)
+    group_rankings(ranking, margin=1e-3)
+    run_iteration(sort_func, size)
+    compute_average(times)
+    compute_median(times)
+    ordinal(n)
 """
 
 import math
@@ -16,24 +25,25 @@ import random
 
 def format_time(seconds, detailed=False):
     """
-    Convert a duration in seconds to a human-readable string with abbreviated time units.
+    Format a time duration (in seconds) into a human-readable string.
 
-    Depending on the value of 'detailed', very short durations are displayed with additional precision.
+    For very short durations, different levels of detail are shown based on the 'detailed' flag.
 
     Examples:
-      - If seconds < 0.001 and detailed is False, returns "less than a ms".
-      - If seconds < 0.001 and detailed is True, returns the time in microseconds (e.g., "123us").
-      - For durations < 1 s, returns the time in milliseconds (e.g., "123ms").
-      - For durations between 1 and 60 s, returns seconds and milliseconds (e.g., "3s 120ms").
-      - For durations between 60 s and 1 hr, returns minutes, seconds, and milliseconds (e.g., "2min 3s 120ms").
-      - For durations >= 1 hr, returns hours, minutes, and seconds (e.g., "1hr 2min 3s").
+      - For durations < 0.001 s:
+          * Detailed: "123us"
+          * Non-detailed: "less than a ms"
+      - For durations < 1 s: Displays in milliseconds.
+      - For durations between 1 and 60 s: Displays seconds and milliseconds.
+      - For durations between 60 s and 1 hr: Displays minutes, seconds, and milliseconds.
+      - For durations >= 1 hr: Displays hours, minutes, and seconds.
 
     Parameters:
-        seconds (float): The duration in seconds.
-        detailed (bool): If True, show sub-millisecond details (microseconds) for very short durations.
+        seconds (float): Duration in seconds.
+        detailed (bool): Flag to enable extra precision for very short durations.
 
     Returns:
-        str: A formatted string representing the duration.
+        str: Formatted time string.
     """
     if seconds is None or (isinstance(seconds, float) and math.isnan(seconds)):
         return "NaN"
@@ -70,19 +80,19 @@ def format_time(seconds, detailed=False):
 
 def group_rankings(ranking, margin=1e-3):
     """
-    Group a sorted list of (algorithm, average time) tuples whose consecutive times differ
-    by less than a given margin. This clusters algorithms with similar performance.
+    Group a sorted list of (algorithm, average_time) tuples that are within a specified margin.
+
+    This function clusters algorithms with similar performance into groups.
 
     Parameters:
-        ranking (list): A sorted list of tuples in the form (algorithm, average_time).
-        margin (float): Maximum allowed difference between consecutive times to be considered tied.
+        ranking (list): Sorted list of tuples in the form (algorithm, average_time).
+        margin (float): Maximum difference between consecutive times to consider them tied.
 
     Returns:
-        list: A list of groups, where each group is a list of (algorithm, average time) tuples.
+        list: A list of groups (each group is a list of tuples).
     """
     if not ranking:
         return []
-
     groups = []
     current_group = [ranking[0]]
     for item in ranking[1:]:
@@ -97,14 +107,17 @@ def group_rankings(ranking, margin=1e-3):
 
 def run_iteration(sort_func, size):
     """
-    Execute one iteration of a sorting algorithm on a randomly generated integer array and measure its runtime.
+    Run a single benchmark iteration of a sorting algorithm.
+
+    Generates a random array of integers of the given size, sorts a copy using the provided function,
+    and returns the elapsed time.
 
     Parameters:
-        sort_func (callable): The sorting function to execute.
-        size (int): The size of the array.
+        sort_func (callable): The sorting algorithm to run.
+        size (int): Size of the array to sort.
 
     Returns:
-        float: The elapsed time in seconds.
+        float: Elapsed time in seconds.
     """
     arr = [random.randint(-1000000, 1000000) for _ in range(size)]
     start = time.perf_counter()
@@ -114,13 +127,13 @@ def run_iteration(sort_func, size):
 
 def compute_average(times):
     """
-    Compute the average of a list of numbers.
+    Compute the arithmetic mean of a list of numbers.
 
     Parameters:
-        times (list): A list of numerical values (e.g., execution times).
+        times (list): List of numerical values.
 
     Returns:
-        float or None: The average of the values, or None if the list is empty.
+        float or None: Average value or None if the list is empty.
     """
     if times:
         return sum(times) / len(times)
@@ -131,13 +144,13 @@ def compute_median(times):
     """
     Compute the median value from a list of numbers.
 
-    For an even number of elements, returns the average of the two middle values.
+    For even counts, returns the average of the two central values.
 
     Parameters:
-        times (list): A list of numerical values (e.g., execution times).
+        times (list): List of numerical values.
 
     Returns:
-        float or None: The median value, or None if the list is empty.
+        float or None: Median value or None if the list is empty.
     """
     n = len(times)
     if n == 0:
@@ -152,17 +165,14 @@ def ordinal(n):
     """
     Convert an integer to its ordinal string representation.
 
-    For example:
-      - 1 becomes "1st"
-      - 2 becomes "2nd"
-      - 3 becomes "3rd"
-      - 4 becomes "4th"
+    Examples:
+        1 -> "1st", 2 -> "2nd", 3 -> "3rd", 4 -> "4th"
 
     Parameters:
-        n (int): The integer to convert.
+        n (int): The integer value.
 
     Returns:
-        str: The ordinal string representation of the integer.
+        str: Ordinal string.
     """
     if 10 <= n % 100 <= 20:
         suffix = "th"
