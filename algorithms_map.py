@@ -1,5 +1,6 @@
 from algorithms import *
 
+
 def get_algorithms():
     """
     Return a mapping of algorithm names to their sorting functions.
@@ -59,8 +60,4 @@ def get_algorithms():
         "Tim Sort": tim_sort,
         "Tournament Sort": tournament_sort,
         "Tree Sort": tree_sort,
-<<<<<<< HEAD
     }
-=======
-    }
->>>>>>> origin/dev
