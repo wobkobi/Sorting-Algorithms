@@ -1,6 +1,7 @@
 import sys
 import os
-from benchmark import run_sorting_tests
+
+from benchmark.processor import run_sorting_tests
 
 
 def get_user_input(prompt, default):
