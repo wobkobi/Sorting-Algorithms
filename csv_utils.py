@@ -1,10 +1,10 @@
 """
-This module provides utility functions for handling CSV files used in the benchmark system.
+This module provides utility functions for managing CSV files used in the benchmark system.
 
 It includes functions to:
-  - Read CSV results and compute statistics (ignoring DNF iterations).
-  - Ensure that a CSV file ends with a newline.
-  - Sort the CSV rows alphabetically by algorithm name.
+  - Parse benchmark results from CSV files and compute performance statistics (ignoring DNF iterations).
+  - Ensure that CSV files end with a newline.
+  - Sort CSV file rows alphabetically by algorithm name and iteration number.
   - Retrieve (or create) the CSV file for a specific array size.
 """
 
@@ -16,90 +16,79 @@ from utils import compute_median, compute_average
 
 def read_csv_results(csv_path, expected_algs):
     """
-    Read benchmark results from a CSV file for a given array size and compute statistics.
+    Parse benchmark results from a CSV file for a given array size and compute performance statistics.
 
-    Iterates through the CSV file, converting elapsed time values to floats.
-    If a row contains "DNF", the result is recorded as None.
-    Only successful (non-None) times are used to compute average, min, max, and median.
-    The total count of iterations (including DNFs) is preserved.
+    The CSV file is expected to contain rows with the following columns:
+      [Algorithm, Array Size, Iteration, Elapsed Time (seconds)]
+    - Iteration numbers are not used for calculations but are implicitly preserved via the order of entries.
+    - The string "DNF" is assumed to be already handled before (or not included in the CSV).
+    - All recorded times (as floats) are collected per algorithm; then, statistics (average, min, max, and median)
+      are computed using only the successful runs (i.e. non-None values).
 
     Parameters:
-        csv_path (str): Path to the CSV file.
-        expected_algs (list): List of expected algorithm names.
+        csv_path (str): The file path to the CSV file.
+        expected_algs (list): A list of algorithm names expected in the results.
 
     Returns:
-        OrderedDict: A mapping from algorithm name to a tuple:
-            (avg, min, max, median, total_iteration_count, times_dict, iter_set)
-            where:
-              - avg (float): Average time of successful runs (or infinity if none succeeded).
-              - min (float or None): Minimum successful time (or None if no successes).
-              - max (float or None): Maximum successful time (or None if no successes).
-              - median (float or None): Median of successful times (or None if no successes).
-              - total_iteration_count (int): Total iterations recorded.
-              - times_dict (dict): Mapping of iteration numbers to recorded times (None for DNFs).
-              - iter_set (set): Set of iteration numbers present.
+        OrderedDict: A mapping from each algorithm to a tuple:
+            (avg, min, max, median, count, times_list)
+        where:
+            - avg: Average elapsed time (using only successful iterations; returns infinity if none succeeded)
+            - min: Minimum elapsed time (or None if no successful iterations)
+            - max: Maximum elapsed time (or None if no successful iterations)
+            - median: Median elapsed time (or None if no successful iterations)
+            - count: Total number of iterations recorded (including those with DNF, if any)
+            - times_list: A list of recorded times (each as a float, or None for a DNF)
     """
-    algorithm_data = {alg: {} for alg in expected_algs}
+    # Initialize a dictionary to hold a list of times for each expected algorithm.
+    algorithm_times = OrderedDict((alg, []) for alg in expected_algs)
 
     with open(csv_path, "r", newline="") as csvfile:
         reader = csv.reader(csvfile)
         try:
-            header = next(reader)
+            # Skip the header row.
+            next(reader)
         except StopIteration:
-            # Return an empty result if file is empty.
-            return OrderedDict((alg, None) for alg in expected_algs)
+            return algorithm_times  # File is empty
 
+        # Process each row of the CSV.
         for row in reader:
             if not row or len(row) < 4:
                 continue
             alg = row[0]
+            # Attempt to convert the elapsed time from the row into a float.
             try:
-                iteration = int(row[2])
+                t = float(row[3])
             except Exception:
                 continue
-            time_str = row[3].strip()
-            if time_str == "DNF":
-                t = None
-            else:
-                try:
-                    t = float(time_str)
-                except Exception:
-                    continue
-            if alg in algorithm_data:
-                algorithm_data[alg][iteration] = t
+            if alg in algorithm_times:
+                algorithm_times[alg].append(t)
 
+    # Compute statistics for each algorithm using only the successful run times.
     results = OrderedDict()
     for alg in expected_algs:
-        data = algorithm_data.get(alg, {})
-        iter_set = set(data.keys())
-        count = len(iter_set)
-        successful_times = [x for x in data.values() if x is not None]
-        if successful_times:
-            avg = compute_average(successful_times)
-            median = compute_median(successful_times)
-            results[alg] = (
-                avg,
-                min(successful_times),
-                max(successful_times),
-                median,
-                count,
-                data,
-                iter_set,
-            )
+        times = algorithm_times[alg]
+        if times:
+            avg = compute_average(times)
+            median = compute_median(times)
+            results[alg] = (avg, min(times), max(times), median, len(times), times)
         else:
-            results[alg] = (float("inf"), None, None, None, count, data, iter_set)
+            results[alg] = None
+
+    # Clear temporary data.
+    del algorithm_times
     return results
 
 
 def ensure_csv_ends_with_newline(csv_path):
     """
-    Ensure that the CSV file at 'csv_path' ends with a newline character.
+    Check if the CSV file ends with a newline; if not, append a newline.
 
-    If the file does not exist or is empty, the function does nothing.
-    Otherwise, it appends a newline if the last character is not a newline.
+    This function ensures that the CSV file conforms to standard formatting,
+    which can prevent issues when appending new rows.
 
     Parameters:
-        csv_path (str): Path to the CSV file.
+        csv_path (str): The file path to the CSV file.
     """
     if not os.path.exists(csv_path):
         return
@@ -116,13 +105,15 @@ def ensure_csv_ends_with_newline(csv_path):
 
 def sort_csv_alphabetically(csv_path):
     """
-    Sort the CSV file at 'csv_path' alphabetically by the algorithm name and iteration number.
+    Sort the rows of the CSV file alphabetically by algorithm name and iteration number.
 
-    Reads the CSV file into memory, sorts the data rows (ignoring the header) first by the
-    algorithm name and then by the iteration number, and writes the sorted rows back to the file.
+    The function reads the entire CSV file (excluding the header), sorts the data rows by:
+      - Primary key: Algorithm name.
+      - Secondary key: Iteration number (converted to int).
+    The sorted data is then written back to the file.
 
     Parameters:
-        csv_path (str): Path to the CSV file.
+        csv_path (str): The file path to the CSV file.
     """
     with open(csv_path, "r", newline="") as f:
         reader = csv.reader(f)
@@ -130,41 +121,52 @@ def sort_csv_alphabetically(csv_path):
     if not rows:
         return
     header = rows[0]
+    # Extract data rows (ignore blank lines) and sort them.
     data_rows = [row for row in rows[1:] if row and len(row) > 0]
     data_rows.sort(key=lambda row: (row[0], int(row[2])))
+    # Write the header and sorted rows back to the file.
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(header)
         writer.writerows(data_rows)
+    # Clear temporary data.
+    del data_rows
 
 
 def get_csv_results_for_size(size, expected_algs, output_folder="results"):
     """
-    Retrieve (or create) a CSV file for the specified array size and parse its contents.
+    Retrieve or create the CSV file for a given array size.
 
-    If a CSV file for the given size exists in the output folder, its contents are read
-    and parsed using read_csv_results(). Otherwise, a new CSV file is created with the proper header.
+    If a CSV file for the specified array size exists in the output folder,
+    its contents are parsed using read_csv_results(). Otherwise, a new CSV file is created
+    with a header.
 
     Parameters:
         size (int): The array size being benchmarked.
-        expected_algs (list): List of expected algorithm names.
-        output_folder (str): Directory where CSV files are stored.
+        expected_algs (list): A list of expected algorithm names.
+        output_folder (str): The directory where CSV files are stored.
 
     Returns:
-        tuple: (csv_path, size_results)
-            - csv_path (str): The full path to the CSV file.
-            - size_results (OrderedDict): Parsed results from the CSV.
+        tuple: (csv_path, size_results, max_iters)
+            - csv_path (str): The full file path to the CSV file.
+            - size_results (OrderedDict): Parsed benchmark results from read_csv_results().
+            - max_iters (dict): A mapping from algorithm name to the maximum iteration number recorded.
+              (Note: In this basic implementation, max_iters is not computed, so it is set to 0 for all algorithms.)
     """
     csv_filename = f"results_{size}.csv"
     csv_path = os.path.join(output_folder, csv_filename)
     if os.path.exists(csv_path):
         size_results = read_csv_results(csv_path, expected_algs)
+        # In this basic version, max_iters is not extracted from the CSV.
+        max_iters = {alg: 0 for alg in expected_algs}
     else:
+        # Create a new CSV file with the proper header.
         with open(csv_path, "w", newline="") as csv_file:
             writer = csv.writer(csv_file)
             writer.writerow(
                 ["Algorithm", "Array Size", "Iteration", "Elapsed Time (seconds)"]
             )
         size_results = OrderedDict((alg, None) for alg in expected_algs)
+        max_iters = {alg: 0 for alg in expected_algs}
     ensure_csv_ends_with_newline(csv_path)
-    return csv_path, size_results
+    return csv_path, size_results, max_iters

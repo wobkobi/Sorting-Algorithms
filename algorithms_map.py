@@ -59,4 +59,8 @@ def get_algorithms():
         "Tim Sort": tim_sort,
         "Tournament Sort": tournament_sort,
         "Tree Sort": tree_sort,
+<<<<<<< HEAD
     }
+=======
+    }
+>>>>>>> origin/dev
