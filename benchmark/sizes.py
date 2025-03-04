@@ -38,22 +38,24 @@ def generate_sizes():
 
 def get_num_workers():
     """
-    Determine the number of worker processes for the benchmark.
+    Determine the number of worker processes for benchmarking.
 
-    The function bases the worker count on:
-      - Total CPU cores.
-      - Time of day (more workers at night).
-      - SLOW_MODE environment variable (reduces worker count if enabled).
+    During night time (from 11:30 PM to 9:30 AM), the function uses all available cores
+    except for 2 reserved for the OS. During other times, it uses 50% of the total cores.
+    If the environment variable "SLOW_MODE" is set, the worker count is further halved.
 
     Returns:
       int: Number of worker processes (at least 1).
     """
     total = os.cpu_count() or 1
     now = datetime.datetime.now().time()
-    # Use 75% of cores at night, otherwise 50%.
+
+    # Night time: between 23:30 and 09:30.
     if datetime.time(23, 30) <= now or now <= datetime.time(9, 30):
-        workers = max(int(total * 0.75), 1)
+        # Use all cores except for 2 reserved for the OS.
+        workers = total - 2 if total > 2 else 1
     else:
+        # Daytime: use 50% of the total cores.
         workers = max(int(total * 0.5), 1)
     # Adjust for slow mode.
     if os.environ.get("SLOW_MODE", "").lower() == "true":
