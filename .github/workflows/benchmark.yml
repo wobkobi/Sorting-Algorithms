@@ -8,7 +8,7 @@ on:
 jobs:
   benchmark:
     runs-on: ubuntu-latest
-    timeout-minutes: 240 # Adjust if needed
+    timeout-minutes: 480 # Adjust if needed
     env:
       USE_ALL_CPUS: "true" # Use all available cores in the GitHub environment
     steps:
@@ -26,8 +26,9 @@ jobs:
 
       - name: Run Sorting Benchmark with Timeout
         run: |
-          # Pipe blank inputs for iterations and threshold, then 'y' to enable timeout and '10' for per-run timeout.
-          printf "\n\ny\n10\n" | python main.py
+          # Provide blank input for iterations (default used), '5' for the time threshold,
+          # then 'y' to enable per-run timeouts (using the threshold value as timeout).
+          printf "\n5\ny\n" | python main.py
 
       - name: Create GitHub Release
         id: create_release
@@ -37,7 +38,7 @@ jobs:
         with:
           tag_name: "benchmark-$(date +'%Y%m%d%H%M%S')"
           release_name: "Sorting Benchmark $(date +'%Y-%m-%d %H:%M:%S')"
-          body: "Automated benchmark run for sorting algorithms with timeout enabled and all CPU cores used. See attached README.md for results."
+          body: "Automated benchmark run for sorting algorithms with per-run timeouts enabled (10s per iteration) and all CPU cores used. See attached README.md for results."
           draft: false
           prerelease: false
 
