@@ -1,11 +1,14 @@
-# benchmark/__init__.py
+# __init__.py
 
 """
-This package re-exports key functions from the submodules for ease of use.
+benchmark package
+
+This package re-exports key functions from submodules for simplified importing.
+
 Modules included:
-  - scheduler: Functions for safe iteration execution and scheduling.
-  - sizes: Functions for generating array sizes and determining worker counts.
-  - processor: Functions for processing array sizes and running the benchmark tests.
+  - scheduler: Safe iteration execution and scheduling.
+  - sizes: Array sizes and worker count functions.
+  - processor: Processing of benchmark tests and results aggregation.
 """
 
 from .scheduler import (

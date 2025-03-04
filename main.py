@@ -2,33 +2,38 @@
 main.py
 
 Entry point for the Sorting Algorithms Benchmark application.
-It interacts with the user to obtain:
-  - Number of iterations.
-  - Time threshold for each iteration.
-  - Whether to enable per-run timeouts.
 
-It also checks for an optional "slow" command-line argument to adjust worker settings.
-Finally, it initiates the benchmark run.
+This script:
+  - Prompts the user for benchmark parameters.
+  - Checks for command-line flags ("slow", "verbose", "debug").
+  - Initiates the benchmark run via run_sorting_tests().
+
+Usage:
+  Run the script with optional arguments:
+    - "slow" to enable slow mode (fewer workers).
+    - "verbose", "v", or "debug" for extra debugging output.
 """
 
 import sys
 import os
 from benchmark import run_sorting_tests
+import benchmark.config as config
 
 
 def get_user_input(prompt, default):
     """
-    Prompt the user for integer input with a default option.
+    Prompt the user for an integer input, using a default value if none is provided.
 
-    If the user enters 'q' or 'quit', the program exits.
-    If no input is provided, returns the default.
+    Special behavior:
+      - If the user inputs 'q' or 'quit', the program exits.
+      - If the input cannot be converted to an integer, the default is used.
 
     Parameters:
-        prompt (str): Message shown to the user.
-        default (int): Default value if input is empty.
+      prompt (str): Message displayed to the user.
+      default (int): Default value to use if no input is provided.
 
     Returns:
-        int: The user's input as an integer, or the default value.
+      int: The user-provided integer or the default value.
     """
     try:
         user_input = input(prompt)
@@ -51,15 +56,15 @@ def get_yes_no_input(prompt, default="n"):
     """
     Prompt the user for a yes/no answer.
 
-    Returns True for affirmative responses ('y' or 'yes'), False otherwise.
-    If no input is provided, uses the provided default.
+    Returns True for "y" or "yes" (case-insensitive); otherwise, returns False.
+    If no input is provided, the default is used.
 
     Parameters:
-        prompt (str): Question to ask the user.
-        default (str): Default answer ("y" for yes, "n" for no).
+      prompt (str): The question to ask the user.
+      default (str): Default answer ("y" for yes, "n" for no).
 
     Returns:
-        bool: True if affirmative, False otherwise.
+      bool: True for affirmative, False otherwise.
     """
     try:
         user_input = input(prompt)
@@ -73,33 +78,37 @@ def get_yes_no_input(prompt, default="n"):
 
 def main():
     """
-    Main function to start the benchmark.
+    Main function to start the benchmark process.
 
-    Prompts the user for configuration parameters, checks for the "slow" mode,
-    and then starts the benchmark using run_sorting_tests().
+    It sets up benchmark parameters (iterations, time threshold, per-run timeout),
+    checks for optional command-line flags, and then calls run_sorting_tests().
     """
-    ITERATIONS_DEFAULT = 500
-    THRESHOLD_DEFAULT = 300
+    # Use default parameters from config.py.
+    iterations_default = config.DEFAULT_ITERATIONS
+    threshold_default = config.DEFAULT_THRESHOLD
 
-    # Check for "slow" command-line argument to enable slow mode.
+    # Check for "slow" mode to adjust the worker count.
     if len(sys.argv) > 1 and sys.argv[1].lower() == "slow":
         os.environ["SLOW_MODE"] = "true"
         print("Slow mode enabled: Using half the workers.")
     else:
         os.environ["SLOW_MODE"] = "false"
 
+    # Enable verbose debugging if requested.
+    if any(arg.lower() in ("verbose", "v", "debug") for arg in sys.argv):
+        config.VERBOSE = True
+        print("Verbose mode enabled: Extra debugging output will be printed.")
+
     iterations = get_user_input(
-        f"Enter number of iterations (default {ITERATIONS_DEFAULT}, or 'q' to quit): ",
-        ITERATIONS_DEFAULT,
+        f"Enter number of iterations (default {iterations_default}, or 'q' to quit): ",
+        iterations_default,
     )
     threshold = get_user_input(
-        f"Enter time threshold in seconds (default {THRESHOLD_DEFAULT}, or 'q' to quit): ",
-        THRESHOLD_DEFAULT,
+        f"Enter time threshold in seconds (default {threshold_default}, or 'q' to quit): ",
+        threshold_default,
     )
-
-    # Ask if per-run timeouts should be enabled (each iteration canceled if exceeding threshold).
     enable_timeout = get_yes_no_input(
-        "Enable per-run timeouts (each iteration will be canceled if it exceeds the threshold)? (y/n, default n): ",
+        "Enable per-run timeouts (cancel iteration if it exceeds the threshold)? (y/n, default n): ",
         "n",
     )
 
@@ -109,4 +118,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("Exiting due to keyboard interrupt.")
+        sys.exit(0)

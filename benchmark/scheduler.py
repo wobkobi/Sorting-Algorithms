@@ -1,32 +1,40 @@
 """
 scheduler.py
 
-This module provides functions to safely run sorting iterations and schedule missing iterations concurrently.
-It uses multiprocessing and concurrent futures to execute sorting tasks with optional per-run timeouts.
+Provides functions to safely run sorting iterations and schedule missing iterations concurrently.
+
+Features:
+  - Running individual iterations in separate processes with optional timeouts.
+  - Scheduling missing iterations using concurrent futures.
+  - Writing iteration results immediately to CSV with data persistence.
 
 Functions:
-    safe_run_target(conn, sort_func, size)
-    safe_run_iteration(sort_func, size, timeout)
-    update_missing_iterations_concurrent(csv_path, size, expected_algs, size_results, iterations, skip_list, threshold, num_workers, per_run_timeout=False)
+  - safe_run_target(): Runs a single iteration and sends back the result.
+  - safe_run_iteration(): Executes a single iteration with a timeout.
+  - update_missing_iterations_concurrent(): Schedules missing iterations concurrently.
 """
 
 import csv
 import sys
+import os
 from multiprocessing import Pipe, Process
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
-from exit_handlers import shutdown_requested
-from utils import run_iteration, compute_average, compute_median, format_time
-from algorithms_map import get_algorithms
+from benchmark.exit_handlers import shutdown_requested
+from benchmark.utils import run_iteration, compute_average, compute_median, format_time
+from benchmark.algorithms_map import get_algorithms
+from benchmark.config import debug
 
 
 def safe_run_target(conn, sort_func, size):
     """
-    Run a single sorting iteration in a separate process and send the elapsed time back via a pipe.
+    Run a single sorting iteration and send the result through a Pipe connection.
+
+    Intended to run in a separate process so it can be terminated if needed.
 
     Parameters:
-        conn: Multiprocessing connection for inter-process communication.
-        sort_func (callable): The sorting algorithm function.
-        size (int): Array size for the sorting operation.
+      conn (Connection): Pipe connection for sending back the result.
+      sort_func (callable): Sorting function to execute.
+      size (int): Array size for the iteration.
     """
     try:
         result = run_iteration(sort_func, size)
@@ -39,17 +47,17 @@ def safe_run_target(conn, sort_func, size):
 
 def safe_run_iteration(sort_func, size, timeout):
     """
-    Execute a sorting iteration with a timeout in a separate process.
+    Execute a sorting iteration in a separate process with a timeout.
 
-    If the process does not complete within the specified timeout, it is terminated.
+    If the iteration exceeds the timeout, it is terminated and returns None.
 
     Parameters:
-        sort_func (callable): The sorting function to run.
-        size (int): Array size for the iteration.
-        timeout (float): Maximum allowed time in seconds for the iteration.
+      sort_func (callable): Sorting function to execute.
+      size (int): Array size for the iteration.
+      timeout (float): Maximum allowed time in seconds.
 
     Returns:
-        float or None: Elapsed time if completed in time, or None if timed out.
+      float or None: Elapsed time if completed in time, otherwise None.
     """
     parent_conn, child_conn = Pipe()
     p = Process(target=safe_run_target, args=(child_conn, sort_func, size))
@@ -58,7 +66,7 @@ def safe_run_iteration(sort_func, size, timeout):
     if p.is_alive():
         p.terminate()
         p.join()
-        return None  # Indicate timeout.
+        return None
     if parent_conn.poll():
         res = parent_conn.recv()
         return None if isinstance(res, Exception) else res
@@ -77,26 +85,30 @@ def update_missing_iterations_concurrent(
     per_run_timeout=False,
 ):
     """
-    Schedule and run missing iterations concurrently for each algorithm.
+    Schedule and execute missing iterations concurrently for each sorting algorithm.
 
-    Reads the CSV to determine which iteration numbers are missing, then schedules those iterations.
-    Also prints information about existing and pending iterations.
+    The function:
+      1. Reads the CSV to determine which iterations exist.
+      2. Identifies missing iteration numbers per algorithm.
+      3. Schedules tasks for missing iterations.
+      4. Writes each iteration result immediately to the CSV.
+      5. Updates in-memory results and computes final statistics.
 
     Parameters:
-        csv_path (str): Path to the CSV file for the current array size.
-        size (int): Current array size.
-        expected_algs (list): List of expected algorithm names.
-        size_results (dict): Current benchmark results for the array size.
-        iterations (int): Total iterations expected per algorithm.
-        skip_list (dict): Dictionary of algorithms to be skipped.
-        threshold (float): Time threshold used to potentially cancel iterations.
-        num_workers (int): Number of worker processes available.
-        per_run_timeout (bool): Flag to enable per-run timeouts.
+      csv_path (str): Full path to the CSV file for the current array size.
+      size (int): Current array size.
+      expected_algs (list): List of expected algorithm names.
+      size_results (dict): Current in-memory benchmark results.
+      iterations (int): Total iterations per algorithm.
+      skip_list (dict): Algorithms to skip (keyed by algorithm name).
+      threshold (float): Time threshold to determine if an algorithm should be skipped.
+      num_workers (int): Number of worker processes to use.
+      per_run_timeout (bool): Enable per-iteration timeout if True.
 
     Returns:
-        tuple: (updated size_results, updated skip_list)
+      tuple: (updated size_results, updated skip_list)
     """
-    # Build a mapping of existing iterations per algorithm from the CSV.
+    # PART 1: Build mapping of existing iterations from CSV.
     existing_iters = {alg: set() for alg in expected_algs}
     try:
         with open(csv_path, "r", newline="") as f:
@@ -112,72 +124,59 @@ def update_missing_iterations_concurrent(
                     continue
                 if alg_name in existing_iters:
                     existing_iters[alg_name].add(iter_num)
-    except Exception:
-        pass
+    except Exception as e:
+        debug(f"Error reading CSV {csv_path}: {e}")
 
-    # Determine which iteration numbers are missing for each algorithm.
+    # PART 2: Determine missing iterations for each algorithm.
     missing_algs = {}
     for alg in expected_algs:
         if alg in skip_list:
             continue
         current_iters = existing_iters.get(alg, set())
-        missing_iters = sorted(set(range(1, iterations + 1)) - current_iters)
-        if missing_iters:
-            missing_algs[alg] = missing_iters
+        missing = sorted(set(range(1, iterations + 1)) - current_iters)
+        if missing:
+            missing_algs[alg] = missing
 
-    # Build messages for algorithms with some results and those with no results.
-    found_msgs = []
-    not_run_msgs = []
-
-    if missing_algs and any(data is not None for data in size_results.values()):
+    # PART 3: Print status messages.
+    if missing_algs:
+        found_msgs = []
+        not_run_msgs = []
         for alg in missing_algs:
             data = size_results.get(alg)
-            # data[4] holds the current iteration count.
             if data is not None:
-                current = data[4]
-                # If either complete (current == iterations) or no iterations (current == 0), show just the name.
-                if current == 0 or current == iterations:
-                    found_msgs.append(f"{alg}")
-                else:
-                    found_msgs.append(f"{alg} ({current})")
+                current = data[4] if len(data) >= 5 else 0
+                found_msgs.append(
+                    alg
+                    if current == 0 or current == iterations
+                    else f"{alg} ({current})"
+                )
             else:
-                not_run_msgs.append(f"{alg}")
-
+                not_run_msgs.append(alg)
         if found_msgs:
             max_items = min(10, len(found_msgs))
-            display_msg = ", ".join(found_msgs[:max_items])
+            disp = ", ".join(found_msgs[:max_items])
             if len(found_msgs) > max_items:
-                display_msg += f", and {len(found_msgs) - max_items} more..."
-            print(f"Algorithms with partial or complete results: {display_msg}.")
-
+                disp += f", and {len(found_msgs)-max_items} more..."
+            print(f"Algorithms with partial/complete results: {disp}.")
         if not_run_msgs:
             max_items = min(10, len(not_run_msgs))
-            display_msg = ", ".join(not_run_msgs[:max_items])
+            disp = ", ".join(not_run_msgs[:max_items])
             if len(not_run_msgs) > max_items:
-                display_msg += f", and {len(not_run_msgs) - max_items} more..."
-            print(f"Algorithms with no results yet: {display_msg}.")
-
-    if not missing_algs:
+                disp += f", and {len(not_run_msgs)-max_items} more..."
+            print(f"Algorithms with no results yet: {disp}.")
+    else:
         return size_results, skip_list
 
-    # Schedule the missing iterations using a concurrent executor.
+    # PART 4: Schedule tasks using a concurrent executor.
     completed_counts = {}
     tasks = {}
+    ExecutorClass = ThreadPoolExecutor if per_run_timeout else ProcessPoolExecutor
 
-    if per_run_timeout:
-        executor_workers = min(num_workers, 2)
-        ExecutorClass = ThreadPoolExecutor
-    else:
-        executor_workers = num_workers
-        ExecutorClass = ProcessPoolExecutor
-
-    with ExecutorClass(max_workers=executor_workers) as executor:
+    with ExecutorClass(max_workers=num_workers) as executor:
         for alg, missing_list in missing_algs.items():
             for iter_num in missing_list:
                 if shutdown_requested:
-                    print(
-                        "Shutdown requested. Exiting update_missing_iterations_concurrent immediately."
-                    )
+                    print("Shutdown requested. Exiting immediately.")
                     sys.exit(0)
                 if per_run_timeout:
                     future = executor.submit(
@@ -186,38 +185,48 @@ def update_missing_iterations_concurrent(
                 else:
                     future = executor.submit(run_iteration, get_algorithms()[alg], size)
                 tasks[future] = (alg, iter_num)
+        debug(f"Scheduled {len(tasks)} tasks for missing iterations.")
 
-        # Process the results as tasks complete.
+        # PART 5: Process task results and write each result immediately to CSV.
         for future in as_completed(tasks):
             if shutdown_requested:
                 for f in tasks:
                     f.cancel()
-                print(
-                    "Shutdown requested during task processing. Exiting loop without recording DNFs."
-                )
+                print("Shutdown requested during task processing. Exiting loop.")
                 sys.exit(0)
             alg, iter_num = tasks[future]
             completed_counts[alg] = completed_counts.get(alg, 0) + 1
             try:
                 t = future.result()
+                debug(f"Task complete for {alg} iteration {iter_num}: result={t}")
             except Exception as e:
                 print(f"{alg} error on size {size} iteration {iter_num}: {e}")
                 t = None
-            # Append the result to the CSV.
-            with open(csv_path, "a", newline="") as csv_file:
-                writer = csv.writer(csv_file)
-                writer.writerow(
-                    [alg, size, iter_num, "DNF" if t is None else f"{t:.8f}"]
-                )
+
+            # Write the result to CSV immediately.
+            try:
+                with open(csv_path, "a", newline="") as csv_file:
+                    writer = csv.writer(csv_file)
+                    row = [alg, size, iter_num, "DNF" if t is None else f"{t:.8f}"]
+                    writer.writerow(row)
+                    csv_file.flush()
+                    os.fsync(csv_file.fileno())
+                debug(f"Wrote row to CSV: {row}")
+            except Exception as e:
+                print(f"Error writing {alg} iteration {iter_num} to CSV: {e}")
+
             # Update in-memory results.
             if size_results.get(alg) is None:
-                size_results[alg] = (None, None, None, None, 0, {})
+                size_results[alg] = (None, None, None, None, 0, [])
             old_times = size_results[alg][5]
+            if isinstance(old_times, list):
+                old_times = {i + 1: old_times[i] for i in range(len(old_times))}
             old_times[iter_num] = t
             new_count = len(old_times)
             size_results[alg] = (None, None, None, None, new_count, old_times)
+
+            # Compute final statistics once all missing iterations for an algorithm are complete.
             if completed_counts[alg] == len(missing_algs.get(alg, [])):
-                # Compute final statistics after completing all missing iterations.
                 times_dict = size_results[alg][5]
                 times_list = [times_dict[k] for k in sorted(times_dict.keys())]
                 successful_times = [x for x in times_list if x is not None]
@@ -241,7 +250,7 @@ def update_missing_iterations_concurrent(
                     times_list,
                 )
                 print(
-                    f"Average for {alg} on size {size}: {format_time(avg, False)} "
-                    + (f"(DNF: {dnf_count}/{len(times_list)})" if dnf_count > 0 else "")
+                    f"{alg} on size {size}: {format_time(avg, False)} "
+                    + (f"(DNF: {dnf_count})" if dnf_count > 0 else "")
                 )
     return size_results, skip_list
