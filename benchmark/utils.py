@@ -167,3 +167,20 @@ def ordinal(n):
     else:
         suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
     return f"{n}{suffix}"
+
+
+def format_size(size):
+    """
+    Format an integer size by inserting commas as thousand separators for values 10,000 and above.
+
+    If the size is less than 10,000, the function returns it as a string without commas.
+
+    Parameters:
+      size (int): The integer to format.
+
+    Returns:
+      str: The formatted string.
+    """
+    if size >= 10000:
+        return f"{size:,}"
+    return str(size)

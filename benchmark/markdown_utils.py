@@ -10,8 +10,8 @@ Provides functions to:
 """
 
 import os
-from benchmark.utils import format_time, group_rankings, ordinal
-from benchmark.config import debug
+from .utils import format_size, format_time, group_rankings, ordinal
+from .config import debug
 
 
 def write_markdown(md_file, size, size_results, skip_list):
@@ -27,11 +27,11 @@ def write_markdown(md_file, size, size_results, skip_list):
       size_results (dict): Mapping from algorithm name to a tuple with performance data.
       skip_list (dict): Mapping of skipped algorithms and their corresponding size.
     """
-    debug(f"Writing markdown for array size {size}")
+    debug(f"Writing markdown for array size {format_size(size)}")
     # Write main header if the file is "details.md" and is empty.
     if md_file.tell() == 0 and os.path.basename(md_file.name) == "details.md":
         md_file.write("# Detailed Benchmark Results\n\n")
-    md_file.write(f"## Array Size: {size}\n\n")
+    md_file.write(f"## Array Size: {format_size(size)}\n\n")
 
     # Build ranking list excluding skipped algorithms.
     ranking = [
@@ -39,7 +39,7 @@ def write_markdown(md_file, size, size_results, skip_list):
         for alg, data in size_results.items()
         if data is not None and alg not in skip_list
     ]
-    debug(f"Ranking data for size {size}: {ranking}")
+    debug(f"Ranking data for size {format_size(size)}: {ranking}")
 
     if ranking:
         # If all times are extremely small, note that differences are negligible.
@@ -107,7 +107,7 @@ def write_algorithm_markdown(per_alg_results):
                 )
                 for size, avg, mn, mx, median in sorted(results, key=lambda x: x[0]):
                     f.write(
-                        f"| {size} | {format_time(avg, False)} | {format_time(median, False)} | {format_time(mn, False)} | {format_time(mx, False)} |\n"
+                        f"| {format_size(size)} | {format_time(avg, False)} | {format_time(median, False)} | {format_time(mn, False)} | {format_time(mx, False)} |\n"
                     )
                 f.write("\n")
             print(f"Wrote results for {alg} to {filepath}")

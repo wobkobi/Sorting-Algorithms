@@ -16,14 +16,14 @@ Functions:
 
 import os
 import sys
-from benchmark.csv_utils import get_csv_results_for_size, sort_csv_alphabetically
-from benchmark.markdown_utils import rebuild_readme, write_markdown, write_algorithm_markdown
-from benchmark import (
-    generate_sizes,
-    get_num_workers,
-    update_missing_iterations_concurrent,
-)
-from benchmark.exit_handlers import shutdown_requested
+
+from .utils import format_size
+from .csv_utils import get_csv_results_for_size, sort_csv_alphabetically
+from .markdown_utils import rebuild_readme, write_markdown, write_algorithm_markdown
+from .sizes import generate_sizes, get_num_workers
+from .scheduler import update_missing_iterations_concurrent
+from .exit_handlers import shutdown_requested
+from .algorithms_map import get_algorithms
 
 
 def update_overall_results(
@@ -145,7 +145,6 @@ def run_sorting_tests(iterations=500, threshold=300, per_run_timeout=False):
       threshold (float): Time threshold (seconds) to determine skipping.
       per_run_timeout (bool): Enforce a timeout for each iteration if True.
     """
-    from benchmark.algorithms_map import get_algorithms  # Local import for mapping.
 
     sizes = generate_sizes()
     expected_algs = list(get_algorithms().keys())
@@ -167,7 +166,7 @@ def run_sorting_tests(iterations=500, threshold=300, per_run_timeout=False):
             if shutdown_requested:
                 print("Shutdown requested. Exiting the size loop.")
                 sys.exit(0)
-            print(f"\nTesting array size: {size}")
+            print(f"\nTesting array size: {format_size(size)}")
             size_results, skip_list = process_size(
                 size,
                 iterations,
