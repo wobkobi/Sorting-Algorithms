@@ -28,16 +28,17 @@ def write_markdown(md_file, size, size_results, skip_list):
       skip_list (dict): Mapping of skipped algorithms and their corresponding size.
     """
     debug(f"Writing markdown for array size {format_size(size)}")
-    # Write main header if the file is "details.md" and is empty.
+    # If this is the first write and the file is "details.md", add a main header.
     if md_file.tell() == 0 and os.path.basename(md_file.name) == "details.md":
         md_file.write("# Detailed Benchmark Results\n\n")
     md_file.write(f"## Array Size: {format_size(size)}\n\n")
 
-    # Build ranking list excluding skipped algorithms.
+    # Build ranking list.
+    # Include algorithms that are either not in skip_list or that are removed at the current size.
     ranking = [
         (alg, data[0], data[3])
         for alg, data in size_results.items()
-        if data is not None and alg not in skip_list
+        if data is not None and (alg not in skip_list or skip_list[alg] == size)
     ]
     debug(f"Ranking data for size {format_size(size)}: {ranking}")
 
@@ -66,16 +67,22 @@ def write_markdown(md_file, size, size_results, skip_list):
     else:
         md_file.write("No algorithms produced a result for this array size.\n\n")
 
-    # Append a note if there are any skipped algorithms.
-    if skip_list:
-        md_file.write(
-            f"**Note:** The following algorithm{'s' if len(skip_list) != 1 else ''} were skipped for this array size due to performance issues: "
+    # Determine which algorithms are removed at this specific array size.
+    removed_here = [
+        alg for alg, removal_size in skip_list.items() if removal_size == size
+    ]
+    if removed_here:
+        note = (
+            f"**Note:** The following algorithm{'s' if len(removed_here) != 1 else ''} "
+            "were removed for this array size due to performance issues: "
             + ", ".join(
-                sorted(f"{alg} (at size {skip_list[alg]})" for alg in skip_list)
+                f"{alg} (at size {format_size(skip_list[alg])})"
+                for alg in sorted(removed_here)
             )
             + "\n\n"
         )
-        debug(f"Skipped algorithms: {skip_list}")
+        md_file.write(note)
+        debug(f"Skipped algorithms at size {format_size(size)}: {removed_here}")
     md_file.flush()
 
 
