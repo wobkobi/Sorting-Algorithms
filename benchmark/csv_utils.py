@@ -13,7 +13,7 @@ This module provides functions to:
 import csv
 import os
 from collections import OrderedDict
-from benchmark.utils import compute_median, compute_average
+from .utils import compute_median, compute_average
 
 
 def read_csv_results(csv_path, expected_algs):

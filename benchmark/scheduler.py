@@ -19,10 +19,10 @@ import sys
 import os
 from multiprocessing import Pipe, Process
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
-from benchmark.exit_handlers import shutdown_requested
-from benchmark.utils import run_iteration, compute_average, compute_median, format_time
-from benchmark.algorithms_map import get_algorithms
-from benchmark.config import debug
+from .exit_handlers import shutdown_requested
+from .utils import format_size, run_iteration, compute_average, compute_median, format_time
+from .algorithms_map import get_algorithms
+from .config import debug
 
 
 def safe_run_target(conn, sort_func, size):
@@ -250,7 +250,7 @@ def update_missing_iterations_concurrent(
                     times_list,
                 )
                 print(
-                    f"{alg} on size {size}: {format_time(avg, False)} "
+                    f"{alg} on size {format_size(size)}: {format_time(avg, False)} "
                     + (f"(DNF: {dnf_count})" if dnf_count > 0 else "")
                 )
     return size_results, skip_list

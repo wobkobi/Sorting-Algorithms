@@ -17,7 +17,7 @@ Usage:
 import sys
 import os
 from benchmark import run_sorting_tests
-import benchmark.config as config
+import benchmark as config
 
 
 def get_user_input(prompt, default):
