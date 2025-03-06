@@ -157,9 +157,11 @@ def run_sorting_tests(iterations=500, threshold=300, per_run_timeout=False):
     # Clear previous details.
     with open(details_path, "w") as f:
         f.write("")
-    initial_workers = get_num_workers()
-    print(f"Using {initial_workers} worker{'s' if initial_workers > 1 else ''}.")
-    process_size.workers = initial_workers
+    # Get initial worker count.
+    process_size.workers = get_num_workers()
+    print(
+        f"Using {process_size.workers} worker{'s' if process_size.workers > 1 else ''}."
+    )
 
     try:
         for size in sizes:
@@ -186,6 +188,14 @@ def run_sorting_tests(iterations=500, threshold=300, per_run_timeout=False):
                 write_markdown(f, size, size_results, skip_list)
             # Rebuild overall README.
             rebuild_readme(overall_totals, details_path, skip_list)
+
+            # Re-check the number of worker processes based on current time.
+            current_workers = get_num_workers()
+            if process_size.workers != current_workers:
+                print(
+                    f"Updating worker count from {process_size.workers} to {current_workers} worker{'s' if process_size.workers > 1 else ''}."
+                )
+                process_size.workers = current_workers
     except KeyboardInterrupt:
         print("KeyboardInterrupt detected. Exiting gracefully.")
         sys.exit(0)

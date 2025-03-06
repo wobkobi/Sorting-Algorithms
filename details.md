@@ -135,3 +135,28 @@
 | 49th | Slowsort | 2s 995ms | 2s 997ms |
 | 50th | Bead Sort | 17s 835ms | 17s 774ms |
 
+## Array Size: 183
+
+| Rank | Algorithm(s) | Average Time | Median Time |
+| ---- | ------------ | ------------ | ----------- |
+| 1st | Replacement Selection Sort, Cubesort, Flash Sort, Burst Sort, Shell Sort, Bucket Sort, Spreadsort, Intro Sort, Patience Sort, Merge Insertion Sort, Franceschini's Method, Polyphase Merge Sort, Comb Sort, Tree Sort, Tim Sort, Hyper Quick, MSD Radix Sort In-Place, MSD Radix Sort, Quick Sort, I Can't Believe It Can Sort, LSD Radix Sort, Heap Sort, Radix Sort, Sample Sort, Block Sort, Merge Sort In-Place, Postman Sort, Merge Sort, Spaghetti Sort, Strand Sort, Library Sort, Selection Sort, Insertion Sort, Exchange Sort, Sorting Network, Cocktail Sort, Pancake Sort, Odd-Even Sort, Bubble Sort, Tournament Sort, Bitonic Sort Parallel, Cycle Sort, Gnome Sort, Smooth Sort | less than a ms | less than a ms |
+| 45th | Stooge Sort | 145ms | 143ms |
+| 46th | Counting Sort | 247ms | 244ms |
+| 47th | Sleep Sort | 1s 994ms | 1s 997ms |
+| 48th | Pigeonhole Sort | 2s 592ms | 2s 680ms |
+| 49th | Bead Sort | 26s 619ms | 24s 121ms |
+| 50th | Slowsort | 28s 495ms | 28s 476ms |
+
+## Array Size: 250
+
+| Rank | Algorithm(s) | Average Time | Median Time |
+| ---- | ------------ | ------------ | ----------- |
+| 1st | Replacement Selection Sort, Cubesort, Flash Sort, Burst Sort, Bucket Sort, Polyphase Merge Sort, Intro Sort, Shell Sort, Spreadsort, Patience Sort, Merge Insertion Sort, Franceschini's Method, Tree Sort, Comb Sort, MSD Radix Sort In-Place, Hyper Quick, Tim Sort, MSD Radix Sort, Quick Sort, I Can't Believe It Can Sort, LSD Radix Sort, Radix Sort, Merge Sort, Heap Sort, Merge Sort In-Place, Postman Sort, Block Sort, Sample Sort, Strand Sort, Spaghetti Sort, Library Sort, Sorting Network, Insertion Sort, Selection Sort, Bitonic Sort Parallel, Exchange Sort, Cocktail Sort, Pancake Sort, Bubble Sort, Odd-Even Sort, Tournament Sort | less than a ms | less than a ms |
+| 42nd | Cycle Sort, Gnome Sort, Smooth Sort | 5ms | 4ms |
+| 45th | Counting Sort | 244ms | 244ms |
+| 46th | Stooge Sort | 432ms | 430ms |
+| 47th | Sleep Sort | 2s 8ms | 2s 10ms |
+| 48th | Pigeonhole Sort | 2s 717ms | 2s 719ms |
+| 49th | Bead Sort | 48s 821ms | 48s 864ms |
+| 50th | Slowsort | 4min 1s 78ms | 4min 1s 549ms |
+
