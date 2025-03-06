@@ -188,6 +188,6 @@
 | 46th | Stooge Sort | 432ms | 430ms |
 | 47th | Sleep Sort | 2s 8ms | 2s 10ms |
 | 48th | Pigeonhole Sort | 2s 717ms | 2s 719ms |
-| 49th | Bead Sort | 48s 821ms | 48s 864ms |
+| 49th | Bead Sort | 48s 824ms | 48s 865ms |
 | 50th | Slowsort | 4min 1s 78ms | 4min 1s 549ms |
 
