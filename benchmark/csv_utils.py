@@ -16,7 +16,7 @@ from collections import OrderedDict
 from .utils import compute_median, compute_average
 
 
-def read_csv_results(csv_path, expected_algs):
+def read_csv_results(csv_path, expected_algs, max_iterations=None):
     """
     Parse benchmark results from a CSV file and compute performance statistics.
 
@@ -45,18 +45,31 @@ def read_csv_results(csv_path, expected_algs):
 
         for row in reader:
             if not row or len(row) < 4:
-                continue
+                continue  # Skip empty or malformed rows.
             alg = row[0]
+            try:
+                iter_num = int(row[2])
+            except Exception:
+                continue  # Skip rows with invalid iteration numbers.
             try:
                 t = float(row[3])
             except Exception:
-                continue
+                continue  # Skip rows with invalid time values.
             if alg in algorithm_times:
-                algorithm_times[alg].append(t)
+                # If max_iterations is specified, only add rows with iteration <= max_iterations.
+                if max_iterations is not None and iter_num > max_iterations:
+                    continue
+                algorithm_times[alg].append((iter_num, t))
 
     results = OrderedDict()
     for alg in expected_algs:
-        times = algorithm_times[alg]
+        entries = algorithm_times[alg]
+        # Sort the entries by iteration number.
+        entries.sort(key=lambda x: x[0])
+        # If max_iterations is specified, take only the first max_iterations entries.
+        if max_iterations is not None:
+            entries = entries[:max_iterations]
+        times = [t for (_, t) in entries]
         if times:
             avg = compute_average(times)
             median = compute_median(times)
@@ -110,7 +123,9 @@ def sort_csv_alphabetically(csv_path):
         writer.writerows(data_rows)
 
 
-def get_csv_results_for_size(size, expected_algs, output_folder="results"):
+def get_csv_results_for_size(
+    size, expected_algs, output_folder="results", max_iterations=None
+):
     """
     Retrieve or create a CSV file for a specific array size.
 
@@ -130,7 +145,7 @@ def get_csv_results_for_size(size, expected_algs, output_folder="results"):
     csv_filename = f"results_{size}.csv"
     csv_path = os.path.join(output_folder, csv_filename)
     if os.path.exists(csv_path):
-        size_results = read_csv_results(csv_path, expected_algs)
+        size_results = read_csv_results(csv_path, expected_algs, max_iterations)
         max_iters = {
             alg: 0 for alg in expected_algs
         }  # Placeholder for iteration count.

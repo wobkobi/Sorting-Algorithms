@@ -34,8 +34,15 @@ def format_time(seconds, detailed=False):
     Returns:
       str: Formatted time string.
     """
-    if seconds is None or (isinstance(seconds, float) and math.isnan(seconds)):
+    try:
+        seconds = float(seconds)
+    except (ValueError, TypeError):
         return "NaN"
+
+    # Check if seconds is NaN.
+    if math.isnan(seconds):
+        return "NaN"
+
     if seconds < 1e-3:
         if detailed:
             us = int(round(seconds * 1e6))

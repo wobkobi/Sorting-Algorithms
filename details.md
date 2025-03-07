@@ -160,3 +160,39 @@
 | 49th | Bead Sort | 48s 824ms | 48s 865ms |
 | 50th | Slowsort | 4min 1s 78ms | 4min 1s 549ms |
 
+## Array Size: 333
+
+| Rank | Algorithm(s) | Average Time | Median Time |
+| ---- | ------------ | ------------ | ----------- |
+| 1st | Replacement Selection Sort, Cubesort, Flash Sort, Spreadsort, Burst Sort, Bucket Sort, Intro Sort, Polyphase Merge Sort, Merge Insertion Sort, Patience Sort, Tree Sort, Franceschini's Method, Shell Sort, MSD Radix Sort, MSD Radix Sort In-Place, Tim Sort, Hyper Quick, Comb Sort, I Can't Believe It Can Sort, LSD Radix Sort, Merge Sort, Block Sort, Quick Sort, Merge Sort In-Place, Heap Sort, Radix Sort, Strand Sort, Postman Sort, Spaghetti Sort, Sample Sort, Library Sort | less than a ms | less than a ms |
+| 32nd | Insertion Sort, Sorting Network, Selection Sort | 3ms | 3ms |
+| 35th | Bitonic Sort Parallel, Exchange Sort, Tournament Sort, Pancake Sort, Cocktail Sort, Bubble Sort, Odd-Even Sort | 5ms | 4ms |
+| 42nd | Gnome Sort | 9ms | 8ms |
+| 43rd | Cycle Sort, Smooth Sort | 10ms | 9ms |
+| 45th | Counting Sort | 259ms | 256ms |
+| 46th | Stooge Sort | 1s 204ms | 1s 204ms |
+| 47th | Sleep Sort | 2s 23ms | 2s 23ms |
+| 48th | Pigeonhole Sort | 2s 635ms | 2s 673ms |
+| 49th | Bead Sort | 1min 5s 812ms | 1min 5s 321ms |
+| 50th | Slowsort | 28min 56s 728ms | 28min 47s 536ms |
+
+**Note:** The following algorithm were removed for this array size due to performance issues: Slowsort (at size 333)
+
+## Array Size: 500
+
+| Rank | Algorithm(s) | Average Time | Median Time |
+| ---- | ------------ | ------------ | ----------- |
+| 1st | Replacement Selection Sort, Cubesort, Burst Sort, Bucket Sort, Spreadsort, Flash Sort, Polyphase Merge Sort, Tree Sort, Intro Sort, Merge Insertion Sort, Patience Sort, Shell Sort, MSD Radix Sort, MSD Radix Sort In-Place, Franceschini's Method, Tim Sort, Quick Sort, Comb Sort, Hyper Quick, Postman Sort, LSD Radix Sort, Radix Sort, I Can't Believe It Can Sort, Merge Sort, Block Sort, Heap Sort, Merge Sort In-Place, Sample Sort, Strand Sort, Spaghetti Sort | less than a ms | less than a ms |
+| 31st | Sorting Network, Library Sort, Bitonic Sort Parallel | 3ms | 3ms |
+| 34th | Insertion Sort, Selection Sort | 6ms | 6ms |
+| 36th | Tournament Sort, Pancake Sort, Exchange Sort | 9ms | 9ms |
+| 39th | Cocktail Sort, Bubble Sort | 12ms | 12ms |
+| 41st | Odd-Even Sort | 13ms | 13ms |
+| 42nd | Gnome Sort | 18ms | 18ms |
+| 43rd | Smooth Sort, Cycle Sort | 19ms | 19ms |
+| 45th | Counting Sort | 213ms | 212ms |
+| 46th | Pigeonhole Sort | 1s 548ms | 1s 565ms |
+| 47th | Sleep Sort | 2s 53ms | 2s 54ms |
+| 48th | Stooge Sort | 3s 127ms | 3s 108ms |
+| 49th | Bead Sort | 1min 10s 78ms | 1min 6s 832ms |
+
