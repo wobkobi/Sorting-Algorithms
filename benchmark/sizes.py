@@ -122,4 +122,7 @@ def get_num_workers():
     # If SLOW_MODE is enabled via the environment variable, halve the number of workers.
     if os.environ.get("SLOW_MODE", "").lower() == "true":
         workers = max(int(workers * 0.5), 1)
+    # If FAST_MODE is enabled via the environment variable, use all cores minus 2.
+    if os.environ.get("FAST_MODE", "").lower() == "true":
+        workers = max(total - 2, 1)
     return workers
