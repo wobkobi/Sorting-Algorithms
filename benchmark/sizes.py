@@ -98,28 +98,39 @@ def get_num_workers():
     """
     Determine the number of worker processes for the benchmark.
 
-    This function calculates the worker count based on:
-      - The total number of CPU cores.
-      - The time of day:
-            * During night time (11:30 PM to 9:30 AM), it reserves 2 cores for the OS.
-            * During daytime, it uses 50% of the total cores.
-      - The SLOW_MODE environment variable: if enabled, the worker count is further halved.
+    Priority:
+      1. If running in GitHub Actions (GITHUB_ACTIONS == "true") and USE_ALL_CPUS is "true",
+         use all available CPU cores (i.e. do not leave any cores free).
+      2. Otherwise, determine the worker count based on:
+         - Time of day:
+             * During night time (11:30 PM to 9:30 AM), reserve 2 cores for the OS.
+             * During daytime, use 50% of the total cores.
+      3. Further adjust based on SLOW_MODE or FAST_MODE:
+         - If SLOW_MODE is enabled, halve the worker count.
+         - Else if FAST_MODE is enabled, use all cores minus 2.
 
     Returns:
       int: The number of worker processes (minimum of 1).
     """
     total = os.cpu_count() or 1
-    now = datetime.datetime.now().time()
 
-    # Determine if it's night time (between 11:30 PM and 9:30 AM).
+    # If running in GitHub Actions and USE_ALL_CPUS is set, return all cores.
+    if (
+        os.environ.get("GITHUB_ACTIONS", "false").lower() == "true"
+        and os.environ.get("USE_ALL_CPUS", "false").lower() == "true"
+    ):
+        return total
+
+    now = datetime.datetime.now().time()
+    # Determine if it's night time (between 11:30 PM and 9:30 AM)
     if datetime.time(23, 30) <= now or now <= datetime.time(9, 30):
-        # Reserve 2 cores for the OS during night time.
         workers = total - 2 if total > 2 else 1
     else:
-        # During daytime, use 50% of the total cores.
         workers = max(int(total * 0.5), 1)
 
-    # If SLOW_MODE is enabled via the environment variable, halve the number of workers.
     if os.environ.get("SLOW_MODE", "").lower() == "true":
         workers = max(int(workers * 0.5), 1)
+    elif os.environ.get("FAST_MODE", "").lower() == "true":
+        workers = max(total - 2, 1)
+
     return workers

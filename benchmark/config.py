@@ -12,6 +12,7 @@ This module defines:
 # Global flags.
 VERBOSE = False  # Set to True for extra debugging output.
 SLOW_MODE = False  # Set to True to reduce worker count in slow mode.
+FAST_MODE = False  # Set to True to use all available cores minus 2.
 
 # Default benchmark parameters.
 DEFAULT_ITERATIONS = 500

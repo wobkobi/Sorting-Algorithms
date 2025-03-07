@@ -5,12 +5,13 @@ Entry point for the Sorting Algorithms Benchmark application.
 
 This script:
   - Prompts the user for benchmark parameters.
-  - Checks for command-line flags ("slow", "verbose", "debug").
+  - Checks for command-line flags ("slow", "fast", "verbose", "v", "debug").
   - Initiates the benchmark run via run_sorting_tests().
 
 Usage:
   Run the script with optional arguments:
     - "slow" to enable slow mode (fewer workers).
+    - "fast" to enable fast mode (use all cores minus 2).
     - "verbose", "v", or "debug" for extra debugging output.
 """
 
@@ -83,16 +84,25 @@ def main():
     It sets up benchmark parameters (iterations, time threshold, per-run timeout),
     checks for optional command-line flags, and then calls run_sorting_tests().
     """
-    # Use default parameters from config.py.
+    # Use default parameters from config.
     iterations_default = config.DEFAULT_ITERATIONS
     threshold_default = config.DEFAULT_THRESHOLD
 
-    # Check for "slow" mode to adjust the worker count.
-    if len(sys.argv) > 1 and sys.argv[1].lower() == "slow":
+    # Check for "slow" mode to reduce worker count.
+    if any(arg.lower() == "slow" for arg in sys.argv):
         os.environ["SLOW_MODE"] = "true"
         print("Slow mode enabled: Using half the workers.")
     else:
         os.environ["SLOW_MODE"] = "false"
+
+    # Check for "fast" mode to use all cores minus 2.
+    if any(arg.lower() == "fast" for arg in sys.argv):
+        os.environ["FAST_MODE"] = "true"
+        # In fast mode, ensure SLOW_MODE is not enabled.
+        os.environ["SLOW_MODE"] = "false"
+        print("Fast mode enabled: Using all available cores minus 2.")
+    else:
+        os.environ["FAST_MODE"] = "false"
 
     # Enable verbose debugging if requested.
     if any(arg.lower() in ("verbose", "v", "debug") for arg in sys.argv):
