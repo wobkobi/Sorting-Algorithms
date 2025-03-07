@@ -82,7 +82,9 @@ def process_size(
       tuple: (size_results, skip_list)
     """
     # Retrieve CSV file and current results.
-    csv_path, size_results, *_ = get_csv_results_for_size(size, expected_algs)
+    csv_path, size_results, *_ = get_csv_results_for_size(
+        size, expected_algs, max_iterations=iterations
+    )
 
     # Determine the number of worker processes.
     current_workers = get_num_workers()
@@ -113,7 +115,9 @@ def process_size(
     # Sort CSV for consistency.
     sort_csv_alphabetically(csv_path)
     # Re-read updated CSV and update overall results.
-    _, updated_results, *_ = get_csv_results_for_size(size, expected_algs)
+    _, updated_results, *_ = get_csv_results_for_size(
+        size, expected_algs, max_iterations=iterations
+    )
     update_overall_results(
         size,
         updated_results,
