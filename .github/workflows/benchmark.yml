@@ -26,9 +26,9 @@ jobs:
 
       - name: Run Sorting Benchmark with Timeout
         run: |
-          # Provide blank input for iterations (default used), '10' for the time threshold,
+          # Provide blank input for iterations (default used), '5' for the time threshold,
           # then 'y' to enable per-run timeouts (using the threshold value as timeout).
-          printf "\n10\ny\n" | python main.py
+          printf "\n5\ny\n" | python main.py
 
       - name: Create GitHub Release
         id: create_release
