@@ -2,7 +2,7 @@ name: Run Sorting Benchmark with Timeout and All CPUs
 
 on:
   push:
-    branches: [main,dev]
+    branches: [main, dev]
   workflow_dispatch:
 
 jobs:
@@ -24,12 +24,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
 
-      - name: Run Sorting Benchmark with Timeout in Fast Mode
+      - name: Run Sorting Benchmark with Timeout
         run: |
-          # The "fast" argument is passed so that FAST_MODE is enabled,
-          # then provide blank input for iterations (default used), '5' for the time threshold,
+          # Provide blank input for iterations (default used), '10' for the time threshold,
           # then 'y' to enable per-run timeouts (using the threshold value as timeout).
-          printf "\n5\ny\n" | python main.py fast
+          printf "\n10\ny\n" | python main.py
 
       - name: Create GitHub Release
         id: create_release
@@ -39,7 +38,7 @@ jobs:
         with:
           tag_name: "benchmark-$(date +'%Y%m%d%H%M%S')"
           release_name: "Sorting Benchmark $(date +'%Y-%m-%d %H:%M:%S')"
-          body: "Automated benchmark run for sorting algorithms with per-run timeouts enabled (5s per iteration) and FAST_MODE enabled (using all CPU cores minus 2). See attached README.md for results."
+          body: "Automated benchmark run for sorting algorithms with per-run timeouts enabled (10s per iteration) and all CPU cores used. See attached README.md for results."
           draft: false
           prerelease: false
 
