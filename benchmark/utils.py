@@ -20,58 +20,64 @@ def format_time(seconds, detailed=False):
     """
     Format a time duration (in seconds) into a human-readable string.
 
-    Depending on the duration and the 'detailed' flag, the function formats times as:
-      - Microseconds for very short durations.
-      - Milliseconds for durations less than one second.
-      - Seconds with milliseconds for durations under 60 seconds.
-      - Minutes/seconds for durations under an hour.
-      - Hours/minutes/seconds for longer durations.
+    If seconds is NaN, None, or an invalid number, returns "NaN".
+
+    For valid numbers:
+      - For durations < 1ms, returns microseconds (if detailed) or "less than a ms".
+      - For durations < 1s, returns milliseconds.
+      - For durations < 60s, returns seconds and milliseconds.
+      - For durations < 3600s, returns minutes, seconds, and milliseconds.
+      - Otherwise, returns hours, minutes, and seconds.
 
     Parameters:
-      seconds (float): Duration in seconds.
-      detailed (bool): If True, show extra precision for very short durations.
+      seconds (number): Duration in seconds.
+      detailed (bool): If True, shows extra precision for very short durations.
 
     Returns:
-      str: Formatted time string.
+      str: The formatted time string, or "NaN" if the input is invalid.
     """
     try:
         seconds = float(seconds)
     except (ValueError, TypeError):
         return "NaN"
 
-    # Check if seconds is NaN.
-    if math.isnan(seconds):
+    # Check for NaN or None
+    if seconds is None or math.isnan(seconds):
         return "NaN"
 
-    if seconds < 1e-3:
-        if detailed:
-            us = int(round(seconds * 1e6))
-            return f"{us}us"
+    try:
+        if seconds < 1e-3:
+            if detailed:
+                us = int(round(seconds * 1e6))
+                return f"{us}us"
+            else:
+                return "less than a ms"
+        elif seconds < 1:
+            total_us = int(round(seconds * 1e6))
+            ms = total_us // 1000
+            remainder_us = total_us % 1000
+            if detailed and remainder_us:
+                return f"{ms}ms {remainder_us}us"
+            else:
+                return f"{ms}ms"
+        elif seconds < 60:
+            sec = int(seconds)
+            ms = int(round((seconds - sec) * 1000))
+            return f"{sec}s {ms}ms"
+        elif seconds < 3600:
+            minutes = int(seconds // 60)
+            sec = int(seconds % 60)
+            ms = int(round((seconds - minutes * 60 - sec) * 1000))
+            return f"{minutes}min {sec}s {ms}ms"
         else:
-            return "less than a ms"
-    elif seconds < 1:
-        total_us = int(round(seconds * 1e6))
-        ms = total_us // 1000
-        remainder_us = total_us % 1000
-        if detailed and remainder_us:
-            return f"{ms}ms {remainder_us}us"
-        else:
-            return f"{ms}ms"
-    elif seconds < 60:
-        sec = int(seconds)
-        ms = int(round((seconds - sec) * 1000))
-        return f"{sec}s {ms}ms"
-    elif seconds < 3600:
-        minutes = int(seconds // 60)
-        sec = int(seconds % 60)
-        ms = int(round((seconds - minutes * 60 - sec) * 1000))
-        return f"{minutes}min {sec}s {ms}ms"
-    else:
-        hr = int(seconds // 3600)
-        rem = seconds % 3600
-        minutes = int(rem // 60)
-        sec = int(rem % 60)
-        return f"{hr}hr {minutes}min {sec}s"
+            hr = int(seconds // 3600)
+            rem = seconds % 3600
+            minutes = int(rem // 60)
+            sec = int(rem % 60)
+            return f"{hr}hr {minutes}min {sec}s"
+    except Exception:
+        # In case any unexpected arithmetic error occurs, return "NaN"
+        return "NaN"
 
 
 def group_rankings(ranking, margin=1e-3):
