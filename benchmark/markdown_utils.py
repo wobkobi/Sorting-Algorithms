@@ -179,13 +179,14 @@ def rebuild_readme(overall_totals, details_path, skip_list):
     if skip_list:
         lines.append("| Algorithm | Skipped At Size |\n")
         lines.append("| --------- | --------------- |\n")
-        for alg in sorted(skip_list.keys()):
-            lines.append(f"| {alg} | {skip_list[alg]} |\n")
+        for alg, size in sorted(skip_list.items(), key=lambda item: item[1]):
+            lines.append(f"| {alg} | {size} |\n")
         lines.append("\n")
         print(
             "Skipped Algorithms:",
             ", ".join(
-                f"{alg} (at size {skip_list[alg]})" for alg in sorted(skip_list.keys())
+                f"{alg} (at size {size})"
+                for alg, size in sorted(skip_list.items(), key=lambda item: item[1])
             ),
         )
     else:
