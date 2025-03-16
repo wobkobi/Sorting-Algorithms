@@ -4,25 +4,25 @@
 
 | Rank | Algorithms | Overall Average Time |
 | ---- | ---------- | -------------------- |
-| 1st | [Replacement Selection Sort](results/algorithms/Replacement_Selection_Sort.md) | 89us |
-| 2nd | [Cubesort](results/algorithms/Cubesort.md) | 93us |
-| 3rd | [Burst Sort](results/algorithms/Burst_Sort.md) | 146us |
-| 4th | [Flash Sort](results/algorithms/Flash_Sort.md) | 152us |
-| 5th | [Bucket Sort](results/algorithms/Bucket_Sort.md) | 154us |
-| 6th | [Spreadsort](results/algorithms/Spreadsort.md) | 170us |
-| 7th | [Polyphase Merge Sort](results/algorithms/Polyphase_Merge_Sort.md) | 209us |
-| 8th | [Intro Sort](results/algorithms/Intro_Sort.md) | 249us |
-| 9th | [Merge Insertion Sort](results/algorithms/Merge_Insertion_Sort.md) | 271us |
-| 10th | [Patience Sort](results/algorithms/Patience_Sort.md) | 293us |
-| 11th | [Tree Sort](results/algorithms/Tree_Sort.md) | 307us |
-| 12th | [MSD Radix Sort](results/algorithms/MSD_Radix_Sort.md) | 312us |
-| 13th | [Franceschini's Method](results/algorithms/Franceschini's_Method.md) | 321us |
-| 14th | [MSD Radix Sort In-Place](results/algorithms/MSD_Radix_Sort_In-Place.md) | 323us |
-| 15th | [Shell Sort](results/algorithms/Shell_Sort.md) | 335us |
-| 16th | [Hyper Quick](results/algorithms/Hyper_Quick.md) | 345us |
-| 17th | [Comb Sort](results/algorithms/Comb_Sort.md), [Tim Sort](results/algorithms/Tim_Sort.md) | 376us |
-| 19th | [Quick Sort](results/algorithms/Quick_Sort.md) | 380us |
-| 20th | [LSD Radix Sort](results/algorithms/LSD_Radix_Sort.md) | 411us |
+| 1st | [Cubesort](results/algorithms/Cubesort.md) | 353us |
+| 2nd | [Replacement Selection Sort](results/algorithms/Replacement_Selection_Sort.md) | 391us |
+| 3rd | [Burst Sort](results/algorithms/Burst_Sort.md) | 637us |
+| 4th | [Bucket Sort](results/algorithms/Bucket_Sort.md) | 662us |
+| 5th | [Flash Sort](results/algorithms/Flash_Sort.md) | 705us |
+| 6th | [Spreadsort](results/algorithms/Spreadsort.md) | 748us |
+| 7th | [Polyphase Merge Sort](results/algorithms/Polyphase_Merge_Sort.md) | 967us |
+| 8th | [MSD Radix Sort](results/algorithms/MSD_Radix_Sort.md) | 1ms 440us |
+| 9th | [Intro Sort](results/algorithms/Intro_Sort.md) | 1ms 460us |
+| 10th | [MSD Radix Sort In-Place](results/algorithms/MSD_Radix_Sort_In-Place.md) | 1ms 542us |
+| 11th | [Tree Sort](results/algorithms/Tree_Sort.md) | 1ms 570us |
+| 12th | [Merge Insertion Sort](results/algorithms/Merge_Insertion_Sort.md) | 1ms 671us |
+| 13th | [LSD Radix Sort](results/algorithms/LSD_Radix_Sort.md) | 1ms 784us |
+| 14th | [Postman Sort](results/algorithms/Postman_Sort.md), [Hyper Quick](results/algorithms/Hyper_Quick.md) | 1ms 820us |
+| 16th | [Radix Sort](results/algorithms/Radix_Sort.md) | 1ms 832us |
+| 17th | [Tim Sort](results/algorithms/Tim_Sort.md) | 1ms 933us |
+| 18th | [Quick Sort](results/algorithms/Quick_Sort.md) | 1ms 948us |
+| 19th | [Franceschini's Method](results/algorithms/Franceschini's_Method.md) | 1ms 986us |
+| 20th | [I Can't Believe It Can Sort](results/algorithms/I_Can't_Believe_It_Can_Sort.md) | 2ms 351us |
 
 ## Skipped Algorithms
 
@@ -30,6 +30,8 @@
 | --------- | --------------- |
 | Bogo Sort | 12 |
 | Slowsort | 333 |
+| Bead Sort | 2500 |
+| Stooge Sort | 5000 |
 
 ## Detailed Benchmark Results
 
@@ -275,4 +277,111 @@
 | 47th | Sleep Sort | 2s 163ms | 2s 162ms |
 | 48th | Stooge Sort | 10s 648ms | 10s 635ms |
 | 49th | Bead Sort | 2min 34s 661ms | 2min 26s 348ms |
+
+### Array Size: 2500
+
+| Rank | Algorithm(s) | Average Time | Median Time |
+| ---- | ------------ | ------------ | ----------- |
+| 1st | Cubesort, Replacement Selection Sort, Burst Sort, Bucket Sort, Flash Sort, Spreadsort, Polyphase Merge Sort | less than a ms | less than a ms |
+| 8th | Intro Sort, MSD Radix Sort, MSD Radix Sort In-Place, Merge Insertion Sort, Hyper Quick, Postman Sort, Tree Sort, LSD Radix Sort, Radix Sort, Quick Sort, Franceschini's Method, Patience Sort, Comb Sort, I Can't Believe It Can Sort, Tim Sort, Shell Sort, Merge Sort, Heap Sort | 3ms | 3ms |
+| 26th | Block Sort | 10ms | 8ms |
+| 27th | Sample Sort, Merge Sort In-Place | 13ms | 11ms |
+| 29th | Strand Sort | 20ms | 20ms |
+| 30th | Sorting Network | 31ms | 29ms |
+| 31st | Spaghetti Sort | 44ms | 42ms |
+| 32nd | Library Sort | 63ms | 58ms |
+| 33rd | Insertion Sort | 144ms | 142ms |
+| 34th | Selection Sort | 146ms | 143ms |
+| 35th | Bitonic Sort Parallel | 184ms | 183ms |
+| 36th | Counting Sort | 190ms | 188ms |
+| 37th | Tournament Sort | 192ms | 195ms |
+| 38th | Pancake Sort | 207ms | 206ms |
+| 39th | Exchange Sort | 221ms | 220ms |
+| 40th | Cocktail Sort | 276ms | 274ms |
+| 41st | Bubble Sort | 309ms | 306ms |
+| 42nd | Odd-Even Sort | 316ms | 312ms |
+| 43rd | Gnome Sort | 398ms | 395ms |
+| 44th | Cycle Sort | 451ms | 451ms |
+| 45th | Smooth Sort | 844ms | 842ms |
+| 46th | Pigeonhole Sort | 1s 314ms | 1s 317ms |
+| 47th | Sleep Sort | 2s 459ms | 2s 451ms |
+| 48th | Stooge Sort | 3min 53s 890ms | 3min 47s 923ms |
+| 49th | Bead Sort | 6min 36s 894ms | 6min 0s 978ms |
+
+**Note:** The following algorithm were removed for this array size due to performance issues: Bead Sort (at size 2500)
+
+### Array Size: 5000
+
+| Rank | Algorithm(s) | Average Time | Median Time |
+| ---- | ------------ | ------------ | ----------- |
+| 1st | Cubesort, Replacement Selection Sort | 2ms | 2ms |
+| 3rd | Burst Sort, Bucket Sort, Flash Sort, Spreadsort | 4ms | 4ms |
+| 7th | Polyphase Merge Sort | 7ms | 6ms |
+| 8th | Tree Sort | 8ms | 8ms |
+| 9th | MSD Radix Sort, Intro Sort, MSD Radix Sort In-Place, Tim Sort | 10ms | 9ms |
+| 13th | Postman Sort, LSD Radix Sort, Merge Insertion Sort, Radix Sort, Hyper Quick | 12ms | 12ms |
+| 18th | Quick Sort, Franceschini's Method | 13ms | 13ms |
+| 20th | I Can't Believe It Can Sort, Merge Sort, Comb Sort, Shell Sort | 16ms | 16ms |
+| 24th | Patience Sort | 19ms | 19ms |
+| 25th | Heap Sort | 21ms | 21ms |
+| 26th | Block Sort | 45ms | 44ms |
+| 27th | Sample Sort | 51ms | 51ms |
+| 28th | Strand Sort | 55ms | 54ms |
+| 29th | Merge Sort In-Place | 60ms | 61ms |
+| 30th | Sorting Network | 103ms | 104ms |
+| 31st | Spaghetti Sort | 258ms | 258ms |
+| 32nd | Counting Sort | 287ms | 286ms |
+| 33rd | Library Sort | 373ms | 342ms |
+| 34th | Bitonic Sort Parallel | 577ms | 571ms |
+| 35th | Tournament Sort | 712ms | 710ms |
+| 36th | Selection Sort | 823ms | 823ms |
+| 37th | Insertion Sort | 841ms | 839ms |
+| 38th | Exchange Sort | 1s 202ms | 1s 201ms |
+| 39th | Pancake Sort | 1s 228ms | 1s 228ms |
+| 40th | Cocktail Sort | 1s 630ms | 1s 627ms |
+| 41st | Bubble Sort | 1s 849ms | 1s 846ms |
+| 42nd | Odd-Even Sort | 1s 880ms | 1s 881ms |
+| 43rd | Gnome Sort | 2s 351ms | 2s 332ms |
+| 44th | Cycle Sort | 2s 588ms | 2s 584ms |
+| 45th | Pigeonhole Sort | 2s 745ms | 2s 724ms |
+| 46th | Sleep Sort | 3s 420ms | 3s 430ms |
+| 47th | Smooth Sort | 5s 928ms | 5s 926ms |
+| 48th | Stooge Sort | 21min 12s 585ms | 15min 37s 135ms |
+
+**Note:** The following algorithm were removed for this array size due to performance issues: Stooge Sort (at size 5000)
+
+### Array Size: 7500
+
+| Rank | Algorithm(s) | Average Time | Median Time |
+| ---- | ------------ | ------------ | ----------- |
+| 1st | Cubesort, Replacement Selection Sort | 2ms | 2ms |
+| 3rd | Burst Sort, Bucket Sort, Flash Sort, Spreadsort | 4ms | 4ms |
+| 7th | Polyphase Merge Sort | 7ms | 6ms |
+| 8th | MSD Radix Sort, MSD Radix Sort In-Place, Intro Sort, Postman Sort, LSD Radix Sort, Radix Sort, Merge Insertion Sort, Tree Sort, Hyper Quick, Quick Sort | 10ms | 9ms |
+| 18th | Tim Sort, Franceschini's Method | 17ms | 16ms |
+| 20th | I Can't Believe It Can Sort, Merge Sort | 19ms | 18ms |
+| 22nd | Comb Sort, Shell Sort | 21ms | 20ms |
+| 24th | Heap Sort, Patience Sort | 24ms | 23ms |
+| 26th | Block Sort | 56ms | 55ms |
+| 27th | Sample Sort | 68ms | 66ms |
+| 28th | Sorting Network | 81ms | 80ms |
+| 29th | Merge Sort In-Place | 88ms | 86ms |
+| 30th | Strand Sort | 105ms | 103ms |
+| 31st | Counting Sort | 217ms | 214ms |
+| 32nd | Bitonic Sort Parallel | 298ms | 295ms |
+| 33rd | Spaghetti Sort | 439ms | 438ms |
+| 34th | Library Sort | 622ms | 567ms |
+| 35th | Selection Sort | 1s 423ms | 1s 422ms |
+| 36th | Insertion Sort | 1s 434ms | 1s 426ms |
+| 37th | Pigeonhole Sort | 1s 455ms | 1s 443ms |
+| 38th | Tournament Sort | 1s 599ms | 1s 596ms |
+| 39th | Pancake Sort | 2s 141ms | 2s 136ms |
+| 40th | Exchange Sort | 2s 144ms | 2s 144ms |
+| 41st | Cocktail Sort | 2s 721ms | 2s 716ms |
+| 42nd | Odd-Even Sort | 3s 160ms | 3s 118ms |
+| 43rd | Bubble Sort | 3s 169ms | 3s 129ms |
+| 44th | Gnome Sort | 3s 907ms | 3s 894ms |
+| 45th | Sleep Sort | 4s 162ms | 4s 140ms |
+| 46th | Cycle Sort | 4s 447ms | 4s 441ms |
+| 47th | Smooth Sort | 16s 867ms | 16s 864ms |
 
