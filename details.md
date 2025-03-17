@@ -350,3 +350,43 @@
 | 46th | Cycle Sort | 4s 447ms | 4s 441ms |
 | 47th | Smooth Sort | 16s 867ms | 16s 864ms |
 
+## Array Size: 10,000
+
+| Rank | Algorithm(s) | Average Time | Median Time |
+| ---- | ------------ | ------------ | ----------- |
+| 1st | Cubesort, Replacement Selection Sort | 3ms | 3ms |
+| 3rd | Burst Sort, Bucket Sort, Flash Sort | 6ms | 5ms |
+| 6th | Spreadsort | 8ms | 8ms |
+| 7th | Polyphase Merge Sort | 10ms | 9ms |
+| 8th | MSD Radix Sort | 14ms | 13ms |
+| 9th | MSD Radix Sort In-Place, Intro Sort, Postman Sort, Radix Sort, LSD Radix Sort | 15ms | 14ms |
+| 14th | Merge Insertion Sort, Hyper Quick, Quick Sort | 19ms | 19ms |
+| 17th | Tree Sort | 22ms | 22ms |
+| 18th | Franceschini's Method | 23ms | 23ms |
+| 19th | I Can't Believe It Can Sort, Tim Sort, Merge Sort | 26ms | 25ms |
+| 22nd | Comb Sort | 30ms | 29ms |
+| 23rd | Shell Sort | 32ms | 31ms |
+| 24th | Heap Sort | 34ms | 33ms |
+| 25th | Patience Sort | 37ms | 36ms |
+| 26th | Block Sort | 82ms | 81ms |
+| 27th | Sample Sort | 104ms | 103ms |
+| 28th | Merge Sort In-Place | 149ms | 147ms |
+| 29th | Sorting Network, Strand Sort | 195ms | 192ms |
+| 31st | Counting Sort | 217ms | 215ms |
+| 32nd | Bitonic Sort Parallel | 385ms | 383ms |
+| 33rd | Spaghetti Sort | 900ms | 884ms |
+| 34th | Library Sort | 1s 107ms | 1s 19ms |
+| 35th | Pigeonhole Sort | 1s 453ms | 1s 442ms |
+| 36th | Insertion Sort | 2s 557ms | 2s 557ms |
+| 37th | Selection Sort | 2s 575ms | 2s 571ms |
+| 38th | Tournament Sort | 3s 384ms | 3s 371ms |
+| 39th | Exchange Sort | 3s 868ms | 3s 868ms |
+| 40th | Pancake Sort | 3s 915ms | 3s 905ms |
+| 41st | Cocktail Sort | 4s 927ms | 4s 903ms |
+| 42nd | Sleep Sort | 5s 9ms | 4s 997ms |
+| 43rd | Bubble Sort | 5s 627ms | 5s 600ms |
+| 44th | Odd-Even Sort | 5s 695ms | 5s 667ms |
+| 45th | Gnome Sort | 7s 43ms | 7s 1ms |
+| 46th | Cycle Sort | 8s 48ms | 8s 45ms |
+| 47th | Smooth Sort | 39s 849ms | 39s 990ms |
+
