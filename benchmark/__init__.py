@@ -63,6 +63,7 @@ from .utils import (
     run_iteration,
     compute_average,
     compute_median,
+    compute_variance,
     ordinal,
     format_size,
 )
@@ -104,6 +105,7 @@ __all__ = [
     "run_iteration",
     "compute_average",
     "compute_median",
+    "compute_variance",
     "ordinal",
     "format_size",
 ]
