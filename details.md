@@ -1,14 +1,32 @@
 # Detailed Benchmark Results
 
-Below is a table of benchmark results for each array size. The columns are defined as follows:
+## Table of Contents
 
-- **Rank:** The ranking order based on average runtime.
-- **Algorithm(s):** The name(s) of the algorithm(s). Ties indicate algorithms with similar performance.
-- **Average Time:** The average runtime for the algorithm over all iterations.
-- **Median Time:** The median runtime for the algorithm.
-- **Variance (%):** The percentage difference between the maximum and minimum runtimes relative to the average. A **lower variance** (typically below 10%) indicates that the algorithm's performance is very consistent across iterations, whereas a **higher variance** (often above 50%) suggests that its performance is more variable. This column is only shown for algorithms that do not share a ranking (i.e. no tie).
+- [Array Size: 5](#array-size-5)
+- [Array Size: 7](#array-size-7)
+- [Array Size: 9](#array-size-9)
+- [Array Size: 12](#array-size-12)
+- [Array Size: 17](#array-size-17)
+- [Array Size: 25](#array-size-25)
+- [Array Size: 30](#array-size-30)
+- [Array Size: 41](#array-size-41)
+- [Array Size: 55](#array-size-55)
+- [Array Size: 75](#array-size-75)
+- [Array Size: 100](#array-size-100)
+- [Array Size: 136](#array-size-136)
+- [Array Size: 183](#array-size-183)
+- [Array Size: 250](#array-size-250)
+- [Array Size: 333](#array-size-333)
+- [Array Size: 500](#array-size-500)
+- [Array Size: 750](#array-size-750)
+- [Array Size: 1000](#array-size-1000)
+- [Array Size: 2500](#array-size-2500)
+- [Array Size: 5000](#array-size-5000)
+- [Array Size: 7500](#array-size-7500)
+- [Array Size: 10,000](#array-size-10000)
+- [Array Size: 25,000](#array-size-25000)
 
-## Array Size: 5
+### Array Size: 5
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -18,7 +36,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 50th | Pigeonhole Sort | 740ms | 657ms | 214% |
 | 51st | Sleep Sort | 1s 328ms | 1s 373ms | 128% |
 
-## Array Size: 7
+### Array Size: 7
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -29,7 +47,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 50th | Pigeonhole Sort | 909ms | 887ms | 164% |
 | 51st | Sleep Sort | 1s 493ms | 1s 546ms | 103% |
 
-## Array Size: 9
+### Array Size: 9
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -40,7 +58,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 50th | Bogo Sort | 1s 479ms | 994ms | 923% |
 | 51st | Sleep Sort | 1s 599ms | 1s 639ms | 96% |
 
-## Array Size: 12
+### Array Size: 12
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -53,7 +71,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 
 **Note:** The following algorithm were removed for this array size due to performance issues: Bogo Sort (at size 12)
 
-## Array Size: 17
+### Array Size: 17
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -63,7 +81,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 49th | Pigeonhole Sort | 1s 820ms | 1s 587ms | 120% |
 | 50th | Bead Sort | 2s 406ms | 2s 351ms | 111% |
 
-## Array Size: 25
+### Array Size: 25
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -73,7 +91,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 49th | Pigeonhole Sort | 1s 902ms | 1s 583ms | 128% |
 | 50th | Bead Sort | 3s 672ms | 3s 577ms | 94% |
 
-## Array Size: 30
+### Array Size: 30
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -83,7 +101,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 49th | Pigeonhole Sort | 1s 937ms | 1s 585ms | 114% |
 | 50th | Bead Sort | 4s 447ms | 4s 291ms | 79% |
 
-## Array Size: 41
+### Array Size: 41
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -94,7 +112,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 49th | Pigeonhole Sort | 1s 981ms | 1s 634ms | 114% |
 | 50th | Bead Sort | 6s 181ms | 6s 6ms | 72% |
 
-## Array Size: 55
+### Array Size: 55
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -106,7 +124,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 49th | Pigeonhole Sort | 2s 7ms | 1s 609ms | 125% |
 | 50th | Bead Sort | 8s 401ms | 8s 238ms | 74% |
 
-## Array Size: 75
+### Array Size: 75
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -118,7 +136,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 49th | Pigeonhole Sort | 2s 30ms | 1s 654ms | 123% |
 | 50th | Bead Sort | 11s 524ms | 11s 589ms | 67% |
 
-## Array Size: 100
+### Array Size: 100
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -130,7 +148,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 49th | Pigeonhole Sort | 2s 48ms | 1s 652ms | 109% |
 | 50th | Bead Sort | 15s 619ms | 16s 701ms | 103% |
 
-## Array Size: 136
+### Array Size: 136
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -142,7 +160,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 49th | Slowsort | 3s 494ms | 3s 197ms | 46% |
 | 50th | Bead Sort | 21s 186ms | 21s 775ms | 59% |
 
-## Array Size: 183
+### Array Size: 183
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -154,7 +172,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 49th | Slowsort | 27s 469ms | 26s 848ms | 19% |
 | 50th | Bead Sort | 29s 873ms | 32s 243ms | 82% |
 
-## Array Size: 250
+### Array Size: 250
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -167,7 +185,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 49th | Bead Sort | 46s 971ms | 46s 857ms | 49% |
 | 50th | Slowsort | 3min 52s 379ms | 3min 47s 804ms | 22% |
 
-## Array Size: 333
+### Array Size: 333
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -183,7 +201,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 
 **Note:** The following algorithm were removed for this array size due to performance issues: Slowsort (at size 333)
 
-## Array Size: 500
+### Array Size: 500
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -201,7 +219,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 48th | Stooge Sort | 3s 106ms | 3s 99ms | 21% |
 | 49th | Bead Sort | 1min 13s 457ms | 1min 15s 614ms | 34% |
 
-## Array Size: 750
+### Array Size: 750
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -224,7 +242,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 48th | Stooge Sort | 10s 787ms | 11s 37ms | 71% |
 | 49th | Bead Sort | 2min 2s 370ms | 1min 59s 429ms | 66% |
 
-## Array Size: 1000
+### Array Size: 1000
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -251,7 +269,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 48th | Stooge Sort | 10s 648ms | 10s 635ms | 12% |
 | 49th | Bead Sort | 2min 34s 661ms | 2min 26s 348ms | 64% |
 
-## Array Size: 2500
+### Array Size: 2500
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -283,7 +301,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 
 **Note:** The following algorithm were removed for this array size due to performance issues: Bead Sort (at size 2500)
 
-## Array Size: 5000
+### Array Size: 5000
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -323,7 +341,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 
 **Note:** The following algorithm were removed for this array size due to performance issues: Stooge Sort (at size 5000)
 
-## Array Size: 7500
+### Array Size: 7500
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -358,7 +376,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 46th | Cycle Sort | 4s 447ms | 4s 441ms | 20% |
 | 47th | Smooth Sort | 16s 867ms | 16s 864ms | 8% |
 
-## Array Size: 10,000
+### Array Size: 10,000
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
@@ -398,7 +416,7 @@ Below is a table of benchmark results for each array size. The columns are defin
 | 46th | Cycle Sort | 8s 48ms | 8s 45ms | 14% |
 | 47th | Smooth Sort | 39s 849ms | 39s 990ms | 18% |
 
-## Array Size: 25,000
+### Array Size: 25,000
 
 | Rank | Algorithm(s) | Average Time | Median Time | Variance (%) |
 | ---- | ------------ | ------------ | ----------- | ------------ |
