@@ -162,6 +162,27 @@ def compute_median(times):
     return sorted_times[n // 2]
 
 
+def compute_variance(avg, mn, mx):
+    """
+    Compute the variance percentage of an algorithm's runtime, defined as:
+        ((max - min) / avg) * 100.
+
+    This function quantifies how consistent the algorithm's performance is.
+    If avg is 0 or None, it returns None.
+
+    Parameters:
+      avg (float): The average runtime.
+      mn (float): The minimum runtime.
+      mx (float): The maximum runtime.
+
+    Returns:
+      float or None: The variance percentage if avg is nonzero, otherwise None.
+    """
+    if avg is None or avg == 0:
+        return None
+    return ((mx - mn) / avg) * 100
+
+
 def ordinal(n):
     """
     Convert an integer to its ordinal string representation.
