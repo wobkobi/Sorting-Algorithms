@@ -1,3 +1,25 @@
+"""
+markdown_utils.py
+
+Generates markdown reports based on benchmark results.
+
+Handles:
+  - Writing detailed markdown sections for each array size.
+  - Generating individual algorithm markdown report files.
+  - Updating the Table of Contents (TOC) in the details markdown file.
+  - Rebuilding the main README.md file with overall results, skipped algorithms, and detailed sections.
+
+Functions:
+  - write_markdown(md_file, size, size_results, skip_list):
+        Writes a markdown section summarizing benchmark results for a specific array size.
+  - write_algorithm_markdown(per_alg_results):
+        Creates individual markdown files for each algorithm with their benchmark results.
+  - update_details_with_toc(details_path):
+        Updates the TOC in the details.md file based on current array size sections.
+  - rebuild_readme(overall_totals, details_path, skip_list):
+        Rebuilds the main README.md file using aggregated results and detailed markdown data.
+"""
+
 import os
 import re
 from .utils import format_size, format_time, group_rankings, ordinal, compute_variance
@@ -8,39 +30,43 @@ def write_markdown(md_file, size, size_results, skip_list):
     """
     Write a markdown section summarizing benchmark results for a specific array size.
 
-    Generates a table ranking algorithms by average runtime and includes an extra column
-    for variance percentage. Variance is computed as ((max - min) / avg) * 100 for a group
-    with a single algorithm. For groups (ties) with multiple algorithms, the Variance column
-    is left blank.
+    This function generates a table ranking algorithms by their average runtime.
+    It also includes an extra column for variance percentage for individual results.
+    If an algorithm is removed at a given array size due to performance issues,
+    a note is appended.
 
-    If any algorithms are removed at this array size due to performance issues, a note is appended.
+    Parameters:
+      md_file (file object): Open file for writing markdown content.
+      size (int): The array size used in the benchmark.
+      size_results (dict): Mapping from algorithm name to a tuple containing
+                           performance data in the form (avg, min, max, median, count, times_list).
+      skip_list (dict): Mapping of algorithms to the array size at which they were removed.
+                        An algorithm removed at this size is still included in the ranking.
     """
     debug(f"Writing markdown for array size {format_size(size)}")
+    # On first write to details.md, output the main header and an explanation.
     if md_file.tell() == 0 and os.path.basename(md_file.name) == "details.md":
-        # Write main header and column explanation.
         md_file.write("# Detailed Benchmark Results\n\n")
         md_file.write(
             "Below is a table of benchmark results for each array size. "
             "The columns are defined as follows:\n\n"
         )
-        md_file.write("- **Rank:** The ranking order based on average runtime.\n")
+        md_file.write("- **Rank:** Ranking order based on average runtime.\n")
         md_file.write(
-            "- **Algorithm(s):** The name(s) of the algorithm(s). Ties indicate algorithms with similar performance.\n"
+            "- **Algorithm(s):** Name(s) of the algorithm(s). Ties indicate similar performance.\n"
         )
+        md_file.write("- **Average Time:** Average runtime over all iterations.\n")
+        md_file.write("- **Median Time:** Median runtime for the algorithm.\n")
         md_file.write(
-            "- **Average Time:** The average runtime for the algorithm over all iterations.\n"
-        )
-        md_file.write("- **Median Time:** The median runtime for the algorithm.\n")
-        md_file.write(
-            "- **Variance (%):** The percentage difference between the maximum and minimum runtimes relative to the average. "
-            "For a single algorithm (no tie), a lower variance (typically below 10%) indicates consistent performance, "
-            "while a higher variance (often above 50%) indicates significant variability. "
+            "- **Variance (%):** Percentage difference between maximum and minimum runtimes relative to the average. "
+            "For a single algorithm (no tie), a lower variance (typically below 10%) indicates consistency, "
+            "while a higher variance (often above 50%) indicates variability. "
             "This column is left blank for ties.\n\n"
         )
     # Write the array size header as a level-3 header.
     md_file.write(f"### Array Size: {format_size(size)}\n\n")
 
-    # Build ranking list: include an algorithm if it's not in skip_list or if its removal size matches the current size.
+    # Build the ranking list for algorithms that either have not been skipped or were skipped at this size.
     ranking = [
         (alg, data[0], data[1], data[2], data[3])
         for alg, data in size_results.items()
@@ -48,6 +74,7 @@ def write_markdown(md_file, size, size_results, skip_list):
     ]
     debug(f"Ranking data for size {format_size(size)}: {ranking}")
 
+    # Write the ranking table or an appropriate message if no results.
     if ranking:
         if all(t < 1e-3 for _, t, _, _, _ in ranking):
             md_file.write(
@@ -83,6 +110,7 @@ def write_markdown(md_file, size, size_results, skip_list):
     else:
         md_file.write("No algorithms produced a result for this array size.\n\n")
 
+    # Append a note if any algorithms were skipped at this size.
     removed_here = [
         alg for alg, removal_size in skip_list.items() if removal_size == size
     ]
@@ -100,18 +128,21 @@ def write_markdown(md_file, size, size_results, skip_list):
         debug(f"Skipped algorithms at size {format_size(size)}: {removed_here}")
     md_file.flush()
 
-    # Update the TOC immediately after finishing this array size.
+    # Immediately update the TOC after finishing this array size section.
     if os.path.basename(md_file.name) == "details.md":
         update_details_with_toc(md_file.name)
 
 
 def write_algorithm_markdown(per_alg_results):
     """
-    Generate individual markdown files for each algorithm with their benchmark results.
+    Generate individual markdown files for each algorithm's benchmark results.
 
-    Creates a file in the "results/algorithms" directory for each algorithm, containing
-    a table of results across different array sizes. An extra column "Variance (%)" is added,
-    but only for rows without ties.
+    For each algorithm, creates a file in the "results/algorithms" directory with a table of results
+    across different array sizes. An extra column for "Variance (%)" is added for single algorithm rows.
+
+    Parameters:
+      per_alg_results (dict): Mapping from algorithm name to a list of tuples in the form:
+                              [(array size, avg, min, max, median), ...].
     """
     alg_folder = os.path.join("results", "algorithms")
     os.makedirs(alg_folder, exist_ok=True)
@@ -164,9 +195,12 @@ def update_details_with_toc(details_path):
     """
     Update the Table of Contents (TOC) in details.md.
 
-    Removes any existing TOC (from the "## Table of Contents" header up to the first "### Array Size:" header)
-    and inserts a fresh TOC immediately after the "# Detailed Benchmark Results" header.
-    In details.md the TOC header is level 2.
+    This function removes any existing TOC (from the "## Table of Contents" header up to the first
+    "### Array Size:" header) and inserts a fresh TOC immediately after the "# Detailed Benchmark Results" header.
+    In details.md, the TOC header is set at level 2.
+
+    Parameters:
+      details_path (str): The file path to details.md.
     """
     with open(details_path, "r") as f:
         content = f.read()
@@ -179,7 +213,7 @@ def update_details_with_toc(details_path):
         flags=re.MULTILINE,
     )
 
-    # Ensure the main header exists.
+    # Ensure that the main header "# Detailed Benchmark Results" exists.
     header_pattern = r"^# Detailed Benchmark Results\s*$"
     header_match = re.search(header_pattern, content, re.MULTILINE)
     if not header_match:
@@ -192,7 +226,7 @@ def update_details_with_toc(details_path):
     for s in sizes:
         anchor = "array-size-" + s.replace(",", "").strip().lower().replace(" ", "-")
         toc_lines.append(f"- [Array Size: {s}](#{anchor})")
-    toc_lines.append("")  # Trailing blank line
+    toc_lines.append("")  # Ensure a single trailing blank line
     toc = "\n".join(toc_lines)
 
     # Insert the TOC immediately after the main header.
@@ -201,7 +235,7 @@ def update_details_with_toc(details_path):
         content[:header_end].rstrip()
         + "\n\n"
         + toc
-        + "\n"  # Changed from "\n\n" to "\n" to ensure only one blank line after the TOC.
+        + "\n"  # Use a single newline after the TOC
         + content[header_end:].lstrip()
     )
 
@@ -212,16 +246,21 @@ def update_details_with_toc(details_path):
 
 def rebuild_readme(overall_totals, details_path, skip_list):
     """
-    Rebuild the main README.md file using aggregated benchmark results and the detailed per-size data.
+    Rebuild the main README.md file using aggregated benchmark results and detailed per-size data.
 
-    The final README structure is:
+    The final README structure is as follows:
       - H1: Project title ("# Sorting Algorithms Benchmark Results")
       - H2: Overall Top 20 Algorithms table
       - H2: Skipped Algorithms section
-      - H2: Detailed Benchmark Results section (from details.md, lowered by one level):
+      - H2: Detailed Benchmark Results section (sourced from details.md but with headings lowered by one level):
             * "# Detailed Benchmark Results" becomes "## Detailed Benchmark Results"
             * "## Table of Contents" becomes "### Table of Contents"
             * "### Array Size:" becomes "#### Array Size:"
+
+    Parameters:
+      overall_totals (dict): Aggregated benchmark results per algorithm.
+      details_path (str): The file path to details.md.
+      skip_list (dict): Mapping of algorithms to the array size at which they were skipped.
     """
     overall = {}
     for alg, totals in overall_totals.items():
@@ -280,7 +319,7 @@ def rebuild_readme(overall_totals, details_path, skip_list):
         lines.append("No algorithms were skipped.\n\n")
         print("No algorithms were skipped.")
 
-    # Read detailed per-size markdown content from details.md and lower headings by one for README.
+    # Read the detailed markdown content from details.md and lower its headings by one level for README.
     with open(details_path, "r") as f:
         details_content = f.read()
     details_content = details_content.replace(
