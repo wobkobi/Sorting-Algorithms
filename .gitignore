@@ -173,3 +173,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 start.ps1
+
+results/
