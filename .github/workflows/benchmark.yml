@@ -27,9 +27,9 @@ jobs:
 
       - name: Run Sorting Benchmark with Timeout
         run: |
-          # Provide blank input for iterations (default used), '5' for the time threshold,
-          # then 'y' to enable per-run timeouts.
-          printf "\n5\ny\n" | python main.py
+          # Provide "100" for iterations, "1" for the time threshold,
+          # and "y" to enable per-run timeouts.
+          printf "100\n1\ny\n" | python main.py
 
       - name: Archive Markdown Files
         run: |
@@ -45,7 +45,7 @@ jobs:
           tag_name: "benchmark-$(date +'%Y%m%d%H%M%S')"
           release_name: "Sorting Benchmark $(date +'%Y-%m-%d %H:%M:%S')"
           body: |
-            Automated benchmark run for sorting algorithms with per-run timeouts enabled (5s per iteration)
+            Automated benchmark run for sorting algorithms with per-run timeouts enabled (1s per iteration threshold)
             and all CPU cores used. See attached markdown archive for results.
           draft: false
           prerelease: false
