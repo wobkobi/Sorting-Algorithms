@@ -2,64 +2,43 @@
 utils.py
 
 Helper functions for the benchmark application.
-
-Functions include:
-  - Time formatting (format_time).
-  - Grouping algorithm rankings (group_rankings).
-  - Running a single benchmark iteration (run_iteration).
-  - Calculating average and median values.
-  - Converting integers to ordinal strings.
+Provides functions for formatting time, grouping rankings,
+running a benchmark iteration, and calculating statistical values.
 """
 
 import math
 import time
 import random
+from .config import debug
 
 
 def format_time(seconds, detailed=False):
     """
     Format a time duration (in seconds) into a human-readable string.
 
-    If seconds is NaN, None, or an invalid number, returns "NaN".
-
-    For valid numbers:
-      - For durations < 1ms, returns microseconds (if detailed) or "less than a ms".
-      - For durations < 1s, returns milliseconds.
-      - For durations < 60s, returns seconds and milliseconds.
-      - For durations < 3600s, returns minutes, seconds, and milliseconds.
-      - Otherwise, returns hours, minutes, and seconds.
-
     Parameters:
-      seconds (number): Duration in seconds.
-      detailed (bool): If True, shows extra precision for very short durations.
+      seconds (number): The time duration in seconds.
+      detailed (bool): If True, provides extra precision for very short durations.
 
     Returns:
-      str: The formatted time string, or "NaN" if the input is invalid.
+      str: The formatted time or "NaN" for invalid input.
     """
     try:
         seconds = float(seconds)
     except (ValueError, TypeError):
         return "NaN"
-
-    # Check for NaN or None
     if seconds is None or math.isnan(seconds):
         return "NaN"
-
     try:
         if seconds < 1e-3:
-            if detailed:
-                us = int(round(seconds * 1e6))
-                return f"{us}us"
-            else:
-                return "less than a ms"
+            return f"{int(round(seconds * 1e6))}us" if detailed else "less than a ms"
         elif seconds < 1:
             total_us = int(round(seconds * 1e6))
             ms = total_us // 1000
             remainder_us = total_us % 1000
-            if detailed and remainder_us:
-                return f"{ms}ms {remainder_us}us"
-            else:
-                return f"{ms}ms"
+            return (
+                f"{ms}ms {remainder_us}us" if detailed and remainder_us else f"{ms}ms"
+            )
         elif seconds < 60:
             sec = int(seconds)
             ms = int(round((seconds - sec) * 1000))
@@ -76,22 +55,19 @@ def format_time(seconds, detailed=False):
             sec = int(rem % 60)
             return f"{hr}hr {minutes}min {sec}s"
     except Exception:
-        # In case any unexpected arithmetic error occurs, return "NaN"
         return "NaN"
 
 
 def group_rankings(ranking, margin=1e-3):
     """
-    Group algorithms into clusters based on similar performance.
-
-    Algorithms are grouped together if their average times differ by less than the given margin.
+    Group algorithms into clusters based on similar average times.
 
     Parameters:
-      ranking (list): Sorted list of tuples (algorithm, average_time).
-      margin (float): Maximum difference to consider times as tied.
+      ranking (list): Sorted list of tuples (algorithm, average_time, ...).
+      margin (float): Maximum allowed difference to group times together.
 
     Returns:
-      list: A list of groups, where each group is a list of tuples.
+      list: List of grouped rankings.
     """
     if not ranking:
         return []
@@ -111,24 +87,31 @@ def run_iteration(sort_func, size):
     """
     Execute a single iteration of a sorting algorithm benchmark.
 
-    Generates a random array of the given size, then times how long the sorting function takes.
+    Generates a random array of given size, runs the sort function,
+    and returns the elapsed time.
 
     Parameters:
       sort_func (callable): The sorting function to test.
-      size (int): The size of the array to generate.
+      size (int): The size of the array.
 
     Returns:
       float: Elapsed time in seconds.
     """
+
+    debug(f"Starting iteration for {sort_func.__name__} on array size {size}.")
     arr = [random.randint(-1000000, 1000000) for _ in range(size)]
     start = time.perf_counter()
     sort_func(arr.copy())
-    return time.perf_counter() - start
+    elapsed = time.perf_counter() - start
+    debug(
+        f"Completed iteration for {sort_func.__name__} on array size {size} in {elapsed:.8f} seconds."
+    )
+    return elapsed
 
 
 def compute_average(times):
     """
-    Calculate the average of a list of numbers.
+    Compute the average of a list of numbers.
 
     Parameters:
       times (list): List of numerical values.
@@ -136,16 +119,12 @@ def compute_average(times):
     Returns:
       float or None: The average value, or None if the list is empty.
     """
-    if times:
-        return sum(times) / len(times)
-    return None
+    return sum(times) / len(times) if times else None
 
 
 def compute_median(times):
     """
-    Compute the median value from a list of numbers.
-
-    For even-numbered lists, returns the average of the two middle values.
+    Compute the median of a list of numbers.
 
     Parameters:
       times (list): List of numerical values.
@@ -164,19 +143,15 @@ def compute_median(times):
 
 def compute_variance(avg, mn, mx):
     """
-    Compute the variance percentage of an algorithm's runtime, defined as:
-        ((max - min) / avg) * 100.
-
-    This function quantifies how consistent the algorithm's performance is.
-    If avg is 0 or None, it returns None.
+    Compute the variance percentage defined as ((max - min) / avg) * 100.
 
     Parameters:
-      avg (float): The average runtime.
-      mn (float): The minimum runtime.
-      mx (float): The maximum runtime.
+      avg (float): The average time.
+      mn (float): Minimum time.
+      mx (float): Maximum time.
 
     Returns:
-      float or None: The variance percentage if avg is nonzero, otherwise None.
+      float or None: The variance percentage, or None if avg is zero.
     """
     if avg is None or avg == 0:
         return None
@@ -185,16 +160,13 @@ def compute_variance(avg, mn, mx):
 
 def ordinal(n):
     """
-    Convert an integer to its ordinal string representation.
-
-    Examples:
-      1 -> "1st", 2 -> "2nd", 3 -> "3rd", 4 -> "4th", etc.
+    Convert an integer n to its ordinal string representation (e.g., 1 -> '1st').
 
     Parameters:
-      n (int): The integer to convert.
+      n (int): The integer.
 
     Returns:
-      str: The ordinal representation.
+      str: The ordinal string.
     """
     if 10 <= n % 100 <= 20:
         suffix = "th"
@@ -205,16 +177,12 @@ def ordinal(n):
 
 def format_size(size):
     """
-    Format an integer size by inserting commas as thousand separators for values 10,000 and above.
-
-    If the size is less than 10,000, the function returns it as a string without commas.
+    Format an integer size by inserting commas as thousand separators if necessary.
 
     Parameters:
-      size (int): The integer to format.
+      size (int): The size number.
 
     Returns:
-      str: The formatted string.
+      str: The formatted size.
     """
-    if size >= 10000:
-        return f"{size:,}"
-    return str(size)
+    return f"{size:,}" if size >= 10000 else str(size)

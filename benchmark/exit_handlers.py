@@ -2,18 +2,16 @@
 exit_handlers.py
 
 Handles graceful shutdown of the benchmark application.
-
 This module sets up signal handlers for SIGINT and SIGTERM and registers an atexit
-handler to print a final shutdown message if a termination was requested.
+handler to print a final exit message if a shutdown is requested.
 """
 
 import atexit
 import signal
 import sys
+from .config import debug
 
-# Global flag to indicate if a shutdown has been requested.
 shutdown_requested = False
-# Internal flag to ensure the shutdown message is printed only once.
 _shutdown_message_printed = False
 
 
@@ -21,9 +19,14 @@ def signal_handler(signum, frame):
     """
     Handle termination signals (SIGINT, SIGTERM).
 
-    Sets the global shutdown flag, prints a shutdown message (once), and exits.
+    Sets the shutdown flag, prints a shutdown message once, and exits.
+
+    Parameters:
+      signum (int): The signal number.
+      frame: Current stack frame.
     """
     global shutdown_requested, _shutdown_message_printed
+    debug(f"Received signal {signum}. Initiating shutdown.")
     if not _shutdown_message_printed:
         print(
             "\nShutdown requested. Cancelling pending tasks and exiting gracefully...",
@@ -34,7 +37,7 @@ def signal_handler(signum, frame):
     sys.exit(0)
 
 
-# Register signal_handler for SIGINT and SIGTERM.
+# Register signal handlers.
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
@@ -45,6 +48,7 @@ def on_exit():
     """
     if shutdown_requested and not _shutdown_message_printed:
         print("Exiting due to shutdown request.", flush=True)
+    debug("Program exiting. on_exit handler called.")
 
 
 atexit.register(on_exit)

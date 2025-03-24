@@ -2,89 +2,80 @@
 csv_utils.py
 
 Utility functions for handling CSV files in the benchmark system.
-
-This module provides functions to:
-  - Read and parse benchmark results from CSV files.
-  - Ensure CSV files end with a newline.
-  - Sort CSV rows by algorithm name and iteration number.
-  - Retrieve or create CSV files for a given array size.
+Includes functions to read CSV results, ensure proper formatting,
+sort CSV rows, and retrieve or create CSV files for given array sizes.
 """
 
 import csv
 import os
 from collections import OrderedDict
-from .utils import compute_median, compute_average
+from .utils import compute_average, compute_median
+from .config import debug
 
 
 def read_csv_results(csv_path, expected_algs, max_iterations=None):
     """
     Parse benchmark results from a CSV file and compute performance statistics.
 
-    The CSV file is expected to have a header row followed by rows with:
-      [Algorithm, Array Size, Iteration, Elapsed Time (seconds)]
-
-    Only valid (float-convertible) elapsed times are used for calculations.
-
     Parameters:
       csv_path (str): Path to the CSV file.
-      expected_algs (list): List of algorithm names expected in the CSV.
+      expected_algs (list): List of expected algorithm names.
+      max_iterations (int, optional): Maximum iterations to consider.
 
     Returns:
-      OrderedDict: Mapping from algorithm to a tuple of statistics:
-                   (avg, min, max, median, count, times_list)
-                   If no valid data exists for an algorithm, its value is None.
+      OrderedDict: Mapping from algorithm to performance tuple.
     """
+    debug(f"Reading CSV results from {csv_path}.")
     algorithm_times = OrderedDict((alg, []) for alg in expected_algs)
-
-    with open(csv_path, "r", newline="") as csvfile:
-        reader = csv.reader(csvfile)
-        try:
-            next(reader)  # Skip header row.
-        except StopIteration:
-            return algorithm_times  # Empty file; return defaults.
-
-        for row in reader:
-            if not row or len(row) < 4:
-                continue  # Skip empty or malformed rows.
-            alg = row[0]
-            try:
-                iter_num = int(row[2])
-            except Exception:
-                continue  # Skip rows with invalid iteration numbers.
-            try:
-                t = float(row[3])
-            except Exception:
-                continue  # Skip rows with invalid time values.
-            if alg in algorithm_times:
-                # If max_iterations is specified, only add rows with iteration <= max_iterations.
-                if max_iterations is not None and iter_num > max_iterations:
+    try:
+        with open(csv_path, "r", newline="") as csvfile:
+            reader = csv.reader(csvfile)
+            next(reader, None)  # Skip header.
+            for row in reader:
+                if not row or len(row) < 4:
                     continue
-                algorithm_times[alg].append((iter_num, t))
+                alg = row[0]
+                try:
+                    iter_num = int(row[2])
+                except Exception:
+                    continue
+                try:
+                    t = float(row[3])
+                except Exception:
+                    continue
+                if alg in algorithm_times:
+                    if max_iterations is not None and iter_num > max_iterations:
+                        continue
+                    algorithm_times[alg].append((iter_num, t))
+    except Exception as e:
+        debug(f"Error reading CSV {csv_path}: {e}")
 
     results = OrderedDict()
     for alg in expected_algs:
         entries = algorithm_times[alg]
-        # Sort the entries by iteration number.
         entries.sort(key=lambda x: x[0])
-        # If max_iterations is specified, take only the first max_iterations entries.
         if max_iterations is not None:
             entries = entries[:max_iterations]
         times = [t for (_, t) in entries]
-        if times:
-            avg = compute_average(times)
-            median = compute_median(times)
-            results[alg] = (avg, min(times), max(times), median, len(times), times)
-        else:
-            results[alg] = None
-
+        results[alg] = (
+            (
+                compute_average(times),
+                min(times) if times else None,
+                max(times) if times else None,
+                compute_median(times),
+                len(times),
+                times,
+            )
+            if times
+            else None
+        )
+    debug(f"Completed reading CSV results from {csv_path}.")
     return results
 
 
 def ensure_csv_ends_with_newline(csv_path):
     """
     Ensure that the CSV file ends with a newline character.
-
-    This avoids formatting issues when appending new data.
 
     Parameters:
       csv_path (str): Path to the CSV file.
@@ -95,11 +86,12 @@ def ensure_csv_ends_with_newline(csv_path):
         try:
             f.seek(-1, os.SEEK_END)
         except OSError:
-            return  # File is empty.
+            return  # Empty file.
         last_char = f.read(1)
     if last_char != b"\n":
         with open(csv_path, "a", newline="") as f:
             f.write("\n")
+        debug(f"Appended newline to CSV file {csv_path}.")
 
 
 def sort_csv_alphabetically(csv_path):
@@ -109,18 +101,20 @@ def sort_csv_alphabetically(csv_path):
     Parameters:
       csv_path (str): Path to the CSV file.
     """
+    debug(f"Sorting CSV file {csv_path} alphabetically.")
     with open(csv_path, "r", newline="") as f:
         reader = csv.reader(f)
         rows = list(reader)
     if not rows:
-        return  # Nothing to sort.
+        return
     header = rows[0]
-    data_rows = [row for row in rows[1:] if row and len(row) > 0]
+    data_rows = [row for row in rows[1:] if row]
     data_rows.sort(key=lambda row: (row[0], int(row[2])))
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(header)
         writer.writerows(data_rows)
+    debug(f"Completed sorting CSV file {csv_path}.")
 
 
 def get_csv_results_for_size(
@@ -129,28 +123,24 @@ def get_csv_results_for_size(
     """
     Retrieve or create a CSV file for a specific array size.
 
-    If the file exists, it parses its contents; otherwise, it creates a new CSV file with the proper header.
-
     Parameters:
-      size (int): Array size used for benchmarking.
-      expected_algs (list): List of expected algorithm names.
+      size (int): Array size.
+      expected_algs (list): List of algorithm names.
       output_folder (str): Folder where CSV files are stored.
+      max_iterations (int, optional): Maximum iterations to consider.
 
     Returns:
       tuple: (csv_path, size_results, max_iters)
-             - csv_path (str): Full path to the CSV file.
-             - size_results (OrderedDict): Parsed benchmark results.
-             - max_iters (dict): Mapping from algorithm to the maximum iteration number (currently 0 for all).
     """
     csv_filename = f"results_{size}.csv"
     csv_path = os.path.join(output_folder, csv_filename)
     if os.path.exists(csv_path):
+        debug(f"CSV file {csv_path} exists. Reading contents.")
         size_results = read_csv_results(csv_path, expected_algs, max_iterations)
-        max_iters = {
-            alg: 0 for alg in expected_algs
-        }  # Placeholder for iteration count.
+        max_iters = {alg: 0 for alg in expected_algs}  # Placeholder.
     else:
-        # Create new CSV file with header.
+        debug(f"CSV file {csv_path} does not exist. Creating new file with header.")
+        os.makedirs(output_folder, exist_ok=True)
         with open(csv_path, "w", newline="") as csv_file:
             writer = csv.writer(csv_file)
             writer.writerow(

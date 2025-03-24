@@ -2,24 +2,21 @@
 algorithms_map.py
 
 Module to map algorithm names to their corresponding sorting functions.
-
-It imports all sorting functions from the 'algorithms' module and returns a dictionary.
-
-Functions:
-  - get_algorithms(): Returns a mapping of algorithm names to functions.
+Imports all sorting functions from the 'algorithms' module and returns a dictionary.
 """
 
 from algorithms import *
+from .config import debug
 
 
 def get_algorithms():
     """
-    Return a dictionary mapping algorithm names (str) to sorting functions (callable).
+    Return a dictionary mapping algorithm names (str) to their sorting functions (callable).
 
     Returns:
-      dict: { "Algorithm Name": sorting_function, ... }
+      dict: Mapping of algorithm names to functions.
     """
-    return {
+    algs = {
         "Bead Sort": bead_sort,
         "Bitonic Sort Parallel": bitonic_sort_parallel,
         "Block Sort": block_sort,
@@ -72,3 +69,8 @@ def get_algorithms():
         "Tournament Sort": tournament_sort,
         "Tree Sort": tree_sort,
     }
+    # Log only once to avoid flooding.
+    if not hasattr(get_algorithms, "_logged"):
+        debug(f"Loaded {len(algs)} algorithms.")
+        get_algorithms._logged = True
+    return algs
