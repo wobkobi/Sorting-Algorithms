@@ -1,5 +1,3 @@
-# __init__.py
-
 """
 benchmark package
 
@@ -12,7 +10,7 @@ Modules included:
   - sizes: Functions for generating array sizes and determining worker counts.
   - processor: Functions for processing benchmark tests and aggregating results.
   - algorithms_map: Mapping of algorithm names to sorting functions.
-  - config: Global configuration settings and debug support.
+  - config: Global configuration settings, debug support, and runtime tracking globals.
   - csv_utils: Utilities for CSV file operations.
   - markdown_utils: Functions for generating markdown reports.
   - exit_handlers: Graceful shutdown handling.
@@ -42,6 +40,10 @@ from .config import (
     SLOW_MODE,
     DEFAULT_ITERATIONS,
     DEFAULT_THRESHOLD,
+    RUN_START_TIME,
+    ARRAY_TIME_LOG,
+    CURRENT_ARRAY,
+    CURRENT_ARRAY_START,
 )
 from .csv_utils import (
     read_csv_results,
@@ -54,9 +56,7 @@ from .markdown_utils import (
     write_algorithm_markdown,
     rebuild_readme,
 )
-from .exit_handlers import (
-    shutdown_requested,
-)
+from .exit_handlers import shutdown_requested, graceful_exit
 from .utils import (
     format_time,
     group_rankings,
@@ -88,6 +88,10 @@ __all__ = [
     "SLOW_MODE",
     "DEFAULT_ITERATIONS",
     "DEFAULT_THRESHOLD",
+    "RUN_START_TIME",
+    "ARRAY_TIME_LOG",
+    "CURRENT_ARRAY",
+    "CURRENT_ARRAY_START",
     # csv_utils functions
     "read_csv_results",
     "ensure_csv_ends_with_newline",
@@ -99,6 +103,7 @@ __all__ = [
     "rebuild_readme",
     # exit_handlers functions/variables
     "shutdown_requested",
+    "graceful_exit",
     # utils functions
     "format_time",
     "group_rankings",

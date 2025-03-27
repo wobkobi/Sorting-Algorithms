@@ -4,10 +4,13 @@ processor.py
 Coordinates benchmark test processing for various array sizes.
 Handles processing for each array size, updates overall results,
 and generates reports (CSV, markdown, README).
+This version also tracks the processing time for each array size
+and writes runtime stats immediately to a JSON file.
 """
 
 import os
 import sys
+import datetime
 from .utils import format_size
 from .csv_utils import get_csv_results_for_size, sort_csv_alphabetically
 from .markdown_utils import rebuild_readme, write_markdown, write_algorithm_markdown
@@ -15,6 +18,7 @@ from .sizes import generate_sizes, get_num_workers
 from .scheduler import update_missing_iterations_concurrent
 from .exit_handlers import shutdown_requested
 from .algorithms_map import get_algorithms
+from . import config  # Import config module to update its runtime globals
 from .config import debug
 
 
@@ -132,13 +136,17 @@ def run_sorting_tests(iterations=500, threshold=300, per_run_timeout=False):
 
     This function generates array sizes, processes each size, updates CSV files,
     generates markdown details, rebuilds the README, and creates per–algorithm reports.
+    It also records and immediately writes the runtime for each array size to a JSON file.
 
     Parameters:
       iterations (int): Number of iterations per algorithm.
       threshold (float): Time threshold.
       per_run_timeout (bool): Whether to enforce timeouts on iterations.
     """
-    debug("Starting run_sorting_tests.")
+    # Update runtime tracking variables directly on the config module.
+    config.RUN_START_TIME = datetime.datetime.now()
+    debug("Run start time set.")
+
     sizes = generate_sizes()
     expected_algs = list(get_algorithms().keys())
     overall_totals = {alg: {"sum": 0, "count": 0} for alg in expected_algs}
@@ -155,49 +163,67 @@ def run_sorting_tests(iterations=500, threshold=300, per_run_timeout=False):
     )
     debug(f"Initial worker count: {process_size.workers}.")
 
-    try:
-        for size in sizes:
-            if shutdown_requested:
-                print("Shutdown requested. Exiting the size loop.")
-                debug("Shutdown requested. Exiting loop in run_sorting_tests.")
-                sys.exit(0)
-            print(f"\nTesting array size: {format_size(size)}")
-            debug(f"Testing array size: {format_size(size)}")
-            size_results, skip_list = process_size(
-                size,
-                iterations,
-                threshold,
-                expected_algs,
-                overall_totals,
-                per_alg_results,
-                skip_list,
-                per_run_timeout=per_run_timeout,
-            )
-            for alg, data in size_results.items():
-                if data is not None and data[0] > threshold and alg not in skip_list:
-                    skip_list[alg] = size
-                    debug(
-                        f"Algorithm {alg} exceeded threshold at size {format_size(size)}. Marked for skipping."
-                    )
-            with open(details_path, "a") as f:
-                write_markdown(f, size, size_results, skip_list)
-            rebuild_readme(overall_totals, details_path, skip_list)
-            current_workers = get_num_workers()
-            if process_size.workers != current_workers:
-                print(
-                    f"Updating worker count from {process_size.workers} to {current_workers} worker{'s' if current_workers > 1 else ''}."
-                )
+    for size in sizes:
+        if shutdown_requested:
+            print("Shutdown requested. Exiting the size loop.")
+            debug("Shutdown requested. Exiting loop in run_sorting_tests.")
+            break
+
+        # Update current array tracking on config.
+        config.CURRENT_ARRAY = size
+        config.CURRENT_ARRAY_START = datetime.datetime.now()
+
+        print(f"\nTesting array size: {format_size(size)}")
+        debug(f"Testing array size: {format_size(size)}")
+        size_results, skip_list = process_size(
+            size,
+            iterations,
+            threshold,
+            expected_algs,
+            overall_totals,
+            per_alg_results,
+            skip_list,
+            per_run_timeout=per_run_timeout,
+        )
+        for alg, data in size_results.items():
+            if data is not None and data[0] > threshold and alg not in skip_list:
+                skip_list[alg] = size
                 debug(
-                    f"Worker count updated from {process_size.workers} to {current_workers}."
+                    f"Algorithm {alg} exceeded threshold at size {format_size(size)}. Marked for skipping."
                 )
-                process_size.workers = current_workers
+        with open(details_path, "a") as f:
+            write_markdown(f, size, size_results, skip_list)
+        rebuild_readme(overall_totals, details_path, skip_list)
+        # Update worker count if needed.
+        current_workers = get_num_workers()
+        if process_size.workers != current_workers:
+            print(
+                f"Updating worker count from {process_size.workers} to {current_workers} worker{'s' if current_workers > 1 else ''}."
+            )
+            debug(
+                f"Worker count updated from {process_size.workers} to {current_workers}."
+            )
+            process_size.workers = current_workers
+
+        # Compute elapsed time for this array size.
+        elapsed = (datetime.datetime.now() - config.CURRENT_ARRAY_START).total_seconds()
+        config.ARRAY_TIME_LOG.append((size, elapsed))
+        debug(f"Array size {format_size(size)} processed in {elapsed:.2f} seconds.")
+        # Immediately save runtime stats to JSON.
+        from .exit_handlers import save_runtime_log_json
+
+        save_runtime_log_json()
+        # Clear current array tracking.
+        config.CURRENT_ARRAY = None
+        config.CURRENT_ARRAY_START = None
+
+    try:
+        write_algorithm_markdown(per_alg_results)
+        print(
+            "\nBenchmark complete: CSV files saved, README.md updated, and per–algorithm files created in 'results/algorithms'."
+        )
+        debug("Completed run_sorting_tests.")
     except KeyboardInterrupt:
         print("KeyboardInterrupt detected. Exiting gracefully.")
         debug("KeyboardInterrupt caught in run_sorting_tests. Exiting.")
         sys.exit(0)
-
-    write_algorithm_markdown(per_alg_results)
-    print(
-        "\nBenchmark complete: CSV files saved, README.md updated, and per–algorithm files created in 'results/algorithms'."
-    )
-    debug("Completed run_sorting_tests.")
